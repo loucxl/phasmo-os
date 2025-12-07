@@ -1,231 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Phasmophobia Ghost Filter — Interactive Checklist</title>
-  <link rel="stylesheet" href="style.css?v=9">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PHASMO.OS // FINAL</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
-<div id="siteBanner">
-  <span id="bannerText">⚠️ Site is Work in Progress. Expect bugs!</span>
-  <button id="bannerClose">×</button>
-</div>
 
-<header>
-  <div class="wrap title">
-<h1>Phasmophobia Ghost Filter</h1>
-<div class="online-counter">
-  Online users: <span id="userCount">0</span>
-  </div>
-    <div class="mode">
-      <label for="difficulty">Difficulty</label>
-      <select id="difficulty">
-        <option>Amateur</option>
-        <option>Intermediate</option>
-        <option selected>Professional</option>
-        <option>Nightmare</option>
-        <option>Insanity</option>
-      </select>
+    <!-- WIP BANNER -->
+    <div class="wip-banner" id="wipBanner">
+        <span class="wip-icon">⚠️</span>
+        <span class="wip-text">Site is Work in Progress. Expect bugs!</span>
+        <button class="wip-close" id="wipClose" aria-label="Dismiss banner">✕</button>
     </div>
-  </div>
-</header>
 
-<main>
-  <aside class="panel" id="controls">
-    <h2>Filters</h2>
-    <div class="toolbar" id="toolbar">
-      <label class="tog"><input type="checkbox" id="compactToggle"> Compact</label>
-      <span style="flex:1"></span>
-      <label class="tog"><input type="checkbox" id="collapseAll"> Collapse all</label>
+    <header>
+        <div class="brand">
+            <div class="live-dot"></div>
+            PHASMO<span>.OS</span>
+        </div>
+        <div class="header-tools">
+            <button class="btn-icon" id="btnManual" title="Hunter's Manual">📖</button>
+            <button class="btn-reset" id="btnReset">Reset</button>
+        </div>
+    </header>
+
+    <div class="controls-wrapper">
+        <div class="evidence-bar" id="evBar"></div>
+        <div class="filters-row" id="filterRow"></div>
     </div>
-    <div class="inner" id="filtersRoot">
-      <details class="group" id="grp-evidence-yes" open>
-        <summary>Observed Evidence</summary>
-        <div class="content">
-          <div class="chips" id="evidence-yes"></div>
-          <p class="help">Select all evidence you <strong>have</strong> seen.</p>
-        </div>
-      </details>
 
-      <details class="group" id="grp-evidence-no">
-        <summary>Not Seen / Ruled Out</summary>
-        <div class="content">
-          <div class="chips" id="evidence-no"></div>
-          <label class="tog" style="margin-top:8px"><input type="checkbox" id="strictNo"> Strictly remove ghosts requiring these</label>
-          <p class="help">Turn this <em>off</em> for Nightmare/Insanity (hidden evidence possible).</p>
+    <div class="dashboard-container">
+        <div class="status-header">
+            <div><span id="matchCount">24</span> Candidates</div>
         </div>
-      </details>
-
-      <details class="group" id="grp-behaviour-exclude">
-        <summary>Behaviour — Rule Outs</summary>
-        <div class="content">
-          <div class="chips" id="behaviour-exclude"></div>
-        </div>
-      </details>
-
-      <details class="group" id="grp-behaviour-require">
-        <summary>Behaviour — Hard Tells</summary>
-        <div class="content">
-          <div class="chips" id="behaviour-require"></div>
-          <p class="help">Note: <strong>The Mimic</strong> can copy many behaviours. If you find <em>DOTS, EMF 5, or Ghost Writing</em>, it cannot be a Mimic.</p>
-        </div>
-      </details>
-
-      <!-- Movement Filters -->
-      <details class="group" id="grp-movement">
-        <summary>Movement Filters</summary>
-        <div class="content">
-          <label class="chip" title="Show only ghosts that can change speed (LoS, temp, sanity, range, or dual-speed)">
-            <input type="checkbox" id="filterSpeedChange"> Only ghosts that change speed
-          </label>
-          <p class="help">Filters to <em>any</em> conditional speed change: LoS, temperature, sanity, proximity, or dual-speed.</p>
-        </div>
-      </details>
-
+        <div class="ghost-grid" id="ghostGrid"></div>
     </div>
-    <div class="btn-row">
-      <button class="btn" id="reset">Reset</button>
-      <button class="btn" id="copy">Copy Remaining</button>
-    </div>
-  </aside>
 
-  <section class="panel" id="results">
-    <div class="bar">
-      <div class="count"><span id="count">24</span> ghosts remain</div>
-      <div class="actions">
-        <label class="tog"><input type="checkbox" id="showRemoved"> Show eliminated</label>
-        <button class="btn" id="share">Share link</button>
-      </div>
+    <div class="footer">
+        <button class="timer-play" id="timerBtn">▶</button>
+        <div class="timer-center">
+            <div class="timer-val" id="timerDisplay">90</div>
+            <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+        </div>
+        <div class="timer-opts">
+            <button class="t-opt active" data-time="90">Smudge</button>
+            <button class="t-opt" data-time="180">Spirit</button>
+            <button class="t-opt" data-time="60">Demon</button>
+        </div>
     </div>
-    <div class="grid" id="grid"></div>
 
-    <!-- Ghost Detail Modal -->
+    <!-- Ghost Details Modal -->
     <dialog id="ghostModal">
-      <div class="gm-head">
-        <div style="display:flex;align-items:center;gap:10px">
-          <h3 id="gm-title" style="margin:0;font-size:1.05rem"></h3>
-          <div id="gm-ev" class="gm-ev"></div>
+        <div class="dialog-header">
+            <h2 class="dialog-title" id="mName">GHOST</h2>
+            <button class="dialog-close" id="closeGhost">&times;</button>
         </div>
-        <button class="btn" id="gm-close">Close</button>
-      </div>
-      <div class="gm-body">
-        <div class="gm-sec">
-          <h4>Hunt Threshold & Conditions</h4>
-          <div id="gm-th"></div>
-        </div>
-        <div class="gm-sec">
-          <h4>Unique Traits & Tells</h4>
-          <ul id="gm-traits" style="margin:0;padding-left:18px"></ul>
-        </div>
-        <div class="gm-sec">
-          <h4>Strategy Highlights</h4>
-          <ol id="gm-plan" style="margin:0;padding-left:18px"></ol>
-        </div>
-      </div>
+        <div class="dialog-body" id="mContent"></div>
     </dialog>
 
-    <details class="reasons" id="removedBox" hidden>
-      <summary>Eliminated ghosts (with reasons)</summary>
-      <div id="removedList" style="display:grid;gap:8px;margin-top:8px"></div>
-    </details>
-  </section>
-</main>
-
-<div class="tips" id="tipsBox">
-  <h2>Investigation Tips <span class="muted" id="tipsMeta"></span></h2>
-  <ul id="tipsList"></ul>
-  <div class="ai-row">
-    <button class="btn" id="planBtn" disabled title="Add filters until 5 or fewer ghosts remain">Generate Strategies</button>
-    <span class="help">Generates step-by-step plans (no AI). Enabled at ≤ 5 remaining ghosts.</span>
-  </div>
-  <details id="planPanel" class="tips" open hidden>
-    <summary><strong>Strategy Plans</strong> <span class="muted">— tailored to your remaining ghosts & difficulty</span></summary>
-    <div id="plansOut" style="margin-top:10px;display:grid;gap:10px"></div>
-  </details>
-</div>
-
-<div class="tools">
-  <section class="tool" id="smudgeTool">
-    <h3>Smudge Timer</h3>
-    <div class="inline">
-      <label>Preset
-        <select id="smudgePreset" class="inputish">
-          <option value="90">Normal (90s)</option>
-          <option value="180">Spirit Test (3:00)</option>
-          <option value="120">Demon Shorter (~120s)</option>
-          <option value="custom">Custom…</option>
-        </select>
-      </label>
-      <input id="smudgeCustom" type="number" min="10" max="600" step="5" placeholder="Seconds" class="inputish" style="width:110px;display:none">
-      <button class="btn" id="smudgeStart">Start</button>
-      <button class="btn" id="smudgeStop" disabled>Stop</button>
-      <button class="btn" id="smudgeReset">Reset</button>
-      <span class="help" id="smudgeLabel">Blocks hunts for the timer duration — use to test <strong>Spirit</strong> (~3:00) vs normal.</span>
-    </div>
-    <div class="timer">
-      <div class="progress"><div class="barfill" id="smudgeBar"></div></div>
-      <div id="smudgeTime" style="min-width:60px;text-align:right;font-variant-numeric:tabular-nums">00:00</div>
-    </div>
-  </section>
-
-  <section class="tool" id="thresholdTool">
-    <h3>Hunt Threshold Guide</h3>
-    <div class="rows" id="thresholdRows"></div>
-  </section>
-</div>
-
-<!-- Load ONLY the updated script once, at the end -->
-<link rel="stylesheet" href="style.css?v=9">
-<script src="script.js?v=9"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  // 1) Init client
-  const supabase = window.supabase.createClient(
-    'https://duxjylccikxatmubtpgy.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1eGp5bGNjaWt4YXRtdWJ0cGd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3OTk0MzAsImV4cCI6MjA3MTM3NTQzMH0.INGyMHCM3Pv53mK9F2d2s_U79eAYLA86Y29KfaH2W4Q'
-  );
-
-  // 2) Generate a stable, anonymous id per-browser (not per tab)
-  const LS_KEY = 'phasmophobia-user-id';
-  let userId = localStorage.getItem(LS_KEY);
-  if (!userId) {
-    userId = crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2);
-    localStorage.setItem(LS_KEY, userId);
-  }
-
-  // 3) Join a realtime "presence" channel
-  //    Use a unique name for your site/app; all visitors join the same room.
-  const channel = supabase.channel('phasmophobia-online', {
-    config: { presence: { key: userId } } // presence "key" groups all tabs for one user
-  });
-
-  // 4) Update the DOM whenever presence state changes
-  function renderOnlineCount() {
-    const state = channel.presenceState(); // { userId: [metas...] }
-    // Count unique users (keys). If you want to count tabs, sum meta lengths instead.
-    const uniqueUsers = Object.keys(state).length;
-    const el = document.getElementById('userCount');
-    if (el) el.textContent = String(uniqueUsers);
-  }
-
-  channel.on('presence', { event: 'sync' }, renderOnlineCount);
-
-  // 5) Subscribe and start tracking this user’s presence
-  channel.subscribe((status) => {
-    if (status === 'SUBSCRIBED') {
-      channel.track({ online_at: new Date().toISOString() });
-    }
-  });
-
-  // (Optional) When the page becomes hidden/visible, you can re-track,
-  // but Supabase handles disconnects/reconnects automatically.
-  window.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      channel.track({ online_at: new Date().toISOString() });
-    }
-  });
-</script>
+    <!-- Manual Modal -->
+    <dialog id="manualModal">
+        <div class="dialog-header">
+            <h2 class="dialog-title">HUNTER'S MANUAL</h2>
+            <button class="dialog-close" id="closeManual">&times;</button>
+        </div>
+        <div class="dialog-body">
+            <div class="manual-nav">
+                <button class="nav-btn active" onclick="showManualTab('ev', this)">Evidence</button>
+                <button class="nav-btn" onclick="showManualTab('cursed', this)">Cursed Items</button>
+                <button class="nav-btn" onclick="showManualTab('sanity', this)">Sanity</button>
+                <button class="nav-btn" onclick="showManualTab('equip', this)">Equipment</button>
+            </div>
+            <div id="manualContent"></div>
+        </div>
+    </dialog>
 
 </body>
 </html>
