@@ -95,9 +95,6 @@ This is a fan-made tool created by the Phasmophobia community for the community.
 
 Phasmophobia and all related trademarks are property of Kinetic Games.
 
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
