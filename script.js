@@ -1014,7 +1014,10 @@ function joinGroupSession(sessionId) {
             // Update UI
             renderFilters();
             updateBoard();
-            updateTimerDisplay();
+            // Update timer display
+            if (ui.timerDisplay) {
+                ui.timerDisplay.textContent = app.timer.dur;
+            }
             
             // Show active session UI
             showActiveSession();
@@ -1069,7 +1072,10 @@ function listenToSession() {
         // Update UI
         renderFilters();
         updateBoard();
-        updateTimerDisplay();
+        // Update timer display
+        if (ui.timerDisplay) {
+            ui.timerDisplay.textContent = app.timer.dur;
+        }
         
         // Update user count
         updateUserCount();
