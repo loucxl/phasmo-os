@@ -1361,3 +1361,593 @@ updateBoard = function() {
     }
 };
 
+
+// ═══════════════════════════════════════════════════════════════
+// GOOGLE AUTHENTICATION + NICKNAMES + STATS TRACKING
+// ═══════════════════════════════════════════════════════════════
+
+let currentUser = null;
+let currentUserNickname = null;
+let currentInvestigation = null;
+
+// Initialize Firebase Auth
+let auth;
+try {
+    auth = firebase.auth();
+    console.log("Firebase Auth initialized");
+} catch (error) {
+    console.error("Firebase Auth initialization error:", error);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AUTH INITIALIZATION
+// ═══════════════════════════════════════════════════════════════
+
+function initGoogleAuth() {
+    console.log("Initializing Google authentication...");
+    
+    // Google login button
+    document.getElementById('btnGoogleLogin').addEventListener('click', handleGoogleLogin);
+    
+    // Logout button
+    document.getElementById('btnLogout').addEventListener('click', handleLogout);
+    
+    // Nickname form
+    document.getElementById('nicknameForm').addEventListener('submit', handleNicknameSubmit);
+    
+    // Change nickname button
+    document.getElementById('btnChangeNickname').addEventListener('click', () => {
+        document.getElementById('statsModal').close();
+        document.getElementById('nicknameModal').showModal();
+    });
+    
+    // View stats
+    document.getElementById('btnViewStats').addEventListener('click', () => {
+        loadStats();
+        document.getElementById('statsModal').showModal();
+    });
+    
+    // Close stats
+    document.getElementById('closeStats').addEventListener('click', () => {
+        document.getElementById('statsModal').close();
+    });
+    
+    // Close guess
+    document.getElementById('closeGuess').addEventListener('click', () => {
+        document.getElementById('guessModal').close();
+    });
+    
+    // Start investigation
+    document.getElementById('btnNewInvestigation').addEventListener('click', () => {
+        startNewInvestigation();
+        document.getElementById('statsModal').close();
+    });
+    
+    // Listen for auth state changes
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            await onUserLoggedIn(user);
+        } else {
+            onUserLoggedOut();
+        }
+    });
+    
+    console.log("Google authentication initialized!");
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GOOGLE AUTH HANDLERS
+// ═══════════════════════════════════════════════════════════════
+
+async function handleGoogleLogin() {
+    try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        await auth.signInWithPopup(provider);
+        console.log("Google sign-in successful");
+    } catch (error) {
+        console.error("Google sign-in error:", error);
+        
+        if (error.code === 'auth/popup-closed-by-user') {
+            return;
+        }
+        
+        alert("Failed to sign in with Google. Please try again.");
+    }
+}
+
+async function handleLogout() {
+    try {
+        // Leave group session if in one
+        if (groupJournal && groupJournal.sessionId) {
+            leaveGroupSession();
+        }
+        
+        await auth.signOut();
+        console.log("User logged out");
+    } catch (error) {
+        console.error("Logout error:", error);
+    }
+}
+
+async function onUserLoggedIn(user) {
+    console.log("User logged in:", user.email);
+    currentUser = user;
+    
+    // Check if user has a nickname
+    const userRef = firebase.database().ref(`users/${user.uid}`);
+    const snapshot = await userRef.once('value');
+    const userData = snapshot.val();
+    
+    if (!userData || !userData.nickname) {
+        // First time login - prompt for nickname
+        document.getElementById('nicknameModal').showModal();
+        return;
+    }
+    
+    // User has nickname, load it
+    currentUserNickname = userData.nickname;
+    showUserView();
+}
+
+function onUserLoggedOut() {
+    console.log("User logged out");
+    currentUser = null;
+    currentUserNickname = null;
+    currentInvestigation = null;
+    
+    // Update UI
+    document.getElementById('authView').style.display = 'flex';
+    document.getElementById('userView').style.display = 'none';
+    
+    // Hide investigation banner
+    const banner = document.getElementById('investigationBanner');
+    if (banner) banner.remove();
+}
+
+function showUserView() {
+    // Update UI
+    document.getElementById('authView').style.display = 'none';
+    document.getElementById('userView').style.display = 'flex';
+    
+    // Set user info
+    document.getElementById('userNickname').textContent = currentUserNickname;
+    document.getElementById('userAvatar').src = currentUser.photoURL || 'https://via.placeholder.com/40';
+    
+    // Load stats
+    loadUserStatsDisplay();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NICKNAME MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+
+async function handleNicknameSubmit(e) {
+    e.preventDefault();
+    
+    const nickname = document.getElementById('nicknameInput').value.trim();
+    const errorEl = document.getElementById('nicknameError');
+    
+    // Clear error
+    errorEl.classList.remove('show');
+    
+    // Validate
+    if (nickname.length < 3 || nickname.length > 20) {
+        errorEl.textContent = "Nickname must be 3-20 characters";
+        errorEl.classList.add('show');
+        return;
+    }
+    
+    if (!/^[A-Za-z0-9 _-]+$/.test(nickname)) {
+        errorEl.textContent = "Only letters, numbers, spaces, - and _ allowed";
+        errorEl.classList.add('show');
+        return;
+    }
+    
+    try {
+        // Save nickname to Firebase
+        const userRef = firebase.database().ref(`users/${currentUser.uid}`);
+        const snapshot = await userRef.once('value');
+        const userData = snapshot.val() || {};
+        
+        await userRef.update({
+            nickname: nickname,
+            email: currentUser.email,
+            photoURL: currentUser.photoURL,
+            updatedAt: Date.now(),
+            stats: userData.stats || { total: 0, wins: 0, losses: 0 }
+        });
+        
+        currentUserNickname = nickname;
+        
+        // Close modal
+        document.getElementById('nicknameModal').close();
+        
+        // Show user view
+        showUserView();
+        
+        console.log("Nickname saved:", nickname);
+        
+    } catch (error) {
+        console.error("Error saving nickname:", error);
+        errorEl.textContent = "Failed to save nickname";
+        errorEl.classList.add('show');
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATS MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+
+async function loadStats() {
+    if (!currentUser) return;
+    
+    try {
+        // Load stats
+        const statsSnapshot = await firebase.database().ref(`users/${currentUser.uid}/stats`).once('value');
+        const stats = statsSnapshot.val() || { total: 0, wins: 0, losses: 0 };
+        
+        const winRate = stats.total > 0 ? Math.round((stats.wins / stats.total) * 100) : 0;
+        
+        // Update title with nickname
+        document.getElementById('statsNickname').textContent = currentUserNickname + "'s";
+        
+        // Update stats display
+        document.getElementById('statTotal').textContent = stats.total;
+        document.getElementById('statWins').textContent = stats.wins;
+        document.getElementById('statLosses').textContent = stats.losses;
+        document.getElementById('statWinRate').textContent = winRate + '%';
+        
+        // Load history
+        const historySnapshot = await firebase.database().ref(`users/${currentUser.uid}/history`)
+            .orderByChild('timestamp')
+            .limitToLast(10)
+            .once('value');
+        
+        const historyList = document.getElementById('historyList');
+        
+        if (historySnapshot.exists()) {
+            historyList.innerHTML = '';
+            const historyItems = [];
+            
+            historySnapshot.forEach((child) => {
+                historyItems.unshift(child.val());
+            });
+            
+            historyItems.forEach((item) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = `history-item ${item.correct ? 'correct' : 'incorrect'}`;
+                
+                const timeAgo = formatTimeAgo(item.timestamp);
+                
+                historyItem.innerHTML = `
+                    <div class="history-info">
+                        <div class="history-guess">
+                            ${item.correct ? '✅' : '❌'} Guessed: ${item.guess}
+                        </div>
+                        <div class="history-result">
+                            Actual: ${item.actual} ${item.correct ? '' : '• Wrong'}
+                        </div>
+                    </div>
+                    <div class="history-time">${timeAgo}</div>
+                `;
+                
+                historyList.appendChild(historyItem);
+            });
+        } else {
+            historyList.innerHTML = '<div class="empty-state">No investigations yet. Start hunting ghosts!</div>';
+        }
+        
+    } catch (error) {
+        console.error("Error loading stats:", error);
+    }
+}
+
+async function loadUserStatsDisplay() {
+    if (!currentUser) return;
+    
+    try {
+        const snapshot = await firebase.database().ref(`users/${currentUser.uid}/stats`).once('value');
+        const stats = snapshot.val() || { total: 0, wins: 0, losses: 0 };
+        
+        const winRate = stats.total > 0 ? Math.round((stats.wins / stats.total) * 100) : 0;
+        
+        document.getElementById('userWins').textContent = stats.wins;
+        document.getElementById('userWinRate').textContent = winRate;
+        
+    } catch (error) {
+        console.error("Error loading stats:", error);
+    }
+}
+
+function formatTimeAgo(timestamp) {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    
+    if (seconds < 60) return 'Just now';
+    if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+    if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+    return Math.floor(seconds / 86400) + 'd ago';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INVESTIGATION MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+
+function startNewInvestigation() {
+    if (!currentUser) {
+        alert('Please log in to track your investigations!');
+        return;
+    }
+    
+    // Randomly select a ghost
+    const randomGhost = GHOSTS[Math.floor(Math.random() * GHOSTS.length)];
+    
+    currentInvestigation = {
+        actualGhost: randomGhost.name,
+        startTime: Date.now()
+    };
+    
+    console.log('Investigation started - Ghost:', currentInvestigation.actualGhost);
+    
+    // Show investigation banner
+    showInvestigationBanner();
+    
+    // Reset evidence
+    Object.keys(app.evidence).forEach(k => app.evidence[k] = 0);
+    app.activeFilters.clear();
+    renderFilters();
+    updateBoard();
+}
+
+function showInvestigationBanner() {
+    // Remove existing banner if any
+    const existingBanner = document.getElementById('investigationBanner');
+    if (existingBanner) existingBanner.remove();
+    
+    // Create new banner
+    const banner = document.createElement('div');
+    banner.id = 'investigationBanner';
+    banner.className = 'investigation-banner';
+    banner.innerHTML = `
+        <div class="investigation-info">
+            🔍 Investigation in progress
+            <span class="timer" id="investigationTimer">0:00</span>
+        </div>
+        <button class="btn-submit-guess" id="btnOpenGuess">Submit Guess</button>
+    `;
+    
+    // Insert after auth bar
+    const authBar = document.getElementById('authBar');
+    authBar.after(banner);
+    
+    // Start timer
+    updateInvestigationTimer();
+    
+    // Add button handler
+    document.getElementById('btnOpenGuess').addEventListener('click', openGuessModal);
+}
+
+function updateInvestigationTimer() {
+    if (!currentInvestigation) return;
+    
+    const timerEl = document.getElementById('investigationTimer');
+    if (!timerEl) return;
+    
+    const elapsed = Math.floor((Date.now() - currentInvestigation.startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    
+    timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    
+    setTimeout(updateInvestigationTimer, 1000);
+}
+
+function openGuessModal() {
+    if (!currentInvestigation) {
+        alert('Start a new investigation first!');
+        return;
+    }
+    
+    // Get current matching ghosts (use existing logic from updateBoard)
+    const matches = [];
+    GHOSTS.forEach(g => {
+        let possible = true;
+        for(const [id, val] of Object.entries(app.evidence)) {
+            if(val === 0) continue;
+            const has = g.ev.includes(id) || (g.name === 'The Mimic' && id === 'orb');
+            if(val === 1 && !has) possible = false;
+            if(val === 2 && has) possible = false;
+        }
+        if(possible && app.activeFilters.size > 0) {
+            app.activeFilters.forEach(fid => {
+                if(!g.tags.includes(fid)) possible = false;
+            });
+        }
+        if(possible) matches.push(g);
+    });
+    
+    // Show options
+    const ghostOptions = document.getElementById('ghostOptions');
+    ghostOptions.innerHTML = '';
+    
+    if (matches.length === 0) {
+        ghostOptions.innerHTML = '<p style="text-align: center; color: var(--text-muted); grid-column: 1/-1;">No ghosts match your evidence. Try removing some crossed-out evidence.</p>';
+    } else {
+        matches.forEach(ghost => {
+            const option = document.createElement('div');
+            option.className = 'ghost-option';
+            option.textContent = ghost.name;
+            option.addEventListener('click', () => submitGuess(ghost.name));
+            ghostOptions.appendChild(option);
+        });
+    }
+    
+    document.getElementById('guessModal').showModal();
+}
+
+async function submitGuess(guessedGhost) {
+    if (!currentInvestigation || !currentUser) return;
+    
+    const correct = guessedGhost === currentInvestigation.actualGhost;
+    const timeTaken = Math.floor((Date.now() - currentInvestigation.startTime) / 1000);
+    
+    console.log('Guess submitted:', guessedGhost, 'Actual:', currentInvestigation.actualGhost, 'Correct:', correct);
+    
+    try {
+        // Get current stats
+        const statsRef = firebase.database().ref(`users/${currentUser.uid}/stats`);
+        const snapshot = await statsRef.once('value');
+        const currentStats = snapshot.val() || { total: 0, wins: 0, losses: 0 };
+        
+        // Update stats
+        const newStats = {
+            total: currentStats.total + 1,
+            wins: currentStats.wins + (correct ? 1 : 0),
+            losses: currentStats.losses + (correct ? 0 : 1)
+        };
+        
+        await statsRef.set(newStats);
+        
+        // Save to history
+        await firebase.database().ref(`users/${currentUser.uid}/history`).push({
+            guess: guessedGhost,
+            actual: currentInvestigation.actualGhost,
+            correct: correct,
+            timeTaken: timeTaken,
+            timestamp: Date.now()
+        });
+        
+        // Show result
+        const winRate = Math.round((newStats.wins / newStats.total) * 100);
+        
+        if (correct) {
+            alert(`✅ CORRECT!\n\nYou guessed ${guessedGhost}!\n\nYour stats:\n🏆 ${newStats.wins} wins out of ${newStats.total} total\n📊 ${winRate}% win rate`);
+        } else {
+            alert(`❌ INCORRECT\n\nYou guessed: ${guessedGhost}\nActual ghost: ${currentInvestigation.actualGhost}\n\nYour stats:\n🏆 ${newStats.wins} wins out of ${newStats.total} total\n📊 ${winRate}% win rate`);
+        }
+        
+        // Update display
+        loadUserStatsDisplay();
+        
+        // End investigation
+        endInvestigation();
+        
+    } catch (error) {
+        console.error('Error submitting guess:', error);
+        alert('Failed to submit guess. Please try again.');
+    }
+    
+    // Close modal
+    document.getElementById('guessModal').close();
+}
+
+function endInvestigation() {
+    currentInvestigation = null;
+    
+    // Remove banner
+    const banner = document.getElementById('investigationBanner');
+    if (banner) banner.remove();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GROUP JOURNAL INTEGRATION - UPDATE EXISTING FUNCTIONS
+// ═══════════════════════════════════════════════════════════════
+
+// Override startHeartbeat to include nickname
+const originalStartHeartbeat = startHeartbeat;
+startHeartbeat = function() {
+    if (!groupJournal.sessionId || !groupJournal.userId) return;
+    
+    const userRef = firebase.database().ref(`sessions/${groupJournal.sessionId}/users/${groupJournal.userId}`);
+    
+    // Set initial presence with nickname
+    userRef.set({
+        lastSeen: Date.now(),
+        nickname: currentUserNickname || 'Anonymous',
+        photoURL: currentUser?.photoURL || null
+    });
+    
+    // Update every 5 seconds
+    const interval = setInterval(() => {
+        if (groupJournal.syncEnabled) {
+            userRef.update({ 
+                lastSeen: Date.now(),
+                nickname: currentUserNickname || 'Anonymous'
+            });
+        } else {
+            clearInterval(interval);
+        }
+    }, 5000);
+    
+    // Clean up on disconnect
+    userRef.onDisconnect().remove();
+};
+
+// Override updateUserCount to show nicknames
+const originalUpdateUserCount = updateUserCount;
+updateUserCount = function() {
+    if (!groupJournal.sessionId) return;
+    
+    const usersRef = firebase.database().ref(`sessions/${groupJournal.sessionId}/users`);
+    usersRef.once('value', (snapshot) => {
+        const users = snapshot.val();
+        if (!users) {
+            document.getElementById('userCount').textContent = '1';
+            const usersList = document.getElementById('usersList');
+            if (usersList) {
+                usersList.innerHTML = '<div class="user-chip you">👤 You</div>';
+            }
+            return;
+        }
+        
+        // Count active users (seen in last 15 seconds)
+        const now = Date.now();
+        const activeUsers = [];
+        
+        Object.entries(users).forEach(([uid, data]) => {
+            if (now - data.lastSeen < 15000) {
+                activeUsers.push({
+                    uid,
+                    nickname: data.nickname || 'Anonymous',
+                    photoURL: data.photoURL,
+                    isYou: uid === groupJournal.userId
+                });
+            }
+        });
+        
+        // Update count
+        document.getElementById('userCount').textContent = activeUsers.length;
+        
+        // Update users list
+        const usersList = document.getElementById('usersList');
+        if (usersList) {
+            usersList.innerHTML = '';
+            
+            activeUsers.forEach(user => {
+                const chip = document.createElement('div');
+                chip.className = `user-chip ${user.isYou ? 'you' : ''}`;
+                
+                if (user.photoURL) {
+                    chip.innerHTML = `
+                        <img src="${user.photoURL}" alt="">
+                        <span>${user.nickname}${user.isYou ? ' (You)' : ''}</span>
+                    `;
+                } else {
+                    chip.innerHTML = `
+                        <span>👤 ${user.nickname}${user.isYou ? ' (You)' : ''}</span>
+                    `;
+                }
+                
+                usersList.appendChild(chip);
+            });
+        }
+    });
+};
+
+// ═══════════════════════════════════════════════════════════════
+// INITIALIZE AUTH
+// ═══════════════════════════════════════════════════════════════
+
+// Call after existing init
+setTimeout(() => {
+    initGoogleAuth();
+}, 200);
