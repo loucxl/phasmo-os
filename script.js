@@ -1623,6 +1623,11 @@ function showUserView() {
     
     // Load stats
     loadUserStatsDisplay();
+    
+    // Initialize friends system for this user
+    initializeFriendCode();
+    loadFriends();
+    listenToFriendRequests();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2200,12 +2205,7 @@ function initFriendsSystem() {
     document.getElementById('btnCopyFriendCode').addEventListener('click', copyFriendCode);
     document.getElementById('addFriendForm').addEventListener('submit', sendFriendRequest);
     
-    // Load friends if logged in
-    if (currentUser) {
-        initializeFriendCode();
-        loadFriends();
-        listenToFriendRequests();
-    }
+    // Load friends if logged in (will be called from showUserView)
     
     console.log('Friends system initialized!');
 }
@@ -2422,7 +2422,19 @@ async function loadFriends() {
         // Load your friend code
         const codeSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friendCode`).once('value');
         const yourCode = codeSnapshot.val();
-        document.getElementById('yourFriendCode').textContent = yourCode || 'Loading...';
+        
+        const codeEl = document.getElementById('yourFriendCode');
+        if (codeEl) {
+            codeEl.textContent = yourCode || 'Generating...';
+        }
+        
+        // If no code yet, wait for initializeFriendCode to finish
+        if (!yourCode) {
+            console.log('Waiting for friend code generation...');
+            // Wait a bit and try again
+            setTimeout(loadFriends, 1000);
+            return;
+        }
         
         // Load friends
         const friendsSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friends`).once('value');
