@@ -810,3 +810,45 @@
         </div>
     </dialog>
 
+
+    <!-- Friend Stats Modal -->
+    <dialog id="friendStatsModal" class="auth-modal">
+        <div class="dialog-header">
+            <h2 class="dialog-title">👤 <span id="friendStatsNickname">Friend</span>'s Stats</h2>
+            <button class="dialog-close" onclick="document.getElementById('friendStatsModal').close()">&times;</button>
+        </div>
+        <div class="dialog-body">
+            <!-- Friend Avatar & Level -->
+            <div style="text-align: center; margin-bottom: 24px;">
+                <img id="friendStatsAvatar" src="" alt="" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--acc-cyan); margin-bottom: 12px;">
+                <div style="font-family: var(--font-hud); font-size: 1.2rem; color: var(--acc-cyan); font-weight: 900;">
+                    ⭐ Level <span id="friendStatLevel">1</span>
+                </div>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="friendStatTotal">0</div>
+                    <div class="stat-label">Total Investigations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="friendStatWins">0</div>
+                    <div class="stat-label">Correct Guesses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="friendStatLosses">0</div>
+                    <div class="stat-label">Incorrect Guesses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="friendStatWinRate">0%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px; padding: 16px; background: var(--bg-elevated); border-radius: 8px; font-family: var(--font-mono); color: var(--text-muted);">
+                <span id="friendStatXP">0 / 500 XP</span>
+            </div>
+        </div>
+    </dialog>
+
