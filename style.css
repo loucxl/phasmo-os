@@ -1597,3 +1597,410 @@ dialog::backdrop {
     content: ' ✓';
 }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTHENTICATION STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.auth-bar {
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.auth-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Google Sign-In Button */
+.btn-google {
+    background: white;
+    color: #3c4043;
+    border: 1px solid #dadce0;
+    padding: 10px 24px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.btn-google:hover {
+    background: #f8f9fa;
+    border-color: #c6c6c6;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--acc-cyan);
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.user-nickname {
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: var(--font-hud);
+}
+
+.user-stats {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+.btn-view-stats {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid var(--acc-green);
+    color: var(--acc-green);
+    padding: 8px 16px;
+    font-family: var(--font-hud);
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 0.9rem;
+}
+
+.btn-view-stats:hover {
+    background: var(--acc-green);
+    color: #000;
+}
+
+.btn-logout {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--acc-red);
+    color: var(--acc-red);
+    padding: 8px 16px;
+    font-family: var(--font-hud);
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 0.9rem;
+}
+
+.btn-logout:hover {
+    background: var(--acc-red);
+    color: #000;
+}
+
+/* Auth Modals */
+.auth-modal {
+    background: var(--bg-panel);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 0;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.auth-modal .dialog-body {
+    max-height: calc(90vh - 80px);
+    overflow-y: auto;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    color: var(--text-muted);
+    font-family: var(--font-hud);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group input {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--text-main);
+    font-size: 1rem;
+    transition: 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--acc-cyan);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+}
+
+.form-group small {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.form-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--acc-red);
+    color: var(--acc-red);
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    display: none;
+}
+
+.form-error.show {
+    display: block;
+}
+
+.btn-secondary {
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid #a855f7;
+    color: #a855f7;
+    padding: 10px 20px;
+    font-family: var(--font-hud);
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-secondary:hover {
+    background: #a855f7;
+    color: #000;
+}
+
+/* Stats Display */
+.stats-overview {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-family: var(--font-hud);
+    font-weight: 900;
+    color: var(--acc-cyan);
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.history-list {
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.history-item {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--acc-cyan);
+    padding: 12px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-item.correct {
+    border-left-color: var(--acc-green);
+}
+
+.history-item.incorrect {
+    border-left-color: var(--acc-red);
+}
+
+.history-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.history-guess {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.history-result {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.history-time {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    font-family: var(--font-mono);
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-dim);
+    padding: 40px;
+    font-style: italic;
+}
+
+/* Ghost Options for Guess */
+.ghost-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.ghost-option {
+    background: var(--bg-elevated);
+    border: 2px solid var(--border);
+    padding: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: center;
+    font-family: var(--font-hud);
+    font-weight: 600;
+}
+
+.ghost-option:hover {
+    border-color: var(--acc-cyan);
+    background: rgba(6, 182, 212, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Investigation Banner */
+.investigation-banner {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(34, 197, 94, 0.15) 100%);
+    border-bottom: 2px solid var(--acc-cyan);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+.investigation-info {
+    color: var(--text-main);
+    font-family: var(--font-hud);
+    font-weight: 600;
+}
+
+.investigation-info .timer {
+    color: var(--acc-cyan);
+    font-family: var(--font-mono);
+    margin-left: 8px;
+}
+
+.btn-submit-guess {
+    background: var(--acc-green);
+    color: #000;
+    border: none;
+    padding: 8px 20px;
+    font-family: var(--font-hud);
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-submit-guess:hover {
+    background: var(--acc-cyan);
+    transform: translateY(-2px);
+}
+
+@keyframes pulse-subtle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.95; }
+}
+
+/* Users List in Group Journal */
+.users-header {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.users-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+    margin-top: 8px;
+}
+
+.user-chip {
+    background: rgba(6, 182, 212, 0.1);
+    border: 1px solid var(--acc-cyan);
+    color: var(--acc-cyan);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.user-chip.you {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: var(--acc-green);
+    color: var(--acc-green);
+}
+
+.user-chip img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
