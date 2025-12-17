@@ -13,9 +13,41 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="script.js" defer></script>
 </head>
 <body>
+    <!-- User Auth Bar -->
+    <div class="auth-bar" id="authBar">
+        <!-- Login View -->
+        <div id="authView" class="auth-content">
+            <button class="btn-google" id="btnGoogleLogin">
+                <svg width="18" height="18" viewBox="0 0 18 18">
+                    <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+                    <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                    <path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z"/>
+                    <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+                </svg>
+                Sign in with Google
+            </button>
+        </div>
+        <!-- User View (when logged in) -->
+        <div id="userView" class="auth-content" style="display: none;">
+            <div class="user-info">
+                <img class="user-avatar" id="userAvatar" src="" alt="">
+                <div class="user-details">
+                    <span class="user-nickname" id="userNickname">Loading...</span>
+                    <span class="user-stats">
+                        🏆 <span id="userWins">0</span> wins · 
+                        📊 <span id="userWinRate">0</span>% win rate
+                    </span>
+                </div>
+            </div>
+            <button class="btn-view-stats" id="btnViewStats">Stats</button>
+            <button class="btn-logout" id="btnLogout">Logout</button>
+        </div>
+    </div>
+
 
     <header>
         <div class="brand">
@@ -545,7 +577,14 @@
                     </div>
                     <div class="session-details">
                         <div class="session-id">Session: <span id="currentSessionId"></span></div>
-                        <div class="session-users">👥 <span id="userCount">1</span> investigator(s)</div>
+                        <div class="session-users">
+                            <div class="users-header">
+                                👥 <span id="userCount">1</span> investigator(s) connected:
+                            </div>
+                            <div class="users-list" id="usersList">
+                                <!-- Nicknames will appear here -->
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="share-section">
@@ -607,3 +646,84 @@
 
 </body>
 </html>
+
+    <!-- Nickname Setup Modal -->
+    <dialog id="nicknameModal" class="auth-modal">
+        <div class="dialog-header">
+            <h2 class="dialog-title">👻 Choose Your Hunter Name</h2>
+        </div>
+        <div class="dialog-body">
+            <p style="color: var(--text-muted); margin-bottom: 16px;">
+                This is the name other investigators will see in group sessions.
+            </p>
+            <form id="nicknameForm" class="auth-form">
+                <div class="form-group">
+                    <label>Nickname</label>
+                    <input type="text" id="nicknameInput" required 
+                           placeholder="Ghost Hunter" 
+                           maxlength="20"
+                           pattern="[A-Za-z0-9 _-]+"
+                           title="Only letters, numbers, spaces, - and _">
+                    <small>3-20 characters, letters and numbers only</small>
+                </div>
+                <div class="form-error" id="nicknameError"></div>
+                <button type="submit" class="btn-primary">Set Nickname</button>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Stats Modal -->
+    <dialog id="statsModal" class="auth-modal">
+        <div class="dialog-header">
+            <h2 class="dialog-title">📊 <span id="statsNickname">Your</span> Stats</h2>
+            <button class="dialog-close" id="closeStats">&times;</button>
+        </div>
+        <div class="dialog-body">
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-value" id="statTotal">0</div>
+                    <div class="stat-label">Total Investigations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statWins">0</div>
+                    <div class="stat-label">Correct Guesses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statLosses">0</div>
+                    <div class="stat-label">Incorrect Guesses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statWinRate">0%</div>
+                    <div class="stat-label">Win Rate</div>
+                </div>
+            </div>
+            
+            <button class="btn-secondary" id="btnChangeNickname" style="margin-bottom: 16px;">
+                Change Nickname
+            </button>
+            
+            <h3 style="color: var(--text-main); margin-bottom: 12px;">Recent Investigations</h3>
+            <div class="history-list" id="historyList">
+                <div class="empty-state">No investigations yet. Start hunting ghosts!</div>
+            </div>
+            
+            <button class="btn-primary" id="btnNewInvestigation">Start New Investigation</button>
+        </div>
+    </dialog>
+
+    <!-- Submit Guess Modal -->
+    <dialog id="guessModal" class="auth-modal">
+        <div class="dialog-header">
+            <h2 class="dialog-title">Submit Your Guess</h2>
+            <button class="dialog-close" id="closeGuess">&times;</button>
+        </div>
+        <div class="dialog-body">
+            <p style="color: var(--text-muted); margin-bottom: 16px;">
+                You've narrowed it down! What ghost do you think it is?
+            </p>
+            <div id="ghostOptions" class="ghost-options">
+                <!-- Will be populated with remaining ghosts -->
+            </div>
+        </div>
+    </dialog>
+
