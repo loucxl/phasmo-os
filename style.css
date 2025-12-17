@@ -176,6 +176,54 @@ header {
     transform: translateY(-2px);
 }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   WORK IN PROGRESS BANNER
+   ═══════════════════════════════════════════════════════════════ */
+.wip-banner {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%);
+    border-bottom: 2px solid var(--acc-orange);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: wip-pulse 3s ease-in-out infinite;
+}
+
+.wip-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    max-width: 1400px;
+    width: 100%;
+}
+
+.wip-icon {
+    font-size: 1.5rem;
+    animation: wip-bounce 2s ease-in-out infinite;
+}
+
+.wip-text {
+    color: var(--text-main);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.wip-text strong {
+    color: var(--acc-orange);
+    font-weight: 700;
+}
+
+@keyframes wip-pulse {
+    0%, 100% { background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%); }
+    50% { background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(245, 158, 11, 0.2) 100%); }
+}
+
+@keyframes wip-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
 /* ═══════════════════════════════════════════════════════════════
    MAIN SECTIONS
    ═══════════════════════════════════════════════════════════════ */
