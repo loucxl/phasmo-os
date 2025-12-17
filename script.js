@@ -2340,7 +2340,13 @@ async function sendFriendRequest(e) {
         const friendSnapshot = await firebase.database().ref(`users/${friendUid}`).once('value');
         const friendData = friendSnapshot.val();
         
-        // Send friend request
+        if (!friendData) {
+            errorEl.textContent = 'User not found';
+            errorEl.classList.add('show');
+            return;
+        }
+        
+        // Prepare request data
         const requestData = {
             from: currentUser.uid,
             fromNickname: currentUserNickname,
@@ -2348,21 +2354,22 @@ async function sendFriendRequest(e) {
             timestamp: Date.now()
         };
         
-        // Add to your outgoing
+        // Add to YOUR outgoing requests
         await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`).set(requestData);
         
-        // Add to their incoming
-        await firebase.database().ref(`users/${friendUid}/friendRequests/incoming/${currentUser.uid}`).set(requestData);
+        // Send notification to THEIR friendRequestReceived path (they can write this)
+        await firebase.database().ref(`users/${friendUid}/friendRequestReceived/${currentUser.uid}`).set(requestData);
         
+        console.log('✅ Friend request sent to', friendData.nickname);
         alert(`Friend request sent to ${friendData.nickname}! ✅`);
         
         codeInput.value = '';
         document.getElementById('addFriendModal').close();
-        loadFriends();
+        await loadFriends();
         
     } catch (error) {
-        console.error('Error sending friend request:', error);
-        errorEl.textContent = 'Failed to send friend request';
+        console.error('❌ Error sending friend request:', error);
+        errorEl.textContent = 'Failed to send friend request: ' + error.message;
         errorEl.classList.add('show');
     }
 }
@@ -2605,9 +2612,33 @@ function updateFriendsBadge() {
 function listenToFriendRequests() {
     if (!currentUser) return;
     
-    // Listen for incoming friend requests
+    // Listen for incoming friend requests (from your own data)
     firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming`).on('value', () => {
         loadFriends();
+    });
+    
+    // Listen for NEW friend request notifications (when someone sends you a request)
+    firebase.database().ref(`users/${currentUser.uid}/friendRequestReceived`).on('child_added', async (snapshot) => {
+        const senderUid = snapshot.key;
+        const requestData = snapshot.val();
+        
+        console.log('New friend request from:', requestData.fromNickname);
+        
+        try {
+            // Add to YOUR incoming requests
+            await firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming/${senderUid}`).set(requestData);
+            
+            // Remove the notification
+            await firebase.database().ref(`users/${currentUser.uid}/friendRequestReceived/${senderUid}`).remove();
+            
+            console.log('✅ Added request to incoming');
+            
+            // Reload friends list to show new request
+            await loadFriends();
+            
+        } catch (error) {
+            console.error('Error processing friend request notification:', error);
+        }
     });
     
     // Listen for friend accepts (when someone accepts YOUR request)
