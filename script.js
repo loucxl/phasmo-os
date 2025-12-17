@@ -1019,13 +1019,15 @@ function joinGroupSession(sessionId) {
             
             console.log("Joined session:", sessionId);
             
-            // Load current state from session
+            // Load current state from session - use spread to ensure deep copy
             const data = snapshot.val();
-            app.evidence = data.evidence || app.evidence;
+            app.evidence = {...data.evidence} || app.evidence;
             app.activeFilters = new Set(data.filters || []);
             if (data.timer && data.timer.dur) {
                 app.timer.dur = data.timer.dur; // Only update duration
             }
+            
+            console.log("Loaded evidence state:", app.evidence);
             
             // Update UI
             renderFilters();
@@ -1079,19 +1081,28 @@ function listenToSession() {
             const data = snapshot.val();
             if (!data) return;
             
-            // Prevent sync loops - don't apply if we just sent this update
-            if (Date.now() - groupJournal.lastSync < 500) return;
-            
-            // Update local state
-            app.evidence = data.evidence || app.evidence;
-            app.activeFilters = new Set(data.filters || []);
-            if (data.timer && data.timer.dur) {
-                app.timer.dur = data.timer.dur; // Only update duration, keep local interval
+            // Prevent sync loops - but allow the first sync (when lastSync is 0)
+            const timeSinceLastSync = Date.now() - groupJournal.lastSync;
+            if (groupJournal.lastSync > 0 && timeSinceLastSync < 500) {
+                console.log("Skipping sync to prevent loop");
+                return;
             }
             
-            // Update UI
+            console.log("Applying synced state:", data);
+            
+            // Update local state - use spread to ensure deep copy
+            app.evidence = {...data.evidence};
+            app.activeFilters = new Set(data.filters || []);
+            if (data.timer && data.timer.dur) {
+                app.timer.dur = data.timer.dur;
+            }
+            
+            // Update UI - renderFilters will update the filter chips
             renderFilters();
+            
+            // updateBoard will update the evidence buttons and ghost list
             updateBoard();
+            
             // Update timer display
             if (ui.timerDisplay) {
                 ui.timerDisplay.textContent = app.timer.dur;
@@ -1119,11 +1130,16 @@ function syncToFirebase() {
     groupJournal.syncTimeout = setTimeout(() => {
         groupJournal.lastSync = Date.now();
         
+        // Create a clean copy of evidence to send
+        const evidenceToSync = {...app.evidence};
+        
+        console.log("Syncing to Firebase:", evidenceToSync);
+        
         const sessionRef = firebase.database().ref(`sessions/${groupJournal.sessionId}`);
         sessionRef.update({
-            evidence: app.evidence,
+            evidence: evidenceToSync,
             filters: Array.from(app.activeFilters),
-            timer: { dur: app.timer.dur }, // Only sync duration, not the interval
+            timer: { dur: app.timer.dur },
             lastUpdate: Date.now()
         }).catch(error => {
             console.error("Sync error:", error);
