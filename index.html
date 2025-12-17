@@ -745,3 +745,68 @@
         </button>
     </div>
 
+
+    <!-- Friends Modal -->
+    <dialog id="friendsModal" class="auth-modal">
+        <div class="dialog-header">
+            <h2 class="dialog-title">👥 Friends</h2>
+            <button class="dialog-close" id="closeFriends">&times;</button>
+        </div>
+        <div class="dialog-body">
+            <!-- Your Friend Code -->
+            <div class="friend-code-section">
+                <div class="friend-code-label">Your Friend Code:</div>
+                <div class="friend-code-display">
+                    <span class="friend-code-text" id="yourFriendCode">Loading...</span>
+                    <button class="btn-copy-code" id="btnCopyFriendCode">Copy</button>
+                </div>
+                <small style="color: var(--text-muted);">Share this code with friends to add them!</small>
+            </div>
+            
+            <!-- Friends List -->
+            <div class="friends-section">
+                <h3>Friends (<span id="friendsCount">0</span>)</h3>
+                <div id="friendsList" class="friends-list">
+                    <div class="empty-state">Loading...</div>
+                </div>
+            </div>
+            
+            <!-- Friend Requests -->
+            <div class="requests-section">
+                <h3>Requests (<span id="requestsCount">0</span>)</h3>
+                <div id="friendRequestsList" class="requests-list">
+                    <div class="empty-state">No pending requests</div>
+                </div>
+            </div>
+            
+            <button class="btn-primary" id="btnAddFriend">➕ Add Friend</button>
+        </div>
+    </dialog>
+
+    <!-- Add Friend Modal -->
+    <dialog id="addFriendModal" class="auth-modal">
+        <div class="dialog-header">
+            <h2 class="dialog-title">➕ Add Friend</h2>
+            <button class="dialog-close" id="closeAddFriend">&times;</button>
+        </div>
+        <div class="dialog-body">
+            <p style="color: var(--text-muted); margin-bottom: 16px;">
+                Enter your friend's code to send them a friend request.
+            </p>
+            <form id="addFriendForm" class="auth-form">
+                <div class="form-group">
+                    <label>Friend Code</label>
+                    <input type="text" id="friendCodeInput" required 
+                           placeholder="ABCD-1234" 
+                           maxlength="9"
+                           pattern="[A-Z]{4}-[0-9]{4}"
+                           style="text-transform: uppercase; font-family: var(--font-mono); font-size: 1.2rem; letter-spacing: 2px; text-align: center;"
+                           title="Format: ABCD-1234">
+                    <small>Format: 4 letters, dash, 4 numbers (e.g. ABCD-1234)</small>
+                </div>
+                <div class="form-error" id="addFriendError"></div>
+                <button type="submit" class="btn-primary">Send Friend Request</button>
+            </form>
+        </div>
+    </dialog>
+
