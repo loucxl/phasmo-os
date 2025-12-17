@@ -1370,13 +1370,32 @@ let currentUser = null;
 let currentUserNickname = null;
 let currentInvestigation = null;
 
-// Initialize Firebase Auth
+// Initialize Firebase Auth - wait for it to be available
 let auth;
-try {
-    auth = firebase.auth();
-    console.log("Firebase Auth initialized");
-} catch (error) {
-    console.error("Firebase Auth initialization error:", error);
+
+function initializeFirebaseAuth() {
+    if (typeof firebase === 'undefined' || !firebase.auth) {
+        console.error("Firebase not loaded yet, retrying...");
+        setTimeout(initializeFirebaseAuth, 100);
+        return;
+    }
+    
+    try {
+        auth = firebase.auth();
+        console.log("Firebase Auth initialized successfully");
+        
+        // Now initialize the auth system
+        initGoogleAuth();
+    } catch (error) {
+        console.error("Firebase Auth initialization error:", error);
+    }
+}
+
+// Start initialization when page loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeFirebaseAuth);
+} else {
+    initializeFirebaseAuth();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1440,6 +1459,12 @@ function initGoogleAuth() {
 // ═══════════════════════════════════════════════════════════════
 
 async function handleGoogleLogin() {
+    if (!auth) {
+        alert("⚠️ Firebase Auth not ready yet.\n\nPlease wait a moment and try again.");
+        console.error("Auth not initialized");
+        return;
+    }
+    
     try {
         const provider = new firebase.auth.GoogleAuthProvider();
         await auth.signInWithPopup(provider);
@@ -1956,8 +1981,3 @@ updateUserCount = function() {
 // ═══════════════════════════════════════════════════════════════
 // INITIALIZE AUTH
 // ═══════════════════════════════════════════════════════════════
-
-// Call after existing init
-setTimeout(() => {
-    initGoogleAuth();
-}, 200);
