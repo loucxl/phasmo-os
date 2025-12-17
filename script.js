@@ -1451,7 +1451,17 @@ async function handleGoogleLogin() {
             return;
         }
         
-        alert("Failed to sign in with Google. Please try again.");
+        if (error.code === 'auth/unauthorized-domain') {
+            alert("⚠️ Domain Not Authorized\n\nThis domain needs to be added to Firebase:\n\n1. Go to Firebase Console\n2. Authentication → Settings → Authorized domains\n3. Add: " + window.location.hostname + "\n\nOr test on your production domain instead!");
+            return;
+        }
+        
+        if (error.code === 'auth/popup-blocked') {
+            alert("⚠️ Popup Blocked\n\nYour browser blocked the sign-in popup.\n\nPlease allow popups for this site and try again.");
+            return;
+        }
+        
+        alert("Failed to sign in with Google.\n\nError: " + (error.message || "Unknown error") + "\n\nPlease try again.");
     }
 }
 
