@@ -1412,8 +1412,33 @@ function initGoogleAuth() {
     // Google login button
     document.getElementById('btnGoogleLogin').addEventListener('click', handleGoogleLogin);
     
-    // Logout button
-    document.getElementById('btnLogout').addEventListener('click', handleLogout);
+    // User menu button (toggle dropdown)
+    document.getElementById('btnUserMenu').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('userDropdown');
+        const userMenu = document.getElementById('btnUserMenu');
+        if (dropdown && !dropdown.contains(e.target) && e.target !== userMenu) {
+            dropdown.style.display = 'none';
+        }
+    });
+    
+    // Dropdown menu items
+    document.getElementById('btnViewStatsDropdown').addEventListener('click', () => {
+        document.getElementById('userDropdown').style.display = 'none';
+        loadStats();
+        document.getElementById('statsModal').showModal();
+    });
+    
+    document.getElementById('btnLogoutDropdown').addEventListener('click', () => {
+        document.getElementById('userDropdown').style.display = 'none';
+        handleLogout();
+    });
     
     // Nickname form
     document.getElementById('nicknameForm').addEventListener('submit', handleNicknameSubmit);
@@ -1469,10 +1494,6 @@ function initGoogleAuth() {
     });
     
     // View stats
-    document.getElementById('btnViewStats').addEventListener('click', () => {
-        loadStats();
-        document.getElementById('statsModal').showModal();
-    });
     
     // Close stats
     document.getElementById('closeStats').addEventListener('click', () => {
@@ -1590,11 +1611,15 @@ function onUserLoggedOut() {
 function showUserView() {
     // Update UI
     document.getElementById('authView').style.display = 'none';
-    document.getElementById('userView').style.display = 'flex';
+    document.getElementById('userView').style.display = 'inline-flex';
     
-    // Set user info
+    // Set user info in button
     document.getElementById('userNickname').textContent = currentUserNickname;
     document.getElementById('userAvatar').src = currentUser.photoURL || 'https://via.placeholder.com/40';
+    
+    // Set user info in dropdown
+    document.getElementById('dropdownNickname').textContent = currentUserNickname;
+    document.getElementById('dropdownAvatar').src = currentUser.photoURL || 'https://via.placeholder.com/40';
     
     // Load stats
     loadUserStatsDisplay();
@@ -1748,9 +1773,12 @@ async function loadUserStatsDisplay() {
         
         const winRate = stats.total > 0 ? Math.round((stats.wins / stats.total) * 100) : 0;
         
+        // Update button display
         document.getElementById('userLevel').textContent = stats.level || 1;
-        document.getElementById('userWins').textContent = stats.wins;
-        document.getElementById('userWinRate').textContent = winRate;
+        
+        // Update dropdown
+        document.getElementById('dropdownWins').textContent = stats.wins;
+        document.getElementById('dropdownWinRate').textContent = winRate;
         
     } catch (error) {
         console.error("Error loading stats:", error);
