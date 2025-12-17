@@ -2537,6 +2537,7 @@ function renderFriendsList() {
                 <div class="friend-name">${friend.nickname}</div>
                 <div class="friend-since">Friends since ${formatDate(friend.since)}</div>
             </div>
+            <button class="btn-friend-view" onclick="viewFriendStats('${uid}', '${friend.nickname}')">View Stats</button>
             <button class="btn-friend-remove" onclick="removeFriend('${uid}', '${friend.nickname}')">Remove</button>
         `;
         container.appendChild(item);
@@ -2703,4 +2704,42 @@ loadFriends = async function() {
     await originalLoadFriends();
     updateFriendsCount();
 };
+
+
+// View friend stats
+async function viewFriendStats(friendUid, friendNickname) {
+    try {
+        // Load friend's data
+        const friendSnapshot = await firebase.database().ref(`users/${friendUid}`).once('value');
+        const friendData = friendSnapshot.val();
+        
+        if (!friendData) {
+            alert('Could not load friend data');
+            return;
+        }
+        
+        const stats = friendData.stats || { total: 0, wins: 0, losses: 0, xp: 0, level: 1 };
+        const winRate = stats.total > 0 ? Math.round((stats.wins / stats.total) * 100) : 0;
+        const level = stats.level || 1;
+        const xp = stats.xp || 0;
+        const xpInLevel = xp % 500;
+        
+        // Update modal content
+        document.getElementById('friendStatsNickname').textContent = friendNickname;
+        document.getElementById('friendStatsAvatar').src = friendData.photoURL || 'https://via.placeholder.com/80';
+        document.getElementById('friendStatLevel').textContent = level;
+        document.getElementById('friendStatTotal').textContent = stats.total;
+        document.getElementById('friendStatWins').textContent = stats.wins;
+        document.getElementById('friendStatLosses').textContent = stats.losses;
+        document.getElementById('friendStatWinRate').textContent = winRate + '%';
+        document.getElementById('friendStatXP').textContent = xpInLevel + ' / 500 XP';
+        
+        // Open modal
+        document.getElementById('friendStatsModal').showModal();
+        
+    } catch (error) {
+        console.error('Error loading friend stats:', error);
+        alert('Failed to load friend stats');
+    }
+}
 
