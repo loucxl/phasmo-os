@@ -1346,3 +1346,254 @@ dialog::backdrop {
         grid-template-columns: 1fr;
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   GROUP JOURNAL STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.btn-group {
+    background: rgba(6, 182, 212, 0.1);
+    border: 1px solid var(--acc-cyan);
+    color: var(--acc-cyan);
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: 0.2s;
+    position: relative;
+}
+
+.btn-group:hover {
+    background: var(--acc-cyan);
+    color: #000;
+    transform: translateY(-2px);
+}
+
+.btn-group.active {
+    background: var(--acc-cyan);
+    color: #000;
+    animation: pulse-cyan 2s infinite;
+}
+
+@keyframes pulse-cyan {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); }
+    50% { box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); }
+}
+
+.group-option {
+    padding: 20px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.group-option h3 {
+    font-family: var(--font-hud);
+    color: var(--acc-cyan);
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+}
+
+.group-option p {
+    color: var(--text-muted);
+    margin: 0 0 16px 0;
+    font-size: 0.95rem;
+}
+
+.group-divider {
+    text-align: center;
+    color: var(--text-dim);
+    font-family: var(--font-hud);
+    font-weight: 700;
+    margin: 20px 0;
+    position: relative;
+}
+
+.group-divider::before,
+.group-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: var(--border);
+}
+
+.group-divider::before { left: 0; }
+.group-divider::after { right: 0; }
+
+.btn-primary {
+    background: var(--acc-cyan);
+    color: #000;
+    border: none;
+    padding: 12px 24px;
+    font-family: var(--font-hud);
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-primary:hover {
+    background: var(--acc-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+.btn-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--acc-red);
+    color: var(--acc-red);
+    padding: 12px 24px;
+    font-family: var(--font-hud);
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 16px;
+}
+
+.btn-danger:hover {
+    background: var(--acc-red);
+    color: #000;
+    transform: translateY(-2px);
+}
+
+#joinSessionInput {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+}
+
+#joinSessionInput:focus {
+    outline: none;
+    border-color: var(--acc-cyan);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+}
+
+.session-info {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.session-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    font-family: var(--font-hud);
+    font-weight: 700;
+    color: var(--acc-green);
+    font-size: 1.1rem;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--acc-green);
+    border-radius: 50%;
+    animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.session-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.session-id,
+.session-users {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+
+.session-id span,
+.session-users span {
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+.share-section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.share-section label {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.share-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+#shareLink {
+    flex: 1;
+    padding: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+
+.btn-copy {
+    background: var(--acc-cyan);
+    color: #000;
+    border: none;
+    padding: 0 20px;
+    font-family: var(--font-hud);
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.btn-copy:hover {
+    background: var(--acc-green);
+    transform: translateY(-2px);
+}
+
+.btn-copy.copied {
+    background: var(--acc-green);
+}
+
+.btn-copy.copied::after {
+    content: ' ✓';
+}
+
