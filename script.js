@@ -2488,6 +2488,12 @@ async function declineFriendRequest(friendUid) {
         } else if (outgoingSnapshot.exists()) {
             // It's an outgoing request (we sent to them) - cancel it
             await outgoingRef.remove();
+            
+            // Notify them to remove from their incoming
+            await firebase.database().ref(`users/${friendUid}/friendRequestCancelled/${currentUser.uid}`).set({
+                timestamp: Date.now()
+            });
+            
             console.log('Cancelled outgoing friend request');
         }
         
@@ -2748,6 +2754,29 @@ function listenToFriendRequests() {
             
         } catch (error) {
             console.error('Error processing friend decline:', error);
+        }
+    });
+    
+    // Listen for friend request cancellations (when someone cancels their request to you)
+    firebase.database().ref(`users/${currentUser.uid}/friendRequestCancelled`).on('child_added', async (snapshot) => {
+        const friendUid = snapshot.key;
+        
+        console.log('Friend request was cancelled by sender');
+        
+        try {
+            // Remove from YOUR incoming requests
+            await firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`).remove();
+            
+            // Remove the cancel notification
+            await firebase.database().ref(`users/${currentUser.uid}/friendRequestCancelled/${friendUid}`).remove();
+            
+            console.log('✅ Removed cancelled request from incoming');
+            
+            // Reload friends list
+            await loadFriends();
+            
+        } catch (error) {
+            console.error('Error processing friend cancel:', error);
         }
     });
 }
