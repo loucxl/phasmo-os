@@ -236,6 +236,36 @@ const GHOSTS = [
         zeroEv: "Extreme activity and speed in early game, becoming progressively slower and quieter. Dead quiet and passive late game.",
         tags: ['fast', 'early']
     }
+    ,
+    { 
+        name: "Dayan", ev: ['emf','orb','box'], danger: "Med", hunt: "45-60%", speed: "1.12-2.25 m/s", blink: "Normal", forced: null,
+        traits: ["Reacts to Movement", "Female Only", "Proximity Sensitive"],
+        desc: "A hyper-vigilant spirit that reacts to player movement. Speeds up dramatically when players move near her (10m), but slows way down when standing still!",
+        ability: "When players are within 10 meters: speeds up to 2.25 m/s if you move, or slows to 1.12 m/s if you stand still. Hunt threshold increases to 60% if moving near her, or decreases to 45% if standing still. Only uses female ghost models.",
+        test: "Stand Still Test: During a hunt, if you are within 10m and stand completely still, the ghost should slow to a crawl (1.12 m/s). If you move, it speeds up to 2.25 m/s instantly. Also check gender - Dayan is always female!",
+        zeroEv: "Ghost dramatically speeds up when players move, slows down when players freeze. Always female ghost model. Hunt thresholds varying based on movement.",
+        tags: ['fast']
+    }
+    ,
+    { 
+        name: "Gallu", ev: ['emf','uv','box'], danger: "High", hunt: "40-60%", speed: "1.36-1.96 m/s", blink: "Normal", forced: null,
+        traits: ["Hates Protective Equipment", "Three States", "Demon-Like"],
+        desc: "Another form of demon that gets ENRAGED when you use protective equipment! Crucifixes and smudge sticks provoke it, making them less effective over time.",
+        ability: "Has three states: Normal (50% hunt, 1.7 m/s), Enraged (60% hunt, 1.96 m/s - triggered by using crucifixes/smudge sticks), and Weakened (40% hunt, 1.36 m/s - after being enraged). Using protective equipment angers it but also exhausts it afterward.",
+        test: "Use a crucifix or smudge sticks multiple times. If hunts start happening MORE frequently and equipment feels less effective, then the ghost suddenly becomes weaker, it is a Gallu. Protective gear provokes it!",
+        zeroEv: "Crucifixes and smudge sticks seeming less effective. Hunts becoming more aggressive after using protection, then weakening afterward. Very aggressive demon-like behavior.",
+        tags: ['early', 'fast']
+    }
+    ,
+    { 
+        name: "Obambo", ev: ['uv','writing','dots'], danger: "Med", hunt: "10% / 65%", speed: "1.45 / 1.96 m/s", blink: "Normal", forced: null,
+        traits: ["Dual States", "Mood Swings", "Unpredictable"],
+        desc: "Switches between calm and aggressive states every ~2 minutes! When calm: barely hunts (10%, 1.45 m/s). When aggressive: hunts often (65%, 1.96 m/s)!",
+        ability: "Alternates between two states approximately every 2 minutes. Calm state: 10% hunt threshold, 1.45 m/s speed, very low activity. Aggressive state: 65% hunt threshold, 1.96 m/s speed, high activity. Can switch states mid-hunt!",
+        test: "Patience is key! Observe the ghost over time. If it is extremely passive for a while then suddenly becomes very aggressive (or vice versa), it is an Obambo. Watch for activity waves.",
+        zeroEv: "Ghost switching between extremely calm periods (no activity, will not hunt) and aggressive periods (frequent hunts, lots of interactions). Inconsistent behavior patterns.",
+        tags: ['early']
+    }
 ];
 
 // --- 2. STATE ---
