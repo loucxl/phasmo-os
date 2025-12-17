@@ -895,3 +895,369 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     }, 200);
 });
+
+// ═══════════════════════════════════════════════════════════════
+// GROUP JOURNAL - MULTIPLAYER SYNC
+// ═══════════════════════════════════════════════════════════════
+
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyCBe2DLH2DnFucxKEp_tMfdsTV3dr8K-Qw",
+    authDomain: "phasmo-group-journal.firebaseapp.com",
+    databaseURL: "https://phasmo-group-journal-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "phasmo-group-journal",
+    storageBucket: "phasmo-group-journal.firebasestorage.app",
+    messagingSenderId: "224238426204",
+    appId: "1:224238426204:web:b20b8db2f80981d2f02e99"
+};
+
+// Group Journal State
+let groupJournal = {
+    sessionId: null,
+    isHost: false,
+    userId: null,
+    syncEnabled: false,
+    lastSync: 0
+};
+
+// Initialize Firebase (only if config is set)
+function initFirebase() {
+    if (firebaseConfig.apiKey === "YOUR-API-KEY-HERE") {
+        console.log("Firebase not configured. Group Journal disabled.");
+        return false;
+    }
+    
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        groupJournal.userId = generateUserId();
+        return true;
+    } catch (error) {
+        console.error("Firebase initialization error:", error);
+        return false;
+    }
+}
+
+// Generate unique user ID
+function generateUserId() {
+    return 'user_' + Math.random().toString(36).substr(2, 9) + Date.now();
+}
+
+// Generate unique session ID
+function generateSessionId() {
+    return Math.random().toString(36).substr(2, 9).toUpperCase();
+}
+
+// Create new group session
+function createGroupSession() {
+    if (!initFirebase()) {
+        alert("Firebase not configured. Please add your Firebase credentials to script.js");
+        return;
+    }
+    
+    groupJournal.sessionId = generateSessionId();
+    groupJournal.isHost = true;
+    groupJournal.syncEnabled = true;
+    
+    // Initialize session in Firebase
+    const sessionRef = firebase.database().ref(`sessions/${groupJournal.sessionId}`);
+    sessionRef.set({
+        createdAt: Date.now(),
+        host: groupJournal.userId,
+        evidence: app.evidence,
+        filters: Array.from(app.activeFilters),
+        timer: app.timer,
+        lastUpdate: Date.now()
+    });
+    
+    // Show active session UI
+    showActiveSession();
+    
+    // Start listening for updates from others
+    listenToSession();
+    
+    // Start heartbeat
+    startHeartbeat();
+}
+
+// Join existing session
+function joinGroupSession(sessionId) {
+    if (!sessionId || sessionId.trim() === '') {
+        alert("Please enter a session ID");
+        return;
+    }
+    
+    if (!initFirebase()) {
+        alert("Firebase not configured. Please add your Firebase credentials to script.js");
+        return;
+    }
+    
+    sessionId = sessionId.trim().toUpperCase();
+    
+    // Check if session exists
+    const sessionRef = firebase.database().ref(`sessions/${sessionId}`);
+    sessionRef.once('value', (snapshot) => {
+        if (snapshot.exists()) {
+            groupJournal.sessionId = sessionId;
+            groupJournal.isHost = false;
+            groupJournal.syncEnabled = true;
+            
+            // Load current state from session
+            const data = snapshot.val();
+            app.evidence = data.evidence || app.evidence;
+            app.activeFilters = new Set(data.filters || []);
+            app.timer = data.timer || app.timer;
+            
+            // Update UI
+            renderFilters();
+            updateBoard();
+            updateTimerDisplay();
+            
+            // Show active session UI
+            showActiveSession();
+            
+            // Start listening
+            listenToSession();
+            
+            // Start heartbeat
+            startHeartbeat();
+            
+            // Close modal
+            ui.groupModal.close();
+        } else {
+            alert("Session not found. Please check the session ID.");
+        }
+    });
+}
+
+// Join session from URL parameter
+function checkUrlForSession() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionParam = urlParams.get('session');
+    
+    if (sessionParam) {
+        // Auto-join session from URL
+        setTimeout(() => {
+            joinGroupSession(sessionParam);
+        }, 500);
+    }
+}
+
+// Listen for session updates
+function listenToSession() {
+    if (!groupJournal.sessionId) return;
+    
+    const sessionRef = firebase.database().ref(`sessions/${groupJournal.sessionId}`);
+    
+    sessionRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (!data) return;
+        
+        // Prevent sync loops - don't apply if we just sent this update
+        if (Date.now() - groupJournal.lastSync < 500) return;
+        
+        // Update local state
+        app.evidence = data.evidence || app.evidence;
+        app.activeFilters = new Set(data.filters || []);
+        if (data.timer) {
+            app.timer = data.timer;
+        }
+        
+        // Update UI
+        renderFilters();
+        updateBoard();
+        updateTimerDisplay();
+        
+        // Update user count
+        updateUserCount();
+    });
+}
+
+// Sync local state to Firebase
+function syncToFirebase() {
+    if (!groupJournal.syncEnabled || !groupJournal.sessionId) return;
+    
+    groupJournal.lastSync = Date.now();
+    
+    const sessionRef = firebase.database().ref(`sessions/${groupJournal.sessionId}`);
+    sessionRef.update({
+        evidence: app.evidence,
+        filters: Array.from(app.activeFilters),
+        timer: app.timer,
+        lastUpdate: Date.now()
+    });
+}
+
+// User heartbeat (track active users)
+function startHeartbeat() {
+    if (!groupJournal.sessionId || !groupJournal.userId) return;
+    
+    const userRef = firebase.database().ref(`sessions/${groupJournal.sessionId}/users/${groupJournal.userId}`);
+    
+    // Set initial presence
+    userRef.set({
+        lastSeen: Date.now()
+    });
+    
+    // Update every 5 seconds
+    setInterval(() => {
+        if (groupJournal.syncEnabled) {
+            userRef.update({ lastSeen: Date.now() });
+        }
+    }, 5000);
+    
+    // Clean up on disconnect
+    userRef.onDisconnect().remove();
+}
+
+// Update user count display
+function updateUserCount() {
+    if (!groupJournal.sessionId) return;
+    
+    const usersRef = firebase.database().ref(`sessions/${groupJournal.sessionId}/users`);
+    usersRef.once('value', (snapshot) => {
+        const users = snapshot.val();
+        if (!users) {
+            document.getElementById('userCount').textContent = '1';
+            return;
+        }
+        
+        // Count active users (seen in last 15 seconds)
+        const now = Date.now();
+        const activeUsers = Object.values(users).filter(u => now - u.lastSeen < 15000);
+        document.getElementById('userCount').textContent = activeUsers.length;
+    });
+}
+
+// Show active session UI
+function showActiveSession() {
+    document.getElementById('groupContent').style.display = 'none';
+    document.getElementById('activeSession').style.display = 'block';
+    
+    // Set session ID
+    document.getElementById('currentSessionId').textContent = groupJournal.sessionId;
+    
+    // Set share link
+    const shareUrl = `${window.location.origin}${window.location.pathname}?session=${groupJournal.sessionId}`;
+    document.getElementById('shareLink').value = shareUrl;
+    
+    // Update user count
+    updateUserCount();
+    setInterval(updateUserCount, 5000);
+    
+    // Add active class to button
+    document.getElementById('btnGroupJournal').classList.add('active');
+}
+
+// Leave session
+function leaveGroupSession() {
+    if (!groupJournal.sessionId) return;
+    
+    // Remove user presence
+    if (groupJournal.userId) {
+        firebase.database().ref(`sessions/${groupJournal.sessionId}/users/${groupJournal.userId}`).remove();
+    }
+    
+    // Reset state
+    groupJournal.sessionId = null;
+    groupJournal.isHost = false;
+    groupJournal.syncEnabled = false;
+    
+    // Reset UI
+    document.getElementById('groupContent').style.display = 'block';
+    document.getElementById('activeSession').style.display = 'none';
+    document.getElementById('btnGroupJournal').classList.remove('active');
+    
+    // Remove session parameter from URL
+    const url = new URL(window.location);
+    url.searchParams.delete('session');
+    window.history.replaceState({}, document.title, url);
+    
+    ui.groupModal.close();
+}
+
+// Copy share link to clipboard
+function copyShareLink() {
+    const shareLink = document.getElementById('shareLink');
+    shareLink.select();
+    shareLink.setSelectionRange(0, 99999); // For mobile
+    
+    navigator.clipboard.writeText(shareLink.value).then(() => {
+        const btn = document.getElementById('btnCopyLink');
+        btn.classList.add('copied');
+        btn.textContent = 'Copied!';
+        
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.textContent = 'Copy';
+        }, 2000);
+    });
+}
+
+// Initialize Group Journal UI
+function initGroupJournal() {
+    // Get UI elements
+    ui.groupModal = document.getElementById('groupModal');
+    
+    // Button to open modal
+    document.getElementById('btnGroupJournal').addEventListener('click', () => {
+        if (groupJournal.syncEnabled) {
+            // Already in session, show active session view
+            showActiveSession();
+        }
+        ui.groupModal.showModal();
+    });
+    
+    // Close button
+    document.getElementById('closeGroup').addEventListener('click', () => {
+        ui.groupModal.close();
+    });
+    
+    // Create session button
+    document.getElementById('btnCreateSession').addEventListener('click', createGroupSession);
+    
+    // Join session button
+    document.getElementById('btnJoinSession').addEventListener('click', () => {
+        const sessionId = document.getElementById('joinSessionInput').value;
+        joinGroupSession(sessionId);
+    });
+    
+    // Leave session button
+    document.getElementById('btnLeaveSession').addEventListener('click', () => {
+        if (confirm('Are you sure you want to leave this group session?')) {
+            leaveGroupSession();
+        }
+    });
+    
+    // Copy link button
+    document.getElementById('btnCopyLink').addEventListener('click', copyShareLink);
+    
+    // Join session on Enter key
+    document.getElementById('joinSessionInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const sessionId = document.getElementById('joinSessionInput').value;
+            joinGroupSession(sessionId);
+        }
+    });
+    
+    // Check if URL has session parameter
+    checkUrlForSession();
+}
+
+// Modify the original updateBoard to sync
+const originalUpdateBoard = updateBoard;
+updateBoard = function() {
+    originalUpdateBoard();
+    if (groupJournal.syncEnabled) {
+        syncToFirebase();
+    }
+};
+
+// Add Group Journal to init
+const originalInit = init;
+init = function() {
+    originalInit();
+    initGroupJournal();
+};
+
