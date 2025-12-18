@@ -456,13 +456,6 @@ function updateBoard() {
         const card = document.createElement('div');
         card.className = 'card';
         card.dataset.danger = g.danger;
-        
-        // Highlight if this is the final ghost
-        if (matches.length === 1) {
-            card.style.border = '2px solid var(--acc-green)';
-            card.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.3)';
-            card.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, var(--bg-card) 100%)';
-        }
 
         let dots = '';
         EVIDENCE.forEach(e => {
@@ -904,38 +897,6 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     }, 200);
 });
-
-
-// ═══════════════════════════════════════════════════════════════
-// STAGGERED XP LEVELING SYSTEM
-// ═══════════════════════════════════════════════════════════════
-// Level 1-10:  100 XP per level (10 correct = 1 level)
-// Level 11-25: 200 XP per level (20 correct = 1 level)
-// Level 26-50: 400 XP per level (40 correct = 1 level)
-// Level 51+:   800 XP per level (80 correct = 1 level)
-
-function getXPForLevel(level) {
-    if (level <= 10) return 100;
-    if (level <= 25) return 200;
-    if (level <= 50) return 400;
-    return 800;
-}
-
-function getLevelFromXP(xp) {
-    let level = 1;
-    let xpRemaining = xp;
-    
-    while (xpRemaining >= getXPForLevel(level)) {
-        xpRemaining -= getXPForLevel(level);
-        level++;
-    }
-    
-    return {
-        level: level,
-        xpInCurrentLevel: xpRemaining,
-        xpForNextLevel: getXPForLevel(level)
-    };
-}
 
 // ═══════════════════════════════════════════════════════════════
 // GROUP JOURNAL - MULTIPLAYER SYNC
@@ -1752,9 +1713,8 @@ async function loadStats() {
         // Update level/XP display
         const level = stats.level || 1;
         const xp = stats.xp || 0;
-        const levelInfo = getLevelFromXP(xp);
-        const xpInLevel = levelInfo.xpInCurrentLevel;
-        const xpForNextLevel = levelInfo.xpForNextLevel;
+        const xpInLevel = xp % 500;
+        const xpForNextLevel = 500;
         const xpPercent = (xpInLevel / xpForNextLevel) * 100;
         
         document.getElementById('statLevel').textContent = level;
@@ -1886,13 +1846,9 @@ function showInvestigationBanner() {
         <button class="btn-submit-guess" id="btnOpenGuess">Submit Result</button>
     `;
     
-    // Insert after header
-    const header = document.querySelector('header');
-    if (header) {
-        header.after(banner);
-    } else {
-        document.body.insertBefore(banner, document.body.firstChild);
-    }
+    // Insert after auth bar
+    const authBar = document.getElementById('authBar');
+    authBar.after(banner);
     
     // Start timer
     updateInvestigationTimer();
@@ -1984,10 +1940,7 @@ async function submitActualGhost(actualGhost) {
         // Calculate XP gain
         const xpGain = correct ? 10 : 0;
         const newXP = (currentStats.xp || 0) + xpGain;
-        
-        // Calculate new level using staggered system
-        const levelInfo = getLevelFromXP(newXP);
-        const newLevel = levelInfo.level;
+        const newLevel = Math.floor(newXP / 500) + 1;
         const leveledUp = newLevel > (currentStats.level || 1);
         
         // Update stats
@@ -2020,7 +1973,7 @@ async function submitActualGhost(actualGhost) {
             if (leveledUp) {
                 resultMessage += `🎉 LEVEL UP! You're now Level ${newLevel}!\n\n`;
             }
-            resultMessage += `+${xpGain} XP (${levelInfo.xpInCurrentLevel}/${levelInfo.xpForNextLevel} to Level ${newLevel + 1})\n\n`;
+            resultMessage += `+${xpGain} XP (${newXP % 500}/500 to Level ${newLevel + 1})\n\n`;
         } else {
             if (matches.length === 0) {
                 resultMessage = `❌ INCORRECT\n\nIt was ${actualGhost} but your evidence ruled it out.\n\n`;
@@ -2383,11 +2336,11 @@ async function sendFriendRequest(e) {
             return;
         }
         
-        // Get friend's public info (nickname, photoURL are public)
-        const nicknameSnapshot = await firebase.database().ref(`users/${friendUid}/nickname`).once('value');
-        const friendNickname = nicknameSnapshot.val();
+        // Get friend's info
+        const friendSnapshot = await firebase.database().ref(`users/${friendUid}`).once('value');
+        const friendData = friendSnapshot.val();
         
-        if (!friendNickname) {
+        if (!friendData) {
             errorEl.textContent = 'User not found';
             errorEl.classList.add('show');
             return;
@@ -2407,8 +2360,8 @@ async function sendFriendRequest(e) {
         // Send notification to THEIR friendRequestReceived path (they can write this)
         await firebase.database().ref(`users/${friendUid}/friendRequestReceived/${currentUser.uid}`).set(requestData);
         
-        console.log('✅ Friend request sent to', friendNickname);
-        alert(`Friend request sent to ${friendNickname}! ✅`);
+        console.log('✅ Friend request sent to', friendData.nickname);
+        alert(`Friend request sent to ${friendData.nickname}! ✅`);
         
         codeInput.value = '';
         document.getElementById('addFriendModal').close();
@@ -2424,29 +2377,23 @@ async function sendFriendRequest(e) {
 // Accept friend request
 async function acceptFriendRequest(friendUid) {
     try {
-        // Get friend's public info
-        const nicknameSnapshot = await firebase.database().ref(`users/${friendUid}/nickname`).once('value');
-        const photoSnapshot = await firebase.database().ref(`users/${friendUid}/photoURL`).once('value');
+        // Get friend's info
+        const friendSnapshot = await firebase.database().ref(`users/${friendUid}`).once('value');
+        const friendData = friendSnapshot.val();
         
-        const friendNickname = nicknameSnapshot.val();
-        const friendPhotoURL = photoSnapshot.val();
-        
-        if (!friendNickname) {
+        if (!friendData) {
             alert('Friend not found');
             return;
         }
         
         // Get your info
-        const yourNicknameSnapshot = await firebase.database().ref(`users/${currentUser.uid}/nickname`).once('value');
-        const yourPhotoSnapshot = await firebase.database().ref(`users/${currentUser.uid}/photoURL`).once('value');
-        
-        const yourNickname = yourNicknameSnapshot.val();
-        const yourPhotoURL = yourPhotoSnapshot.val();
+        const yourSnapshot = await firebase.database().ref(`users/${currentUser.uid}`).once('value');
+        const yourData = yourSnapshot.val();
         
         // Add friend to YOUR friends list
         await firebase.database().ref(`users/${currentUser.uid}/friends/${friendUid}`).set({
-            nickname: friendNickname,
-            photoURL: friendPhotoURL,
+            nickname: friendData.nickname,
+            photoURL: friendData.photoURL,
             since: Date.now()
         });
         
@@ -2456,13 +2403,13 @@ async function acceptFriendRequest(friendUid) {
         // Create a "friendAccepted" notification for the other user
         // They'll use this to add you to their friends list
         await firebase.database().ref(`users/${friendUid}/friendAccepted/${currentUser.uid}`).set({
-            nickname: yourNickname,
-            photoURL: yourPhotoURL,
+            nickname: yourData.nickname,
+            photoURL: yourData.photoURL,
             since: Date.now()
         });
         
         console.log('✅ Friend request accepted!');
-        alert(`You and ${friendNickname} are now friends! 🎉`);
+        alert(`You and ${friendData.nickname} are now friends! 🎉`);
         
         await loadFriends();
         
@@ -2485,22 +2432,10 @@ async function declineFriendRequest(friendUid) {
         if (incomingSnapshot.exists()) {
             // It's an incoming request (someone sent to us) - decline it
             await incomingRef.remove();
-            
-            // Notify them it was declined so they can remove from their outgoing
-            await firebase.database().ref(`users/${friendUid}/friendRequestDeclined/${currentUser.uid}`).set({
-                timestamp: Date.now()
-            });
-            
             console.log('Declined incoming friend request');
         } else if (outgoingSnapshot.exists()) {
             // It's an outgoing request (we sent to them) - cancel it
             await outgoingRef.remove();
-            
-            // Notify them to remove from their incoming
-            await firebase.database().ref(`users/${friendUid}/friendRequestCancelled/${currentUser.uid}`).set({
-                timestamp: Date.now()
-            });
-            
             console.log('Cancelled outgoing friend request');
         }
         
@@ -2740,52 +2675,6 @@ function listenToFriendRequests() {
             console.error('Error processing friend accept:', error);
         }
     });
-    
-    // Listen for friend request declines (when someone declines YOUR request)
-    firebase.database().ref(`users/${currentUser.uid}/friendRequestDeclined`).on('child_added', async (snapshot) => {
-        const friendUid = snapshot.key;
-        
-        console.log('Friend request was declined');
-        
-        try {
-            // Remove from YOUR outgoing requests
-            await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`).remove();
-            
-            // Remove the decline notification
-            await firebase.database().ref(`users/${currentUser.uid}/friendRequestDeclined/${friendUid}`).remove();
-            
-            console.log('✅ Removed declined request from outgoing');
-            
-            // Reload friends list
-            await loadFriends();
-            
-        } catch (error) {
-            console.error('Error processing friend decline:', error);
-        }
-    });
-    
-    // Listen for friend request cancellations (when someone cancels their request to you)
-    firebase.database().ref(`users/${currentUser.uid}/friendRequestCancelled`).on('child_added', async (snapshot) => {
-        const friendUid = snapshot.key;
-        
-        console.log('Friend request was cancelled by sender');
-        
-        try {
-            // Remove from YOUR incoming requests
-            await firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`).remove();
-            
-            // Remove the cancel notification
-            await firebase.database().ref(`users/${currentUser.uid}/friendRequestCancelled/${friendUid}`).remove();
-            
-            console.log('✅ Removed cancelled request from incoming');
-            
-            // Reload friends list
-            await loadFriends();
-            
-        } catch (error) {
-            console.error('Error processing friend cancel:', error);
-        }
-    });
 }
 
 // Format date
@@ -2833,9 +2722,7 @@ async function viewFriendStats(friendUid, friendNickname) {
         const winRate = stats.total > 0 ? Math.round((stats.wins / stats.total) * 100) : 0;
         const level = stats.level || 1;
         const xp = stats.xp || 0;
-        const levelInfo = getLevelFromXP(xp);
-        const xpInLevel = levelInfo.xpInCurrentLevel;
-        const xpForNextLevel = levelInfo.xpForNextLevel;
+        const xpInLevel = xp % 500;
         
         // Update modal content
         document.getElementById('friendStatsNickname').textContent = friendNickname;
@@ -2845,7 +2732,7 @@ async function viewFriendStats(friendUid, friendNickname) {
         document.getElementById('friendStatWins').textContent = stats.wins;
         document.getElementById('friendStatLosses').textContent = stats.losses;
         document.getElementById('friendStatWinRate').textContent = winRate + '%';
-        document.getElementById('friendStatXP').textContent = xpInLevel + ' / ' + xpForNextLevel + ' XP';
+        document.getElementById('friendStatXP').textContent = xpInLevel + ' / 500 XP';
         
         // Open modal
         document.getElementById('friendStatsModal').showModal();
@@ -2855,437 +2742,4 @@ async function viewFriendStats(friendUid, friendNickname) {
         alert('Failed to load friend stats');
     }
 }
-
-
-// ═══════════════════════════════════════════════════════════════
-// SIDEBAR INTEGRATION
-// ═══════════════════════════════════════════════════════════════
-
-// Sort ghosts alphabetically
-GHOSTS.sort((a, b) => a.name.localeCompare(b.name));
-
-// Populate sidebar on load
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Populating sidebar...');
-    
-    // Populate evidence
-    const evidenceContainer = document.getElementById('sidebarEvidence');
-    if (evidenceContainer) {
-        evidenceContainer.innerHTML = `
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-                <button onclick="cycleEvidence('emf')" oncontextmenu="ruleOutEvidence('emf', event)" data-ev="emf" class="sidebar-btn">
-                    <span style="font-size: 1rem;">📶</span>
-                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">EMF 5</span>
-                </button>
-                <button onclick="cycleEvidence('box')" oncontextmenu="ruleOutEvidence('box', event)" data-ev="box" class="sidebar-btn">
-                    <span style="font-size: 1rem;">📦</span>
-                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">BOX</span>
-                </button>
-                <button onclick="cycleEvidence('uv')" oncontextmenu="ruleOutEvidence('uv', event)" data-ev="uv" class="sidebar-btn">
-                    <span style="font-size: 1rem;">💡</span>
-                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">UV</span>
-                </button>
-                <button onclick="cycleEvidence('orb')" oncontextmenu="ruleOutEvidence('orb', event)" data-ev="orb" class="sidebar-btn">
-                    <span style="font-size: 1rem;">🔮</span>
-                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">ORBS</span>
-                </button>
-                <button onclick="cycleEvidence('writing')" oncontextmenu="ruleOutEvidence('writing', event)" data-ev="writing" class="sidebar-btn">
-                    <span style="font-size: 1rem;">✍️</span>
-                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">WRITING</span>
-                </button>
-                <button onclick="cycleEvidence('freezing')" oncontextmenu="ruleOutEvidence('freezing', event)" data-ev="freezing" class="sidebar-btn">
-                    <span style="font-size: 1rem;">❄️</span>
-                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">FREEZE</span>
-                </button>
-                <button onclick="cycleEvidence('dots')" oncontextmenu="ruleOutEvidence('dots', event)" data-ev="dots" class="sidebar-btn">
-                    <span style="font-size: 1rem;">🎯</span>
-                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">D.O.T.S</span>
-                </button>
-            </div>
-        `;
-    }
-    
-    // Populate filters
-    const filtersContainer = document.getElementById('sidebarFilters');
-    if (filtersContainer) {
-        filtersContainer.innerHTML = `
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-                <button onclick="toggleFilter('fast')" data-filter="fast" class="sidebar-btn">
-                    <span style="font-size: 1rem;">⚡</span>
-                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main);">Fast Speed</span>
-                </button>
-                <button onclick="toggleFilter('early')" data-filter="early" class="sidebar-btn">
-                    <span style="font-size: 1rem;">⚠️</span>
-                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main);">Early Hunter</span>
-                </button>
-                <button onclick="toggleFilter('quiet')" data-filter="quiet" class="sidebar-btn">
-                    <span style="font-size: 1rem;">🟡</span>
-                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main);">Quiet Steps</span>
-                </button>
-                <button onclick="toggleFilter('guarantee')" data-filter="guarantee" class="sidebar-btn">
-                    <span style="font-size: 1rem;">✨</span>
-                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main);">Guaranteed Ev</span>
-                </button>
-            </div>
-        `;
-    }
-    
-    // Hook submit button
-    const btnSubmit = document.getElementById('btnSubmitSidebar');
-    if (btnSubmit) {
-        btnSubmit.addEventListener('click', openGuessModal);
-    }
-    
-    // Start timer sync
-    setInterval(function() {
-        const sidebarInv = document.getElementById('sidebarInvestigation');
-        const timerEl = document.getElementById('sidebarTimer');
-        
-        if (!currentInvestigation) {
-            if (sidebarInv) sidebarInv.style.display = 'none';
-            return;
-        }
-        
-        if (sidebarInv) sidebarInv.style.display = 'block';
-        
-        const elapsed = Math.floor((Date.now() - currentInvestigation.startTime) / 1000);
-        const minutes = Math.floor(elapsed / 60);
-        const seconds = elapsed % 60;
-        if (timerEl) {
-            timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }
-    }, 1000);
-    
-    // Initial sync
-    setTimeout(syncSidebar, 100);
-});
-
-// Sync sidebar state with main app
-function syncSidebar() {
-    // Calculate possible evidence based on current matches
-    const matches = [];
-    const possibleEv = new Set();
-    
-    GHOSTS.forEach(g => {
-        let possible = true;
-        for(const [id, val] of Object.entries(app.evidence)) {
-            if(val === 0) continue;
-            const has = g.ev.includes(id) || (g.name === 'The Mimic' && id === 'orb');
-            if(val === 1 && !has) possible = false;
-            if(val === 2 && has) possible = false;
-        }
-        if(possible && app.activeFilters.size > 0) {
-            app.activeFilters.forEach(fid => {
-                if(!g.tags.includes(fid)) possible = false;
-            });
-        }
-        
-        if(possible) {
-            matches.push(g);
-            g.ev.forEach(e => possibleEv.add(e));
-            if(g.name === 'The Mimic') possibleEv.add('orb');
-        }
-    });
-    
-    // Sync evidence buttons
-    Object.keys(app.evidence).forEach(evId => {
-        const btn = document.querySelector(`#sidebarEvidence button[data-ev="${evId}"]`);
-        if (btn) {
-            btn.style.borderColor = 'var(--border)';
-            btn.style.background = 'var(--bg-card)';
-            btn.style.opacity = '1';
-            
-            if (app.evidence[evId] === 1) {
-                btn.style.borderColor = 'var(--acc-green)';
-                btn.style.background = 'rgba(16, 185, 129, 0.1)';
-            } else if (app.evidence[evId] === 2) {
-                btn.style.borderColor = 'var(--acc-red)';
-                btn.style.background = 'rgba(239, 68, 68, 0.1)';
-                btn.style.opacity = '0.6';
-            } else if (app.evidence[evId] === 0 && matches.length < GHOSTS.length && !possibleEv.has(evId)) {
-                // Grey out if not selected AND not possible with current matches
-                btn.style.opacity = '0.3';
-                btn.style.pointerEvents = 'none';
-            } else {
-                btn.style.pointerEvents = 'auto';
-            }
-        }
-    });
-    
-    // Sync filter buttons
-    document.querySelectorAll('#sidebarFilters button').forEach(btn => {
-        const filterId = btn.dataset.filter;
-        btn.style.borderColor = 'var(--border)';
-        btn.style.background = 'var(--bg-card)';
-        
-        if (app.activeFilters.has(filterId)) {
-            btn.style.borderColor = 'var(--acc-purple)';
-            btn.style.background = 'rgba(139, 92, 246, 0.1)';
-        }
-    });
-    
-    // Sync ghost count
-    const sidebarCount = document.getElementById('sidebarCount');
-    const mainCount = document.getElementById('matchCount');
-    if (sidebarCount && mainCount) {
-        sidebarCount.textContent = mainCount.textContent;
-    }
-}
-
-// Hook into existing updateBoard to sync sidebar
-const _origUpdateBoard = updateBoard;
-updateBoard = function() {
-    _origUpdateBoard();
-    syncSidebar();
-};
-
-// Add CSS for sidebar buttons
-const sidebarCSS = document.createElement('style');
-sidebarCSS.textContent = `
-    .sidebar-btn {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        padding: 8px;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-    .sidebar-btn:hover {
-        border-color: var(--acc-cyan);
-        background: rgba(6, 182, 212, 0.05);
-    }
-`;
-document.head.appendChild(sidebarCSS);
-
-
-// ═══════════════════════════════════════════════════════════════
-// NAVIGATION HIGHLIGHTING
-// ═══════════════════════════════════════════════════════════════
-
-// Highlight active section in nav
-function highlightActiveSection() {
-    const sections = ['ghosts', 'maps', 'equipment', 'mechanics', 'strategy'];
-    
-    sections.forEach(sectionId => {
-        const section = document.getElementById(`section-${sectionId}`);
-        const navBtn = document.querySelector(`button[onclick="showSection('${sectionId}')"]`);
-        
-        if (section && navBtn) {
-            if (section.style.display !== 'none') {
-                navBtn.style.borderColor = 'var(--acc-cyan)';
-                navBtn.style.background = 'rgba(6, 182, 212, 0.1)';
-                navBtn.style.color = '#fff';
-            } else {
-                navBtn.style.borderColor = 'transparent';
-                navBtn.style.background = 'transparent';
-                navBtn.style.color = 'var(--text-muted)';
-            }
-        }
-    });
-}
-
-// Override showSection to add highlighting
-const _origShowSection = showSection;
-showSection = function(sectionId) {
-    _origShowSection(sectionId);
-    highlightActiveSection();
-};
-
-// Initial highlight
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(highlightActiveSection, 200);
-});
-
-
-// ═══════════════════════════════════════════════════════════════
-// FILTER TOGGLE FOR SIDEBAR
-// ═══════════════════════════════════════════════════════════════
-
-function toggleFilter(filterId) {
-    console.log('toggleFilter called:', filterId);
-    
-    if (app.activeFilters.has(filterId)) {
-        app.activeFilters.delete(filterId);
-    } else {
-        app.activeFilters.add(filterId);
-    }
-    
-    renderFilters(); // Update original filter chips
-    updateBoard(); // This will also call syncSidebar
-}
-
-
-// ═══════════════════════════════════════════════════════════════
-// EVIDENCE CYCLING FOR SIDEBAR
-// ═══════════════════════════════════════════════════════════════
-
-function cycleEvidence(evId) {
-    console.log('cycleEvidence (left click):', evId);
-    
-    // Left click - toggle between none and found (green)
-    if (app.evidence[evId] === 0) {
-        app.evidence[evId] = 1; // Found (green)
-    } else {
-        app.evidence[evId] = 0; // None
-    }
-    
-    renderEvidence();
-    updateBoard();
-}
-
-function ruleOutEvidence(evId, event) {
-    console.log('ruleOutEvidence (right click):', evId);
-    event.preventDefault();
-    
-    // Right click - toggle between none and ruled out (red)
-    if (app.evidence[evId] === 0) {
-        app.evidence[evId] = 2; // Ruled out (red)
-    } else {
-        app.evidence[evId] = 0; // None
-    }
-    
-    renderEvidence();
-    updateBoard();
-}
-
-
-// ═══════════════════════════════════════════════════════════════
-// HOOK UP NEW TOP BAR BUTTONS
-// ═══════════════════════════════════════════════════════════════
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Setting up new top bar button handlers...');
-    
-    // Share button - opens group journal
-    const newShareBtn = document.getElementById('btnShare');
-    const oldGroupBtn = document.getElementById('btnGroupJournal');
-    if (newShareBtn && oldGroupBtn) {
-        newShareBtn.addEventListener('click', function() {
-            console.log('New share button clicked, triggering old group journal button');
-            oldGroupBtn.click();
-        });
-    }
-    
-    // Friends button - wait for it to be created dynamically, then hook it up
-    setTimeout(function() {
-        const newFriendsBtn = document.getElementById('btnFriends');
-        // The old friends button is also id='btnFriends' but created dynamically
-        // We need to make our new button call the openFriendsModal function
-        if (newFriendsBtn && typeof openFriendsModal === 'function') {
-            // Remove any existing listeners by cloning
-            const newBtn = newFriendsBtn.cloneNode(true);
-            newFriendsBtn.parentNode.replaceChild(newBtn, newFriendsBtn);
-            
-            newBtn.addEventListener('click', function() {
-                console.log('New friends button clicked, calling openFriendsModal');
-                openFriendsModal();
-            });
-            
-            // Also sync the badge
-            const oldBadge = document.querySelector('.header-tools #friendsBadge');
-            const newBadge = document.getElementById('friendsBadge');
-            if (oldBadge && newBadge) {
-                // Copy badge state
-                setInterval(function() {
-                    if (oldBadge.style.display !== 'none') {
-                        newBadge.style.display = 'block';
-                        newBadge.textContent = oldBadge.textContent;
-                    } else {
-                        newBadge.style.display = 'none';
-                    }
-                }, 1000);
-            }
-        }
-    }, 1000);
-});
-
-
-// ═══════════════════════════════════════════════════════════════
-// SYNC GROUP JOURNAL ACTIVE STATE
-// ═══════════════════════════════════════════════════════════════
-
-// Sync the 'active' pulsing state from old button to new button
-setInterval(function() {
-    const oldGroupBtn = document.getElementById('btnGroupJournal');
-    const newShareBtn = document.getElementById('btnShare');
-    
-    if (oldGroupBtn && newShareBtn) {
-        if (oldGroupBtn.classList.contains('active')) {
-            newShareBtn.classList.add('active');
-            newShareBtn.style.animation = 'pulse-cyan 2s infinite';
-            newShareBtn.style.background = 'var(--acc-cyan)';
-            newShareBtn.style.color = '#000';
-        } else {
-            newShareBtn.classList.remove('active');
-            newShareBtn.style.animation = '';
-            newShareBtn.style.background = '';
-            newShareBtn.style.color = '';
-        }
-    }
-}, 500);
-
-
-// ═══════════════════════════════════════════════════════════════
-// SYNC AUTHENTICATION DISPLAY
-// ═══════════════════════════════════════════════════════════════
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Hook up new login button to old login button
-    const newLoginBtn = document.getElementById('btnGoogleLoginNew');
-    const oldLoginBtn = document.getElementById('btnGoogleLogin');
-    
-    if (newLoginBtn && oldLoginBtn) {
-        newLoginBtn.addEventListener('click', function() {
-            console.log('New login button clicked, triggering old login button');
-            oldLoginBtn.click();
-        });
-    }
-    
-    // Sync auth display between old and new
-    setInterval(function() {
-        const oldAuthView = document.getElementById('authView');
-        const oldUserView = document.getElementById('userView');
-        const newAuthView = document.getElementById('authViewNew');
-        const newUserView = document.getElementById('userViewNew');
-        
-        if (oldAuthView && oldUserView && newAuthView && newUserView) {
-            // If user is logged in (old userView is visible)
-            if (oldUserView.style.display !== 'none') {
-                newAuthView.style.display = 'none';
-                newUserView.style.display = 'flex';
-                
-                // Copy user info to new view
-                const oldAvatar = oldUserView.querySelector('#userAvatar');
-                const oldNickname = oldUserView.querySelector('#userNickname');
-                const oldLevel = oldUserView.querySelector('#userLevel');
-                
-                if (oldAvatar && oldNickname && oldLevel) {
-                    newUserView.innerHTML = `
-                        <button class="btn-user" id="btnUserMenuNew" style="background: rgba(6, 182, 212, 0.1); border: 1px solid var(--acc-cyan); padding: 4px 8px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: var(--font-hud);">
-                            <img class="user-avatar-small" src="${oldAvatar.src}" alt="" style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--acc-cyan);">
-                            <span style="color: var(--text-main); font-weight: 700; font-size: 0.75rem; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${oldNickname.textContent}</span>
-                            <span style="background: var(--acc-cyan); color: #000; padding: 2px 5px; border-radius: 8px; font-size: 0.65rem; font-weight: 900;">Lvl ${oldLevel.textContent}</span>
-                        </button>
-                    `;
-                    
-                    // Hook up new user menu button
-                    const newUserBtn = document.getElementById('btnUserMenuNew');
-                    const oldUserBtn = document.getElementById('btnUserMenu');
-                    if (newUserBtn && oldUserBtn) {
-                        newUserBtn.addEventListener('click', function() {
-                            oldUserBtn.click();
-                        });
-                    }
-                }
-            } else {
-                // User is logged out
-                newAuthView.style.display = 'flex';
-                newUserView.style.display = 'none';
-            }
-        }
-    }, 1000);
-});
 
