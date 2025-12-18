@@ -3202,3 +3202,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
 });
 
+
+// ═══════════════════════════════════════════════════════════════
+// SYNC GROUP JOURNAL ACTIVE STATE
+// ═══════════════════════════════════════════════════════════════
+
+// Sync the 'active' pulsing state from old button to new button
+setInterval(function() {
+    const oldGroupBtn = document.getElementById('btnGroupJournal');
+    const newShareBtn = document.getElementById('btnShare');
+    
+    if (oldGroupBtn && newShareBtn) {
+        if (oldGroupBtn.classList.contains('active')) {
+            newShareBtn.classList.add('active');
+            newShareBtn.style.animation = 'pulse-cyan 2s infinite';
+            newShareBtn.style.background = 'var(--acc-cyan)';
+            newShareBtn.style.color = '#000';
+        } else {
+            newShareBtn.classList.remove('active');
+            newShareBtn.style.animation = '';
+            newShareBtn.style.background = '';
+            newShareBtn.style.color = '';
+        }
+    }
+}, 500);
+
