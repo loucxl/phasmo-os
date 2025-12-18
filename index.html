@@ -16,8 +16,98 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 </head>
 <body>
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%); display: flex; align-items: center; justify-content: center; z-index: 10000; color: white; font-family: Arial;">
+        <div style="text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 20px; color: #06b6d4;">●PHASMO.OS</div>
+            <div style="font-size: 1.2rem; color: #9ca3af;">INITIALIZING SYSTEMS...</div>
+            <div style="margin-top: 30px; font-size: 0.9rem; color: #6b7280;">Loading ghosts, equipment, and user data...</div>
+            
+            <!-- Progress Bar -->
+            <div style="width: 300px; height: 4px; background: rgba(6, 182, 212, 0.2); border-radius: 2px; margin: 30px auto 10px; overflow: hidden;">
+                <div id="loadingProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #06b6d4, #8b5cf6); transition: width 0.3s ease;"></div>
+            </div>
+            <div id="loadingPercent" style="font-family: monospace; font-size: 0.9rem; color: #06b6d4;">0%</div>
+        </div>
+    </div>
+    <div id="mainApp" style="display: flex; flex-direction: column; height: 100vh; overflow: hidden;">
 
-    <header>
+    <!-- New Top Bar -->
+    <header style="height: 40px; background: var(--bg-panel); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; flex-shrink: 0;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="font-family: var(--font-hud); font-size: 1.2rem; font-weight: 700; letter-spacing: 1px; color: #fff; display: flex; align-items: center; gap: 6px;">
+                <div class="live-dot"></div>
+                PHASMO<span style="color: var(--acc-cyan);">.OS</span>
+                <div style="font-size: 0.6rem; background: var(--acc-cyan); color: #000; padding: 2px 5px; border-radius: 3px; font-weight: 700;">v2.1</div>
+            </div>
+            <nav style="display: flex; gap: 4px;">
+                <button class="nav-btn" onclick="showSection('ghosts')" style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 6px 10px; font-family: var(--font-hud); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Ghosts</button>
+                <button class="nav-btn" onclick="showSection('maps')" style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 6px 10px; font-family: var(--font-hud); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Maps</button>
+                <button class="nav-btn" onclick="showSection('equipment')" style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 6px 10px; font-family: var(--font-hud); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Equipment</button>
+                <button class="nav-btn" onclick="showSection('mechanics')" style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 6px 10px; font-family: var(--font-hud); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Mechanics</button>
+                <button class="nav-btn" onclick="showSection('strategy')" style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 6px 10px; font-family: var(--font-hud); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Strategy</button>
+            </nav>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <button id="btnShare" title="Share" style="background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); width: 32px; height: 32px; border-radius: 4px; display: grid; place-items: center; font-size: 1rem; cursor: pointer;">🔗</button>
+            <button id="btnFriends" title="Friends" style="background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); width: 32px; height: 32px; border-radius: 4px; display: grid; place-items: center; font-size: 1rem; cursor: pointer; position: relative;">
+                👥
+                <span id="friendsBadge" style="display: none; position: absolute; top: -4px; right: -4px; background: var(--acc-red); color: #fff; font-size: 0.6rem; font-weight: 700; padding: 2px 5px; border-radius: 10px; min-width: 16px; text-align: center;">0</span>
+            </button>
+            <button class="btn-reset" id="btnReset" style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--acc-red); color: var(--acc-red); padding: 0 12px; height: 32px; font-family: var(--font-hud); font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-radius: 4px;">RESET</button>
+            
+            <div id="authView" class="header-auth">
+                <button class="btn-login" id="btnGoogleLogin" style="background: #fff; border: 1px solid #ddd; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: #000;">Login</button>
+            </div>
+            <div id="userView" class="header-auth" style="display: none;">
+                <button class="btn-user" id="btnUserMenu" style="background: rgba(6, 182, 212, 0.1); border: 1px solid var(--acc-cyan); padding: 4px 8px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: var(--font-hud);">
+                    <img class="user-avatar-small" id="userAvatar" src="" alt="" style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--acc-cyan);">
+                    <span class="user-nickname-compact" id="userNickname" style="color: var(--text-main); font-weight: 700; font-size: 0.75rem; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">User</span>
+                    <span class="user-level-badge" style="background: var(--acc-cyan); color: #000; padding: 2px 5px; border-radius: 8px; font-size: 0.65rem; font-weight: 900;">Lvl <span id="userLevel">1</span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Layout Wrapper with Sidebar -->
+    <div style="display: flex; flex: 1; overflow: hidden;">
+        <!-- Sidebar -->
+        <aside id="sidebar" style="width: 180px; background: var(--bg-panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0;">
+            <!-- Investigation Timer (when active) -->
+            <div id="sidebarInvestigation" style="display: none; padding: 16px 12px; border-bottom: 1px solid var(--border);">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: rgba(6, 182, 212, 0.1); border-radius: 6px; border: 1px solid var(--acc-cyan); margin-bottom: 12px;">
+                    <span style="font-size: 1.2rem;">🔍</span>
+                    <span id="sidebarTimer" style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--text-main);">0:00</span>
+                </div>
+                <button id="btnSubmitSidebar" style="width: 100%; background: var(--acc-cyan); color: #000; border: none; padding: 10px; font-family: var(--font-hud); font-weight: 700; font-size: 0.8rem; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">SUBMIT RESULT</button>
+            </div>
+            
+            <!-- Evidence Section -->
+            <div style="padding: 16px 12px; border-bottom: 1px solid var(--border);">
+                <h3 style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 700; color: var(--acc-cyan); letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase;">EVIDENCE</h3>
+                <div id="sidebarEvidence"></div>
+            </div>
+            
+            <!-- Filters Section -->
+            <div style="padding: 16px 12px; border-bottom: 1px solid var(--border);">
+                <h3 style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 700; color: var(--acc-cyan); letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase;">FILTERS</h3>
+                <div id="sidebarFilters"></div>
+            </div>
+            
+            <!-- Ghost Count -->
+            <div style="padding: 16px 12px;">
+                <div style="text-align: center; padding: 12px; background: rgba(6, 182, 212, 0.05); border-radius: 6px; border: 1px solid rgba(6, 182, 212, 0.2);">
+                    <div id="sidebarCount" style="font-family: var(--font-mono); font-size: 2rem; font-weight: 700; color: var(--acc-cyan); display: block;">27</div>
+                    <div style="font-family: var(--font-hud); font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Candidates</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main style="flex: 1; overflow-y: auto; overflow-x: hidden; background: var(--bg-main);">
+    
+    <!-- Hide original header -->
+    <header style="display: none;">
         <div class="brand">
             <div class="live-dot"></div>
             PHASMO<span>.OS</span>
@@ -49,7 +139,7 @@
         </div>
     </header>
     <!-- WORK IN PROGRESS BANNER -->
-    <div class="wip-banner">
+    <div class="wip-banner" style="display: none;">
         <div class="wip-content">
             <span class="wip-icon">⚠️</span>
             <div class="wip-text">
@@ -62,13 +152,13 @@
 
     <!-- GHOSTS SECTION (Default) -->
     <div class="main-section" id="section-ghosts" style="display: flex;">
-        <div class="controls-wrapper">
+        <div class="controls-wrapper" style="display: none;">
             <div class="evidence-bar" id="evBar"></div>
             <div class="filters-row" id="filterRow"></div>
         </div>
 
         <div class="dashboard-container">
-            <div class="status-header">
+            <div class="status-header" style="display: none;">
                 <div><span id="matchCount">27</span> Candidates</div>
                 <div class="quick-stats">
                     <span class="stat-badge">Evidence: <span id="evCount">0</span>/3</span>
@@ -624,6 +714,36 @@
         }
     </script>
 
+
+        </main><!-- End main content -->
+    </div><!-- End layout wrapper -->
+    </div><!-- End mainApp -->
+    
+    <script>
+        // Loading screen with progress bar - 3 seconds
+        let progress = 0;
+        const progressBar = document.getElementById('loadingProgressBar');
+        const progressPercent = document.getElementById('loadingPercent');
+        
+        const interval = setInterval(function() {
+            progress += 2;
+            if (progress > 100) progress = 100;
+            
+            if (progressBar) progressBar.style.width = progress + '%';
+            if (progressPercent) progressPercent.textContent = progress + '%';
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                setTimeout(function() {
+                    document.getElementById('loadingScreen').style.opacity = '0';
+                    document.getElementById('loadingScreen').style.transition = 'opacity 0.5s';
+                    setTimeout(function() {
+                        document.getElementById('loadingScreen').style.display = 'none';
+                    }, 500);
+                }, 200);
+            }
+        }, 60); // Update every 60ms = 3 seconds total
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
