@@ -1723,7 +1723,7 @@ dialog::backdrop {
 /* User Dropdown Menu */
 .user-dropdown {
     position: fixed;
-    top: 70px;
+    top: 48px;
     right: 20px;
     background: var(--bg-panel);
     border: 2px solid var(--border);
