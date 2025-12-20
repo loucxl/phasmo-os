@@ -2963,15 +2963,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const level = oldUserView.querySelector('#userLevel');
             
             if (avatar && nickname && level) {
-                const userState = `${avatar.src}|${nickname.textContent}|${level.textContent}`;
+                const avatarSrc = avatar.src || avatar.getAttribute('src') || '';
+                console.log('📸 Avatar URL:', avatarSrc);
+                
+                const userState = `${avatarSrc}|${nickname.textContent}|${level.textContent}`;
                 
                 // Only update if user data changed
                 if (userState !== lastUserState) {
                     lastUserState = userState;
                     
+                    // Use avatar URL or fallback to generic icon
+                    const avatarHTML = avatarSrc && avatarSrc !== '' 
+                        ? `<img src="${avatarSrc}" alt="" style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--acc-cyan);">`
+                        : `<div style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--acc-cyan); background: var(--acc-cyan); display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">👤</div>`;
+                    
                     newUserView.innerHTML = `
                         <button class="btn-user-new" id="btnUserMenuNew" onclick="openNewUserMenu()" style="background: rgba(6, 182, 212, 0.1); border: 1px solid var(--acc-cyan); padding: 4px 8px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: var(--font-hud); transition: all 0.2s;">
-                            <img src="${avatar.src}" alt="" style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--acc-cyan);">
+                            ${avatarHTML}
                             <span style="color: var(--text-main); font-weight: 700; font-size: 0.75rem; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${nickname.textContent}</span>
                             <span style="background: var(--acc-cyan); color: #000; padding: 2px 5px; border-radius: 8px; font-size: 0.65rem; font-weight: 900;">Lvl ${level.textContent}</span>
                         </button>
