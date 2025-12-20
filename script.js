@@ -898,6 +898,38 @@ window.addEventListener('DOMContentLoaded', function() {
     }, 200);
 });
 
+
+// ═══════════════════════════════════════════════════════════════
+// STAGGERED XP LEVELING SYSTEM
+// ═══════════════════════════════════════════════════════════════
+// Level 1-10:  100 XP per level (10 correct = 1 level)
+// Level 11-25: 200 XP per level (20 correct = 1 level)
+// Level 26-50: 400 XP per level (40 correct = 1 level)
+// Level 51+:   800 XP per level (80 correct = 1 level)
+
+function getXPForLevel(level) {
+    if (level <= 10) return 100;
+    if (level <= 25) return 200;
+    if (level <= 50) return 400;
+    return 800;
+}
+
+function getLevelFromXP(xp) {
+    let level = 1;
+    let xpRemaining = xp;
+    
+    while (xpRemaining >= getXPForLevel(level)) {
+        xpRemaining -= getXPForLevel(level);
+        level++;
+    }
+    
+    return {
+        level: level,
+        xpInCurrentLevel: xpRemaining,
+        xpForNextLevel: getXPForLevel(level)
+    };
+}
+
 // ═══════════════════════════════════════════════════════════════
 // GROUP JOURNAL - MULTIPLAYER SYNC
 // ═══════════════════════════════════════════════════════════════
@@ -1713,8 +1745,9 @@ async function loadStats() {
         // Update level/XP display
         const level = stats.level || 1;
         const xp = stats.xp || 0;
-        const xpInLevel = xp % 500;
-        const xpForNextLevel = 500;
+        const levelInfo = getLevelFromXP(xp);
+        const xpInLevel = levelInfo.xpInCurrentLevel;
+        const xpForNextLevel = levelInfo.xpForNextLevel;
         const xpPercent = (xpInLevel / xpForNextLevel) * 100;
         
         document.getElementById('statLevel').textContent = level;
@@ -1846,9 +1879,13 @@ function showInvestigationBanner() {
         <button class="btn-submit-guess" id="btnOpenGuess">Submit Result</button>
     `;
     
-    // Insert after auth bar
-    const authBar = document.getElementById('authBar');
-    authBar.after(banner);
+    // Insert after header
+    const header = document.querySelector('header');
+    if (header) {
+        header.after(banner);
+    } else {
+        document.body.insertBefore(banner, document.body.firstChild);
+    }
     
     // Start timer
     updateInvestigationTimer();
@@ -1940,7 +1977,10 @@ async function submitActualGhost(actualGhost) {
         // Calculate XP gain
         const xpGain = correct ? 10 : 0;
         const newXP = (currentStats.xp || 0) + xpGain;
-        const newLevel = Math.floor(newXP / 500) + 1;
+        
+        // Calculate new level using staggered system
+        const levelInfo = getLevelFromXP(newXP);
+        const newLevel = levelInfo.level;
         const leveledUp = newLevel > (currentStats.level || 1);
         
         // Update stats
@@ -1973,7 +2013,7 @@ async function submitActualGhost(actualGhost) {
             if (leveledUp) {
                 resultMessage += `🎉 LEVEL UP! You're now Level ${newLevel}!\n\n`;
             }
-            resultMessage += `+${xpGain} XP (${newXP % 500}/500 to Level ${newLevel + 1})\n\n`;
+            resultMessage += `+${xpGain} XP (${levelInfo.xpInCurrentLevel}/${levelInfo.xpForNextLevel} to Level ${newLevel + 1})\n\n`;
         } else {
             if (matches.length === 0) {
                 resultMessage = `❌ INCORRECT\n\nIt was ${actualGhost} but your evidence ruled it out.\n\n`;
@@ -2336,11 +2376,11 @@ async function sendFriendRequest(e) {
             return;
         }
         
-        // Get friend's info
-        const friendSnapshot = await firebase.database().ref(`users/${friendUid}`).once('value');
-        const friendData = friendSnapshot.val();
+        // Get friend's public info (nickname, photoURL are public)
+        const nicknameSnapshot = await firebase.database().ref(`users/${friendUid}/nickname`).once('value');
+        const friendNickname = nicknameSnapshot.val();
         
-        if (!friendData) {
+        if (!friendNickname) {
             errorEl.textContent = 'User not found';
             errorEl.classList.add('show');
             return;
@@ -2360,8 +2400,8 @@ async function sendFriendRequest(e) {
         // Send notification to THEIR friendRequestReceived path (they can write this)
         await firebase.database().ref(`users/${friendUid}/friendRequestReceived/${currentUser.uid}`).set(requestData);
         
-        console.log('✅ Friend request sent to', friendData.nickname);
-        alert(`Friend request sent to ${friendData.nickname}! ✅`);
+        console.log('✅ Friend request sent to', friendNickname);
+        alert(`Friend request sent to ${friendNickname}! ✅`);
         
         codeInput.value = '';
         document.getElementById('addFriendModal').close();
@@ -2377,23 +2417,29 @@ async function sendFriendRequest(e) {
 // Accept friend request
 async function acceptFriendRequest(friendUid) {
     try {
-        // Get friend's info
-        const friendSnapshot = await firebase.database().ref(`users/${friendUid}`).once('value');
-        const friendData = friendSnapshot.val();
+        // Get friend's public info
+        const nicknameSnapshot = await firebase.database().ref(`users/${friendUid}/nickname`).once('value');
+        const photoSnapshot = await firebase.database().ref(`users/${friendUid}/photoURL`).once('value');
         
-        if (!friendData) {
+        const friendNickname = nicknameSnapshot.val();
+        const friendPhotoURL = photoSnapshot.val();
+        
+        if (!friendNickname) {
             alert('Friend not found');
             return;
         }
         
         // Get your info
-        const yourSnapshot = await firebase.database().ref(`users/${currentUser.uid}`).once('value');
-        const yourData = yourSnapshot.val();
+        const yourNicknameSnapshot = await firebase.database().ref(`users/${currentUser.uid}/nickname`).once('value');
+        const yourPhotoSnapshot = await firebase.database().ref(`users/${currentUser.uid}/photoURL`).once('value');
+        
+        const yourNickname = yourNicknameSnapshot.val();
+        const yourPhotoURL = yourPhotoSnapshot.val();
         
         // Add friend to YOUR friends list
         await firebase.database().ref(`users/${currentUser.uid}/friends/${friendUid}`).set({
-            nickname: friendData.nickname,
-            photoURL: friendData.photoURL,
+            nickname: friendNickname,
+            photoURL: friendPhotoURL,
             since: Date.now()
         });
         
@@ -2403,13 +2449,13 @@ async function acceptFriendRequest(friendUid) {
         // Create a "friendAccepted" notification for the other user
         // They'll use this to add you to their friends list
         await firebase.database().ref(`users/${friendUid}/friendAccepted/${currentUser.uid}`).set({
-            nickname: yourData.nickname,
-            photoURL: yourData.photoURL,
+            nickname: yourNickname,
+            photoURL: yourPhotoURL,
             since: Date.now()
         });
         
         console.log('✅ Friend request accepted!');
-        alert(`You and ${friendData.nickname} are now friends! 🎉`);
+        alert(`You and ${friendNickname} are now friends! 🎉`);
         
         await loadFriends();
         
@@ -2432,10 +2478,22 @@ async function declineFriendRequest(friendUid) {
         if (incomingSnapshot.exists()) {
             // It's an incoming request (someone sent to us) - decline it
             await incomingRef.remove();
+            
+            // Notify them it was declined so they can remove from their outgoing
+            await firebase.database().ref(`users/${friendUid}/friendRequestDeclined/${currentUser.uid}`).set({
+                timestamp: Date.now()
+            });
+            
             console.log('Declined incoming friend request');
         } else if (outgoingSnapshot.exists()) {
             // It's an outgoing request (we sent to them) - cancel it
             await outgoingRef.remove();
+            
+            // Notify them to remove from their incoming
+            await firebase.database().ref(`users/${friendUid}/friendRequestCancelled/${currentUser.uid}`).set({
+                timestamp: Date.now()
+            });
+            
             console.log('Cancelled outgoing friend request');
         }
         
@@ -2675,6 +2733,52 @@ function listenToFriendRequests() {
             console.error('Error processing friend accept:', error);
         }
     });
+    
+    // Listen for friend request declines (when someone declines YOUR request)
+    firebase.database().ref(`users/${currentUser.uid}/friendRequestDeclined`).on('child_added', async (snapshot) => {
+        const friendUid = snapshot.key;
+        
+        console.log('Friend request was declined');
+        
+        try {
+            // Remove from YOUR outgoing requests
+            await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`).remove();
+            
+            // Remove the decline notification
+            await firebase.database().ref(`users/${currentUser.uid}/friendRequestDeclined/${friendUid}`).remove();
+            
+            console.log('✅ Removed declined request from outgoing');
+            
+            // Reload friends list
+            await loadFriends();
+            
+        } catch (error) {
+            console.error('Error processing friend decline:', error);
+        }
+    });
+    
+    // Listen for friend request cancellations (when someone cancels their request to you)
+    firebase.database().ref(`users/${currentUser.uid}/friendRequestCancelled`).on('child_added', async (snapshot) => {
+        const friendUid = snapshot.key;
+        
+        console.log('Friend request was cancelled by sender');
+        
+        try {
+            // Remove from YOUR incoming requests
+            await firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`).remove();
+            
+            // Remove the cancel notification
+            await firebase.database().ref(`users/${currentUser.uid}/friendRequestCancelled/${friendUid}`).remove();
+            
+            console.log('✅ Removed cancelled request from incoming');
+            
+            // Reload friends list
+            await loadFriends();
+            
+        } catch (error) {
+            console.error('Error processing friend cancel:', error);
+        }
+    });
 }
 
 // Format date
@@ -2722,7 +2826,9 @@ async function viewFriendStats(friendUid, friendNickname) {
         const winRate = stats.total > 0 ? Math.round((stats.wins / stats.total) * 100) : 0;
         const level = stats.level || 1;
         const xp = stats.xp || 0;
-        const xpInLevel = xp % 500;
+        const levelInfo = getLevelFromXP(xp);
+        const xpInLevel = levelInfo.xpInCurrentLevel;
+        const xpForNextLevel = levelInfo.xpForNextLevel;
         
         // Update modal content
         document.getElementById('friendStatsNickname').textContent = friendNickname;
@@ -2732,7 +2838,7 @@ async function viewFriendStats(friendUid, friendNickname) {
         document.getElementById('friendStatWins').textContent = stats.wins;
         document.getElementById('friendStatLosses').textContent = stats.losses;
         document.getElementById('friendStatWinRate').textContent = winRate + '%';
-        document.getElementById('friendStatXP').textContent = xpInLevel + ' / 500 XP';
+        document.getElementById('friendStatXP').textContent = xpInLevel + ' / ' + xpForNextLevel + ' XP';
         
         // Open modal
         document.getElementById('friendStatsModal').showModal();
@@ -2742,4 +2848,403 @@ async function viewFriendStats(friendUid, friendNickname) {
         alert('Failed to load friend stats');
     }
 }
+
+
+// ═══════════════════════════════════════════════════════════════
+// COMPLETE NEW TOP BAR INTEGRATION
+// ═══════════════════════════════════════════════════════════════
+
+// Sort ghosts alphabetically
+GHOSTS.sort((a, b) => a.name.localeCompare(b.name));
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initializing new top bar...');
+    
+    // ============================================================
+    // 1. SHARE/GROUP JOURNAL BUTTON
+    // ============================================================
+    const newShareBtn = document.getElementById('btnShare');
+    const oldGroupBtn = document.getElementById('btnGroupJournal');
+    
+    if (newShareBtn && oldGroupBtn) {
+        // Click handler
+        newShareBtn.addEventListener('click', function() {
+            console.log('Share button clicked');
+            oldGroupBtn.click();
+        });
+        
+        // Sync active pulsing state every 500ms
+        setInterval(function() {
+            if (oldGroupBtn.classList.contains('active')) {
+                newShareBtn.classList.add('active');
+                newShareBtn.style.animation = 'pulse-cyan 2s infinite';
+                newShareBtn.style.background = 'var(--acc-cyan)';
+                newShareBtn.style.color = '#000';
+                newShareBtn.style.borderColor = 'var(--acc-cyan)';
+            } else {
+                newShareBtn.classList.remove('active');
+                newShareBtn.style.animation = '';
+                newShareBtn.style.background = 'var(--bg-card)';
+                newShareBtn.style.color = 'var(--text-muted)';
+                newShareBtn.style.borderColor = 'var(--border)';
+            }
+        }, 500);
+    }
+    
+    // ============================================================
+    // 2. FRIENDS BUTTON
+    // ============================================================
+    setTimeout(function() {
+        const newFriendsBtn = document.getElementById('btnFriends');
+        
+        if (newFriendsBtn && typeof openFriendsModal === 'function') {
+            // Remove existing listeners
+            const cleanBtn = newFriendsBtn.cloneNode(true);
+            newFriendsBtn.parentNode.replaceChild(cleanBtn, newFriendsBtn);
+            
+            // Add click handler
+            cleanBtn.addEventListener('click', function() {
+                console.log('Friends button clicked');
+                openFriendsModal();
+            });
+            
+            // Sync badge
+            setInterval(function() {
+                const oldBadge = document.querySelector('.header-tools #friendsBadge');
+                const newBadge = document.getElementById('friendsBadge');
+                if (oldBadge && newBadge) {
+                    newBadge.style.display = oldBadge.style.display;
+                    newBadge.textContent = oldBadge.textContent;
+                }
+            }, 1000);
+        }
+    }, 1000);
+    
+    // ============================================================
+    // 3. AUTHENTICATION SYNC
+    // ============================================================
+    const newLoginBtn = document.getElementById('btnGoogleLoginNew');
+    const oldLoginBtn = document.getElementById('btnGoogleLogin');
+    
+    if (newLoginBtn && oldLoginBtn) {
+        newLoginBtn.addEventListener('click', function() {
+            console.log('Login button clicked');
+            oldLoginBtn.click();
+        });
+    }
+    
+    // Sync auth display
+    setInterval(function() {
+        const oldAuthView = document.getElementById('authView');
+        const oldUserView = document.getElementById('userView');
+        const newAuthView = document.getElementById('authViewNew');
+        const newUserView = document.getElementById('userViewNew');
+        
+        if (!oldAuthView || !oldUserView || !newAuthView || !newUserView) return;
+        
+        // Check if user is logged in
+        const isLoggedIn = oldUserView.style.display !== 'none';
+        
+        if (isLoggedIn) {
+            // Hide login, show user
+            newAuthView.style.display = 'none';
+            newUserView.style.display = 'flex';
+            
+            // Get user data
+            const avatar = oldUserView.querySelector('#userAvatar');
+            const nickname = oldUserView.querySelector('#userNickname');
+            const level = oldUserView.querySelector('#userLevel');
+            
+            if (avatar && nickname && level) {
+                newUserView.innerHTML = `
+                    <button class="btn-user" id="btnUserMenuNew" style="background: rgba(6, 182, 212, 0.1); border: 1px solid var(--acc-cyan); padding: 4px 8px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: var(--font-hud);">
+                        <img src="${avatar.src}" alt="" style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--acc-cyan);">
+                        <span style="color: var(--text-main); font-weight: 700; font-size: 0.75rem; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${nickname.textContent}</span>
+                        <span style="background: var(--acc-cyan); color: #000; padding: 2px 5px; border-radius: 8px; font-size: 0.65rem; font-weight: 900;">Lvl ${level.textContent}</span>
+                    </button>
+                `;
+                
+                // Hook up user menu click
+                const newUserBtn = document.getElementById('btnUserMenuNew');
+                const oldUserBtn = document.getElementById('btnUserMenu');
+                if (newUserBtn && oldUserBtn) {
+                    newUserBtn.addEventListener('click', function() {
+                        oldUserBtn.click();
+                    });
+                }
+            }
+        } else {
+            // Show login, hide user
+            newAuthView.style.display = 'flex';
+            newUserView.style.display = 'none';
+        }
+    }, 1000);
+    
+    // ============================================================
+    // 4. NAVIGATION HIGHLIGHTING
+    // ============================================================
+    function highlightActiveSection() {
+        const sections = ['ghosts', 'maps', 'equipment', 'mechanics', 'strategy'];
+        
+        sections.forEach(sectionId => {
+            const section = document.getElementById(`section-${sectionId}`);
+            const navBtn = document.querySelector(`button[onclick="showSection('${sectionId}')"]`);
+            
+            if (section && navBtn) {
+                if (section.style.display !== 'none') {
+                    navBtn.style.borderColor = 'var(--acc-cyan)';
+                    navBtn.style.background = 'rgba(6, 182, 212, 0.1)';
+                    navBtn.style.color = '#fff';
+                } else {
+                    navBtn.style.borderColor = 'transparent';
+                    navBtn.style.background = 'transparent';
+                    navBtn.style.color = 'var(--text-muted)';
+                }
+            }
+        });
+    }
+    
+    const _origShowSection = showSection;
+    window.showSection = function(sectionId) {
+        _origShowSection(sectionId);
+        highlightActiveSection();
+    };
+    
+    setTimeout(highlightActiveSection, 200);
+    
+    // ============================================================
+    // 5. SIDEBAR POPULATION
+    // ============================================================
+    const evidenceContainer = document.getElementById('sidebarEvidence');
+    if (evidenceContainer) {
+        evidenceContainer.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <button onclick="cycleEvidence('emf')" oncontextmenu="ruleOutEvidence('emf', event)" data-ev="emf" class="sidebar-btn">
+                    <span style="font-size: 1rem;">📶</span>
+                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">EMF 5</span>
+                </button>
+                <button onclick="cycleEvidence('box')" oncontextmenu="ruleOutEvidence('box', event)" data-ev="box" class="sidebar-btn">
+                    <span style="font-size: 1rem;">📦</span>
+                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">BOX</span>
+                </button>
+                <button onclick="cycleEvidence('uv')" oncontextmenu="ruleOutEvidence('uv', event)" data-ev="uv" class="sidebar-btn">
+                    <span style="font-size: 1rem;">💡</span>
+                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">UV</span>
+                </button>
+                <button onclick="cycleEvidence('orb')" oncontextmenu="ruleOutEvidence('orb', event)" data-ev="orb" class="sidebar-btn">
+                    <span style="font-size: 1rem;">🔮</span>
+                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">ORBS</span>
+                </button>
+                <button onclick="cycleEvidence('writing')" oncontextmenu="ruleOutEvidence('writing', event)" data-ev="writing" class="sidebar-btn">
+                    <span style="font-size: 1rem;">✍️</span>
+                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">WRITING</span>
+                </button>
+                <button onclick="cycleEvidence('freezing')" oncontextmenu="ruleOutEvidence('freezing', event)" data-ev="freezing" class="sidebar-btn">
+                    <span style="font-size: 1rem;">❄️</span>
+                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">FREEZE</span>
+                </button>
+                <button onclick="cycleEvidence('dots')" oncontextmenu="ruleOutEvidence('dots', event)" data-ev="dots" class="sidebar-btn">
+                    <span style="font-size: 1rem;">🎯</span>
+                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main); flex: 1;">D.O.T.S</span>
+                </button>
+            </div>
+        `;
+    }
+    
+    const filtersContainer = document.getElementById('sidebarFilters');
+    if (filtersContainer) {
+        filtersContainer.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <button onclick="toggleFilter('fast')" data-filter="fast" class="sidebar-btn">
+                    <span style="font-size: 1rem;">⚡</span>
+                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main);">Fast Speed</span>
+                </button>
+                <button onclick="toggleFilter('early')" data-filter="early" class="sidebar-btn">
+                    <span style="font-size: 1rem;">⚠️</span>
+                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main);">Early Hunter</span>
+                </button>
+                <button onclick="toggleFilter('quiet')" data-filter="quiet" class="sidebar-btn">
+                    <span style="font-size: 1rem;">🟡</span>
+                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main);">Quiet Steps</span>
+                </button>
+                <button onclick="toggleFilter('guarantee')" data-filter="guarantee" class="sidebar-btn">
+                    <span style="font-size: 1rem;">✨</span>
+                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main);">Guaranteed Ev</span>
+                </button>
+            </div>
+        `;
+    }
+    
+    // Hook submit button
+    const btnSubmit = document.getElementById('btnSubmitSidebar');
+    if (btnSubmit) {
+        btnSubmit.addEventListener('click', openGuessModal);
+    }
+    
+    // Timer sync
+    setInterval(function() {
+        const sidebarInv = document.getElementById('sidebarInvestigation');
+        const timerEl = document.getElementById('sidebarTimer');
+        
+        if (!currentInvestigation) {
+            if (sidebarInv) sidebarInv.style.display = 'none';
+            return;
+        }
+        
+        if (sidebarInv) sidebarInv.style.display = 'block';
+        
+        const elapsed = Math.floor((Date.now() - currentInvestigation.startTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        if (timerEl) {
+            timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+    }, 1000);
+    
+    setTimeout(syncSidebar, 100);
+});
+
+// ============================================================
+// SIDEBAR SYNC FUNCTION
+// ============================================================
+function syncSidebar() {
+    const matches = [];
+    const possibleEv = new Set();
+    
+    GHOSTS.forEach(g => {
+        let possible = true;
+        for(const [id, val] of Object.entries(app.evidence)) {
+            if(val === 0) continue;
+            const has = g.ev.includes(id) || (g.name === 'The Mimic' && id === 'orb');
+            if(val === 1 && !has) possible = false;
+            if(val === 2 && has) possible = false;
+        }
+        if(possible && app.activeFilters.size > 0) {
+            app.activeFilters.forEach(fid => {
+                if(!g.tags.includes(fid)) possible = false;
+            });
+        }
+        
+        if(possible) {
+            matches.push(g);
+            g.ev.forEach(e => possibleEv.add(e));
+            if(g.name === 'The Mimic') possibleEv.add('orb');
+        }
+    });
+    
+    Object.keys(app.evidence).forEach(evId => {
+        const btn = document.querySelector(`#sidebarEvidence button[data-ev="${evId}"]`);
+        if (btn) {
+            btn.style.borderColor = 'var(--border)';
+            btn.style.background = 'var(--bg-card)';
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+            
+            if (app.evidence[evId] === 1) {
+                btn.style.borderColor = 'var(--acc-green)';
+                btn.style.background = 'rgba(16, 185, 129, 0.1)';
+            } else if (app.evidence[evId] === 2) {
+                btn.style.borderColor = 'var(--acc-red)';
+                btn.style.background = 'rgba(239, 68, 68, 0.1)';
+                btn.style.opacity = '0.6';
+            } else if (app.evidence[evId] === 0 && matches.length < GHOSTS.length && !possibleEv.has(evId)) {
+                btn.style.opacity = '0.3';
+                btn.style.pointerEvents = 'none';
+            }
+        }
+    });
+    
+    document.querySelectorAll('#sidebarFilters button').forEach(btn => {
+        const filterId = btn.dataset.filter;
+        btn.style.borderColor = 'var(--border)';
+        btn.style.background = 'var(--bg-card)';
+        
+        if (app.activeFilters.has(filterId)) {
+            btn.style.borderColor = 'var(--acc-purple)';
+            btn.style.background = 'rgba(139, 92, 246, 0.1)';
+        }
+    });
+    
+    const sidebarCount = document.getElementById('sidebarCount');
+    const mainCount = document.getElementById('matchCount');
+    if (sidebarCount && mainCount) {
+        sidebarCount.textContent = mainCount.textContent;
+    }
+}
+
+// ============================================================
+// EVIDENCE FUNCTIONS
+// ============================================================
+function cycleEvidence(evId) {
+    if (app.evidence[evId] === 0) {
+        app.evidence[evId] = 1;
+    } else {
+        app.evidence[evId] = 0;
+    }
+    renderEvidence();
+    updateBoard();
+}
+
+function ruleOutEvidence(evId, event) {
+    event.preventDefault();
+    if (app.evidence[evId] === 0) {
+        app.evidence[evId] = 2;
+    } else {
+        app.evidence[evId] = 0;
+    }
+    renderEvidence();
+    updateBoard();
+}
+
+// ============================================================
+// FILTER FUNCTION
+// ============================================================
+function toggleFilter(filterId) {
+    if (app.activeFilters.has(filterId)) {
+        app.activeFilters.delete(filterId);
+    } else {
+        app.activeFilters.add(filterId);
+    }
+    renderFilters();
+    updateBoard();
+}
+
+// ============================================================
+// HOOK INTO UPDATEBOARD
+// ============================================================
+const _origUpdateBoard = updateBoard;
+updateBoard = function() {
+    _origUpdateBoard();
+    
+    // Highlight final ghost
+    const matches = document.querySelectorAll('.card');
+    if (matches.length === 1) {
+        matches[0].style.border = '2px solid var(--acc-green)';
+        matches[0].style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.3)';
+        matches[0].style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, var(--bg-card) 100%)';
+    }
+    
+    syncSidebar();
+};
+
+// Add sidebar button styling
+const sidebarCSS = document.createElement('style');
+sidebarCSS.textContent = `
+    .sidebar-btn {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        padding: 8px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .sidebar-btn:hover {
+        border-color: var(--acc-cyan);
+        background: rgba(6, 182, 212, 0.05);
+    }
+`;
+document.head.appendChild(sidebarCSS);
 
