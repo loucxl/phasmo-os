@@ -2510,3 +2510,156 @@ nav .nav-btn[onclick*="zeroev"]:focus {
     line-height: 1.65;
     color: #c4b5fd;
 }
+
+/* ═══════════════════════════════════════════
+   FOOTSTEP TEMPO SECTION
+   ═══════════════════════════════════════════ */
+
+.tempo-section {
+    background: rgba(249, 115, 22, 0.06);
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 16px 0 24px;
+}
+
+.tempo-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.tempo-title {
+    font-family: var(--font-hud);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--acc-orange);
+    text-transform: uppercase;
+}
+
+.tempo-hint {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: auto;
+    font-style: italic;
+}
+
+/* Beat indicator dot */
+.beat-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(249, 115, 22, 0.25);
+    border: 2px solid rgba(249, 115, 22, 0.4);
+    flex-shrink: 0;
+    transition: background 0.04s ease, transform 0.04s ease;
+}
+
+.beat-indicator.beat-flash {
+    background: var(--acc-orange);
+    border-color: var(--acc-orange);
+    transform: scale(1.4);
+    box-shadow: 0 0 8px var(--acc-orange);
+}
+
+/* Speed/tempo buttons */
+.tempo-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tempo-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    min-width: 120px;
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.tempo-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(249,115,22,0.08), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.tempo-btn:hover {
+    border-color: rgba(249, 115, 22, 0.5);
+    background: rgba(249, 115, 22, 0.05);
+    transform: translateY(-1px);
+}
+
+.tempo-btn:hover::before { opacity: 1; }
+
+.tempo-btn-active {
+    border-color: var(--acc-orange) !important;
+    background: rgba(249, 115, 22, 0.1) !important;
+    box-shadow: 0 0 12px rgba(249, 115, 22, 0.2);
+}
+
+.tempo-btn-active::before { opacity: 1 !important; }
+
+.tempo-btn-label {
+    font-family: var(--font-hud);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: 0.3px;
+    line-height: 1;
+}
+
+.tempo-btn-speed {
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--acc-orange);
+    line-height: 1.2;
+}
+
+.tempo-btn-bpm {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    line-height: 1;
+}
+
+.tempo-btn-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.65rem;
+    color: var(--acc-orange);
+    opacity: 0.7;
+    transition: opacity 0.15s;
+}
+
+.tempo-btn:hover .tempo-btn-icon,
+.tempo-btn-active .tempo-btn-icon {
+    opacity: 1;
+}
+
+/* Pulsing animation on active button */
+@keyframes tempo-pulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(249,115,22,0.2); }
+    50% { box-shadow: 0 0 18px rgba(249,115,22,0.45); }
+}
+
+.tempo-btn-active {
+    animation: tempo-pulse 0.8s ease-in-out infinite;
+}
