@@ -27,7 +27,8 @@ const GHOSTS = [
         ability: "No unique hunt mechanics. When smudge sticks are used near it, the Spirit cannot hunt for at least 180 seconds (3 minutes). While any ghost can occasionally wait this long after a smudge, the Spirit will always wait at least this long — making it the only ghost where 180s is a guaranteed minimum, not just a possibility.",
         test: "Smudge Test: Use smudge sticks near the Spirit and start a timer. The Spirit will always wait at least <span class='hl-green'>180 seconds (3 minutes)</span> before hunting again — this is its guaranteed minimum. Important caveat: any ghost can occasionally wait this long by chance, so use the double-smudge method for reliability: wait ~160s, then smudge again. If it hunts within 60s of the second smudge, it confirms Spirit.",
         zeroEv: "The Spirit's ONLY tell is the smudge timer. Smudge it and time until the next hunt attempt — if it doesn't hunt for 3 full minutes, it's almost certainly a Spirit. Note: other ghosts CAN occasionally wait 180s too, so the double-smudge method is more reliable than a single test. The Spirit must always wait this long; for other ghosts it's just chance.",
-        tags: []
+        tags: [],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Wraith", ev: ['emf','box','dots'], danger: "Med", hunt: "50%", speed: "1.7 m/s", blink: "Normal", forced: null,
@@ -36,7 +37,8 @@ const GHOSTS = [
         ability: "Can randomly teleport to within 3 meters of any player, triggering an EMF 2 reading at the teleport location (EMF 5 if the Wraith has EMF5 as one of its evidence types). Because it floats, it never leaves UV footprints in salt (all other ghosts do).",
         test: "Salt Test: Place salt piles in doorways in/near the ghost room. If salt gets disturbed (you'll see the pile scatter) but shining UV on it reveals <span class='hl-red'>NO footprints at all</span>, it's a confirmed Wraith — it's the ONLY ghost that won't leave UV prints in salt. All other ghosts do. Also watch for EMF 2 spikes appearing near players in different rooms (teleport).",
         zeroEv: "Watch for random EMF readings appearing right next to a player in a room far from the ghost room — that's a Wraith teleport. Disturbed salt piles with zero UV footprints when scanned is the cleanest tell.",
-        tags: ['guarantee']
+        tags: ['guarantee'],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Phantom", ev: ['box','uv','dots'], danger: "Med", hunt: "50%", speed: "1.7 m/s", blink: "Slow", forced: null,
@@ -45,7 +47,8 @@ const GHOSTS = [
         ability: "Drains about 0.5% sanity per second when you look directly at it during manifestations. During hunts, it stays invisible longer than other ghosts (slower blink rate = harder to see).",
         test: "Photo Test: Take a photo during a ghost event while the ghost is visible. If the ghost <span class='hl-green'>instantly disappears</span> from sight AND the photo is labelled as a 'Ghost' photo in the journal (meaning the photo registered correctly), it's a Phantom. If the photo is NOT labelled as Ghost, the Phantom will NOT disappear. The ghost model also won't appear in the photo itself even when it registers.",
         zeroEv: "Unusually fast sanity drain (0.5%/s) when looking directly at the ghost during events. Ghost blinking LESS during hunts than normal ghosts (stays invisible longer between flickers). Disappears when photographed during an event — but only if the photo is labelled as 'Ghost' in the journal; an unlabelled photo won't make it vanish.",
-        tags: ['vis']
+        tags: ['vis'],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Poltergeist", ev: ['box','uv','writing'], danger: "Med", hunt: "50%", speed: "1.7 m/s", blink: "Normal", forced: null,
@@ -54,7 +57,8 @@ const GHOSTS = [
         ability: "Can throw multiple objects simultaneously in a 3-meter radius. Each thrown item drains 2% sanity from nearby players. Will also throw objects during hunts. Completely ineffective in empty rooms with nothing to throw.",
         test: "Pile Test: Create a large pile of throwable objects in the ghost room. A Poltergeist can 'explode' the entire pile, scattering items in all directions simultaneously. Also note that Poltergeists throw objects <span class='hl-green'>every 0.5 seconds</span> during hunts (100% chance each interval) vs other ghosts' 50% chance — much more frequent mid-hunt throwing.",
         zeroEv: "Constant, heavy object throwing — way more than any other ghost. Objects thrown during hunts very frequently. Each thrown object drains 2% sanity from nearby players, so rapid sanity loss in a cluttered room is suspicious. Exploding a pile of objects is a near-certain tell.",
-        tags: ['vis']
+        tags: ['vis'],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Banshee", ev: ['uv','orb','dots'], danger: "Low", hunt: "Target Sanity", speed: "1.7 m/s", blink: "Normal", forced: null,
@@ -63,7 +67,8 @@ const GHOSTS = [
         ability: "Randomly picks one player as its 'target' at contract start. Focuses exclusively on this player during hunts. Uses the TARGET's sanity only (not team average) to decide when to hunt. Target changes when any player dies (not just the target dying). Crucifixes work from 5m instead of 3m.",
         test: "Parabolic Mic Test: Point the parabolic mic toward the ghost room from outside. If you hear a <span class='hl-green'>unique screech/wail sound</span> that other ghosts don't make, it's a Banshee. Important: <strong>any player</strong> can hear this scream — not just the target. In multiplayer, watch who the ghost chases during hunts — it will always ignore other players and beeline for its target, even walking past them.",
         zeroEv: "In multiplayer: one player always gets chased regardless of others being nearby, and the ghost ignores everyone else mid-hunt. The Banshee hunts using its TARGET's sanity only (not team average), so it can hunt early if one player has low sanity even while others are high. Unique screech on parabolic mic is audible to any player, not just the target — a reliable solo and team tell.",
-        tags: ['guarantee']
+        tags: ['guarantee'],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Jinn", ev: ['emf','uv','freezing'], danger: "High", hunt: "50%", speed: "1.7-2.5 m/s", blink: "Normal", forced: null,
@@ -72,7 +77,8 @@ const GHOSTS = [
         ability: "Speeds up to 2.5 m/s when chasing in line-of-sight and breaker is ON. Sanity drain ability: instantly drains 25% from nearby players when breaker is ON (gives EMF 2 or 5 at the breaker). Will never turn the breaker OFF. Bug: the 25% drain ability can affect players on the floor directly below (3m range is not blocked by floors).",
         test: "Breaker Speed Test: Make sure the breaker is ON. During a hunt, if the ghost is fast (2.5 m/s) when it has line-of-sight from more than 3m away, turn the breaker OFF. <span class='hl-green'>If it immediately drops to normal speed (1.7 m/s)</span>, it's a Jinn. Also watch for sudden 25% sanity drops near the ghost (breaker must be ON for this ability).",
         zeroEv: "Very fast movement during hunts ONLY when the breaker is on and the ghost has line-of-sight. Cutting the power removes the speed boost instantly. The Jinn will NEVER turn the breaker off itself (only other ghosts can do that). Sudden 25% sanity zaps near the ghost with the power on.",
-        tags: ['fast']
+        tags: ['fast'],
+        speedStates: [{"label": "Normal", "speed": 1.7}, {"label": "LoS + breaker ON", "speed": 2.5}]
     },
     { 
         name: "Mare", ev: ['box','orb','writing'], danger: "Med", hunt: "60% (dark) / 40% (light)", speed: "1.7 m/s", blink: "Normal", forced: null,
@@ -81,7 +87,8 @@ const GHOSTS = [
         ability: "Hunts at 60% sanity in DARK rooms but only 40% sanity in LIT rooms. Will immediately turn lights OFF (within seconds) and frequently shatters bulbs. Can NEVER turn lights ON — only off. Note: despite patch notes suggesting otherwise, the Mare currently cannot turn TVs or computers on either (a known in-game bug).",
         test: "Light Test: Switch ON a light in the ghost room. A Mare will turn it <span class='hl-red'>back OFF within seconds</span> — it cannot turn lights ON, only off. You can also test hunt threshold: if it hunts in a lit room, sanity must be below 40%. In a dark room, it can hunt at 60%. Keeping the ghost room lit forces it to a lower hunt threshold.",
         zeroEv: "Lights constantly being switched off, never turned on. Frequent light bulb breaking events. Hunts earlier in dark areas (60%) but safer if room is lit (40% threshold). If a light goes off almost immediately after you turn it on, that's a strong Mare indicator. Note: the Mare does not seek out dark rooms — it simply roams more when its current room is lit, which tends to move it around the map frequently.",
-        tags: ['early']
+        tags: ['early'],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Revenant", ev: ['orb','writing','freezing'], danger: "High", hunt: "50%", speed: "1.0 / 3.0 m/s", blink: "Normal", forced: null,
@@ -90,7 +97,8 @@ const GHOSTS = [
         ability: "Moves at only 1.0 m/s (very slow - half normal speed) when roaming without seeing anyone. Speeds up to 3.0 m/s (nearly twice normal!) when it has line of sight on a player. Constantly alternates between these speeds.",
         test: "Speed Listen Test: During a hunt, listen carefully when hidden. Revenant footsteps should be <span class='hl-green'>very slow (1 m/s)</span> when it hasn't seen anyone — slower than a walking player. If it suddenly spots someone, it rockets to 3 m/s (nearly sprint speed). This dramatic slow-to-fast switch is unmistakable. Break line of sight by ducking through a doorway to make it slow again.",
         zeroEv: "The Revenant's slow-to-fast speed pattern is its biggest tell: methodically slow footsteps while searching (1 m/s), then extremely rapid footsteps when it detects a player (3 m/s). If you hear it speed up without being chased, it may have detected voice or equipment. Never run in a straight line — always corner or break LoS.",
-        tags: ['fast']
+        tags: ['fast'],
+        speedStates: [{"label": "Searching", "speed": 1.0}, {"label": "Chasing (LoS)", "speed": 3.0}]
     },
     { 
         name: "Shade", ev: ['emf','writing','freezing'], danger: "Low", hunt: "35%", speed: "1.7 m/s", blink: "Normal", forced: null,
@@ -99,7 +107,8 @@ const GHOSTS = [
         ability: "Cannot initiate a hunt if any player is in the same room as it — even a single player prevents it from hunting. Hunts at only 35% sanity (lower than normal 50%). Generally very passive with low activity levels.",
         test: "Group Test: Stay in the ghost room as a team with a crucifix placed. Let sanity drop below 35%. If the ghost refuses to hunt while any player is in the room despite very low sanity, it's very likely a Shade. You can also try placing a Ghost Writing book alone — the Shade won't write in it if a player is in the room. Send one person in solo to trigger activity.",
         zeroEv: "Extremely passive — very low ghost activity, rare interactions, barely any events. Will not hunt OR produce EMF readings while any player is in the same room (not just the favourite room). It can still reach into the room from an adjacent one to interact with objects. If activity is near-zero while players are present but picks up when the room is empty, suspect Shade.",
-        tags: []
+        tags: [],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Demon", ev: ['uv','writing','freezing'], danger: "Extreme", hunt: "70%", speed: "1.7 m/s", blink: "Normal", forced: null,
@@ -108,7 +117,8 @@ const GHOSTS = [
         ability: "Hunts at 70% sanity (vs normal 50%). Only 20-second cooldown between hunts (vs normal 25s). Has a rare ability to hunt at 100% sanity (very rare). Smudging only prevents hunts for 60s (vs 90s). Crucifixes work from 5m (vs 3m).",
         test: "Smudge Timing Test: Smudge the ghost when it's NOT hunting and start a timer. If it initiates a hunt <span class='hl-red'>between 60–90 seconds</span> after being smudged (vs Spirit's 180s or standard 90s), it's likely a Demon. Also watch for hunts at high sanity (70%+) and very short gaps between consecutive hunts (20s cooldown vs 25s normally).",
         zeroEv: "Frequent hunts starting at 60–70% sanity — you'll be hunted way earlier than expected. Very short cooldown between hunts. Smudge blocks hunting for only 60 seconds. Crucifix range is 5m (vs 3m) so it burns crucifixes from further away. Rare chance to hunt at ANY sanity, even 100%.",
-        tags: ['early']
+        tags: ['early'],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Yurei", ev: ['orb','freezing','dots'], danger: "Med", hunt: "50%", speed: "1.7 m/s", blink: "Normal", forced: null,
@@ -117,7 +127,8 @@ const GHOSTS = [
         ability: "Can smoothly close a door fully (without creaking) and drain 15% sanity from nearby players — this is its unique ability. Only ghost that can close EXIT doors outside of hunts. When smudged, trapped in its room for ~90 seconds. Bug: can partially open locker doors.",
         test: "Door Slam Test: Leave doors in the ghost room propped open at 45°. A Yurei can <span class='hl-green'>fully close a door in one smooth motion</span> (no creaking) while draining 15% sanity from nearby players — this is its unique ability. Critically, if a door leading OUTSIDE the building fully closes without a hunt or event, it's <span class='hl-green'>100% a Yurei</span> (only ghost that can do this). Smudge it and place motion sensors at doorways — if it doesn't leave for 90s, supports Yurei.",
         zeroEv: "A door closing fully and smoothly (not slamming during a hunt/event) with a sudden 15% sanity drop is the clearest tell. Watch exit/building doors especially — only Yurei closes those outside of hunts. After smudging, the Yurei gets temporarily confined to its room (use motion sensors to verify it hasn't left).",
-        tags: []
+        tags: [],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Oni", ev: ['emf','freezing','dots'], danger: "Med", hunt: "50%", speed: "1.7 m/s", blink: "Solid", forced: null,
@@ -126,7 +137,8 @@ const GHOSTS = [
         ability: "Cannot perform the 'airball' mist event (floating ball of mist). Drains 20% sanity during WALKING manifestation event collisions (vs 10% normal). Note: singing events only drain 10% due to a known bug. More visible during hunts — stays visible longer between flickers.",
         test: "Airball Elimination Test: Watch ghost events carefully. If you visually see the 'airball' event — a small ball of mist/smoke floating towards you — it is <span class='hl-red'>100% NOT an Oni</span>. Important: a walking ghost manifestation can also produce the same hiss sound as an airball event. You must actually <strong>see</strong> the floating mist ball, not just hear the hiss, before ruling out Oni. During hunts, the Oni stays visible longer between flickers — more visible than other ghosts. Very high object interaction rate is also a strong indicator.",
         zeroEv: "Very high activity level — lots of physical interactions and events. Cannot be an Oni if you visually see the airball mist event (the hiss sound alone is not enough — walking manifestation events make the same hiss). During hunts, the ghost stays visible longer than normal. Sanity drain: Oni drains 20% on WALKING manifestation collisions, but only 10% on SINGING events (a known in-game bug).",
-        tags: ['vis']
+        tags: ['vis'],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Yokai", ev: ['box','orb','dots'], danger: "Med", hunt: "80% (talking) / 50%", speed: "1.7 m/s", blink: "Normal", forced: null,
@@ -135,7 +147,8 @@ const GHOSTS = [
         ability: "If players talk within 2m of the Yokai, it can hunt at 80% sanity instead of 50%. Silence = 50% threshold. During hunts, can only detect voice and electronics within 2.5m (vs 12m normal) — very easy to hide from if quiet. Bug: Music Box triggers Yokai event at standard 5m range instead of its 2.5m reduced range.",
         test: "Voice Detection Test: During a hunt, hide in a nearby room and talk loudly or use your microphone. A normal ghost can detect voices from <span class='hl-green'>12m away</span>. If the ghost completely ignores your talking from more than 2.5m, it's a Yokai. Also: if hunts start very early (80% sanity) when players are talking near the ghost room, that confirms it.",
         zeroEv: "Hunts at 80% sanity if players are talking within 2m of the ghost — stop talking near the ghost room! During hunts, Yokai can only hear voices and detect electronics within 2.5m (vs 12m normally), making it very easy to hide from if you stay quiet and keep distance. Both early hunts AND 'deaf' hunting behavior together strongly suggest Yokai.",
-        tags: ['early']
+        tags: ['early'],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Hantu", ev: ['freezing','orb','uv'], danger: "Med", hunt: "50%", speed: "1.4-2.7 m/s", blink: "Normal", forced: "freezing",
@@ -144,7 +157,8 @@ const GHOSTS = [
         ability: "Speed scales with temperature: 1.4 m/s in warm → 2.7 m/s in freezing. No LOS speed-up — Hantu moves at a fixed speed based on room temperature only. Shows visible frosty breath during hunts even in warm areas. Will never turn breaker ON (but can turn it OFF). Has double the normal chance to turn breaker off.",
         test: "Temperature Speed Test: Keep the breaker ON to warm rooms. During a hunt in a warm area, a Hantu slows to 1.4 m/s. In a freezing room it hits 2.7 m/s. Look for <span class='hl-green'>visible frosty breath clouds</span> emanating from the ghost during hunts — this is unique to Hantu and appears even in warm rooms. Hantu also has a doubled chance to turn the breaker OFF, but will NEVER turn it ON.",
         zeroEv: "Visible freezing breath clouds from the ghost during a hunt, even in warm areas — this is Hantu's most reliable visual tell. Speed varies dramatically between rooms: very fast in cold rooms, noticeably sluggish in warm ones. The breaker frequently goes off, but never gets turned back on by the ghost.",
-        tags: ['fast']
+        tags: ['fast'],
+        speedStates: [{"label": "Warm room", "speed": 1.4}, {"label": "Freezing room", "speed": 2.7}]
     },
     { 
         name: "Goryo", ev: ['emf','uv','dots'], danger: "Low", hunt: "50%", speed: "1.7 m/s", blink: "Normal", forced: "dots",
@@ -153,7 +167,8 @@ const GHOSTS = [
         ability: "D.O.T.S silhouette is only visible through a video camera (not with your eyes directly). The effect only shows when no players are in the room. Goryo will not roam far from its favorite room.",
         test: "Camera-Only D.O.T.S Test (Nightmare/Insanity only): Set up a video camera pointing at the D.O.T.S projector and leave the room. If you see the D.O.T.S silhouette <span class='hl-green'>ONLY through the camera feed</span> and NEVER with your naked eyes, it's a Goryo. The D.O.T.S also only appears when NO players are in the room. <span class='hl-red'>IMPORTANT: On 0-evidence custom difficulty, Goryo shows NO D.O.T.S at all</span> — the only tell is that it never changes favourite room and only performs short roams.",
         zeroEv: "<span class='hl-red'>On 0 evidence: Goryo is nearly impossible to confirm.</span> D.O.T.S does not appear at all. Your only tells are behavioural: it will never change its ghost room, only performs short roams (use salt/motion sensors to observe), and has the highest interaction rate of any ghost. On Nightmare/Insanity (1–2 ev), if D.O.T.S is one of the shown evidences, it will ONLY appear via video camera — never to the naked eye.",
-        tags: ['guarantee']
+        tags: ['guarantee'],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Myling", ev: ['emf','writing','uv'], danger: "Med", hunt: "50%", speed: "1.7 m/s", blink: "Normal", forced: null,
@@ -162,7 +177,8 @@ const GHOSTS = [
         ability: "Footsteps during hunts are only audible within 12 meters instead of the normal 20 meters. This makes it much harder to hear approaching. More vocal on the parabolic microphone.",
         test: "Flashlight Floor Test: Drop your flashlight on the floor during a hunt (it won't attract the ghost while on the floor). Watch for the flashlight flickering — the ghost is within 10m. If the flashlight IS flickering but you <span class='hl-green'>cannot hear footsteps yet</span>, it's a Myling (footsteps only audible within 12m vs 20m normally). Other ghosts: you'd hear footsteps well before seeing flickering.",
         zeroEv: "Both footsteps AND vocals during hunts are only audible within 12m instead of 20m — the ghost seems near-silent until it is already very close. Note: Myling CAN make vocal sounds during hunts like any other ghost, they're just shorter-ranged. Outside hunts, Mylings make paranormal sounds more frequently than average on the Parabolic Mic. The surprise close approach is the danger.",
-        tags: ['quiet']
+        tags: ['quiet'],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "Onryo", ev: ['box','orb','freezing'], danger: "High", hunt: "60% (Any w/ flames)", speed: "1.7 m/s", blink: "Normal", forced: null,
@@ -171,7 +187,8 @@ const GHOSTS = [
         ability: "Lit candles/lighters within 4m prevent the Onryo from hunting (work like crucifixes). However, if it blows out 3 flames total (tracked across the whole game), it will hunt at ANY sanity level! Each flame blocks one hunt attempt.",
         test: "Firelight Test: Light a Firelight near the ghost room. The Onryo treats flames like crucifixes — it <span class='hl-green'>cannot hunt while a flame is within 4m</span> of it. Instead, it blows the flame out. Every time it blows out a flame to stop a hunt, that counts toward a tally. On the <span class='hl-red'>3rd blow-out</span>, it hunts regardless of sanity. To confirm: place a crucifix AND a Firelight. If the flame blows out first instead of the crucifix burning, it's an Onryo.",
         zeroEv: "Flames being blown out regularly — each blow-out is a blocked hunt attempt. Keep 2 Firelights active so blow-out of one is blocked by the other. After 3 total blow-outs it can hunt at any sanity. Tier II Firelights (3 candles) are much more likely to be blown out (~96% combined chance) — but still count as 1 flame for Onryo mechanics. Onryo cannot light any fire sources.",
-        tags: ['early']
+        tags: ['early'],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "The Twins", ev: ['emf','box','freezing'], danger: "Med", hunt: "50%", speed: "1.53 / 1.87 m/s", blink: "Normal", forced: null,
@@ -180,7 +197,8 @@ const GHOSTS = [
         ability: "Two ghosts: Main entity (1.5 m/s) and Decoy entity (1.9 m/s). They alternate which one hunts. Can interact with environment in two different locations simultaneously.",
         test: "Dual Interaction Test: Watch for interactions happening in <span class='hl-green'>two different rooms simultaneously</span> — this is only possible with the Twins. You may see EMF readings or object interactions in different locations at once. During hunts, listen for speed variation across different hunts: one hunt may feel slower (~1.53 m/s) and the next faster (~1.87 m/s) — this is the two twins alternating who initiates.",
         zeroEv: "Simultaneous interactions in separate rooms are the clearest tell — e.g. a door in one room and an object in another moving at the same time. Hunt speeds will feel inconsistent across hunts (one is 10% slower, one is 10% faster than normal 1.7 m/s). The ghost may also start a hunt from an unexpected location far from the ghost room.",
-        tags: ['fast']
+        tags: ['fast'],
+        speedStates: [{"label": "Slow twin", "speed": 1.5}, {"label": "Fast twin", "speed": 1.9}]
     },
     { 
         name: "Raiju", ev: ['emf','orb','dots'], danger: "High", hunt: "65% (electronics)", speed: "1.7-2.5 m/s", blink: "Normal", forced: null,
@@ -189,7 +207,8 @@ const GHOSTS = [
         ability: "Near active electronics, moves at 2.5 m/s and can hunt at 65% sanity instead of 50%. Disrupts electronics from 15m away (vs normal 10m). Note: only held/carried electronics trigger the early hunt threshold — placed DOTS T2/T3, motion sensors, and sound sensors do not count.",
         test: "Electronics Speed Test: Leave active equipment (flashlights, D.O.T.S, EMF readers) on the floor in/near the ghost room. During a hunt, if the ghost moves at <span class='hl-green'>2.5 m/s near your gear</span> and slows to 1.7 m/s away from it, it's a Raiju. Also: you'll hear your heartbeat from 15m away (vs 10m for other ghosts) and electronics flicker from further away (15m vs 10m). Note: DOTS T2/T3 placed on the ground, Motion Sensors and Sound Sensors do NOT trigger the Raiju speed boost.",
         zeroEv: "Very fast movement during hunts specifically near active electronics — slows noticeably when away from gear. Electronics flickering from unusually long range (15m). Can hunt at 65% sanity if active equipment is nearby. To slow it down, turn off flashlights and pick up any active equipment during a hunt.",
-        tags: ['fast', 'early']
+        tags: ['fast', 'early'],
+        speedStates: [{"label": "Normal", "speed": 1.7}, {"label": "Near electronics", "speed": 2.5}]
     },
     { 
         name: "Obake", ev: ['emf','orb','uv'], danger: "Med", hunt: "50%", speed: "1.7 m/s", blink: "Shifting", forced: "uv",
@@ -198,7 +217,8 @@ const GHOSTS = [
         ability: "Can leave 6-finger handprints instead of normal 5-finger (rare but confirms it). Only 75% chance to leave UV evidence at all (vs 100% for others). Changes ghost model/appearance during hunts. UV evidence disappears faster (half the normal time).",
         test: "Fingerprint Test: Check all doors and surfaces the ghost touches for UV fingerprints. Obake has a <span class='hl-red'>75% chance to leave fingerprints</span> (not 100% like other ghosts), and those prints fade in ~30s instead of 60s. If you find a <span class='hl-green'>6-finger handprint</span> on a door, it's 100% confirmed Obake. During hunts, watch for the ghost's model briefly changing to a different ghost — this happens at least once per hunt.",
         zeroEv: "Fingerprints appearing less often than expected or fading very quickly (half the normal time). Watching the ghost during a hunt and seeing its model flicker into a different ghost type. A 6-fingered handprint is a guaranteed Obake. UV is forced evidence on Nightmare so it will always appear even if reduced evidence is selected.",
-        tags: ['guarantee']
+        tags: ['guarantee'],
+        speedStates: [{"label": "Normal", "speed": 1.7}]
     },
     { 
         name: "The Mimic", ev: ['box','freezing','uv'], danger: "Low", hunt: "Variable", speed: "Variable", blink: "Variable", forced: "orb",
@@ -207,7 +227,8 @@ const GHOSTS = [
         ability: "Mimics the traits, abilities, speeds, and hunt patterns of other ghost types, changing which ghost it copies every 30 seconds to 2 minutes. ALWAYS has Ghost Orbs as forced 4th evidence.",
         test: "Fourth Evidence Test: The Mimic <span class='hl-green'>ALWAYS produces Ghost Orbs</span> as a fake 4th piece of evidence — even on 0-evidence custom runs. If you see Ghost Orbs AND collect 2 other evidence on Nightmare, suspect Mimic strongly. Watch for wildly inconsistent behavior across different hunts: speed, hunt threshold, and abilities all changing every 30s–2min as it mimics a new ghost type.",
         zeroEv: "Behaviour that dramatically shifts — one hunt it's slow, then fast, then it can't be hidden from, then hunts at high sanity. Ghost Orbs will always be present even on Nightmare. The mimic changes which ghost it copies every 30 seconds to 2 minutes (never mid-hunt). Cannot copy Goryo's camera-only D.O.T.S behaviour.",
-        tags: ['guarantee']
+        tags: ['guarantee'],
+        speedStates: [{"label": "Copies host ghost", "speed": 0}]
     },
     { 
         name: "Moroi", ev: ['box','writing','freezing'], danger: "High", hunt: "50%", speed: "1.5-2.25 m/s", blink: "Normal", forced: "box",
@@ -216,7 +237,8 @@ const GHOSTS = [
         ability: "Spirit Box response or parabolic microphone sounds curse the player, causing 2x passive sanity drain (lights won't stop it). Speed increases from 1.5 m/s at high sanity to 2.25 m/s at low sanity (up to 3.71 m/s with LOS at 0% sanity). Smudge blind during hunts lasts ~7 seconds (vs ~5s for other ghosts — a known bug vs intended 7.5s).",
         test: "Curse & Pill Test: Get a Spirit Box response (this curses the respondent). If that player's sanity drops even while standing in lit areas — which normally stops drain — they're cursed by a Moroi. <span class='hl-green'>Taking Sanity Pills removes the curse</span>. During a hunt, smudge it and count: Moroi is blinded for ~7 seconds (vs 5s for other ghosts). Also watch ghost speed across multiple hunts — it gets progressively faster as average sanity drops.",
         zeroEv: "Gets noticeably faster in later hunts as team sanity drops — can become one of the fastest ghosts in the game near 0% sanity (up to ~3.71 m/s). Spirit Box is forced evidence on Nightmare. If a cursed player's sanity drains in the light and pills fix it, that strongly points to Moroi.",
-        tags: ['fast']
+        tags: ['fast'],
+        speedStates: [{"label": "High sanity", "speed": 1.5}, {"label": "Low sanity (base)", "speed": 2.25}, {"label": "0% sanity + LoS max", "speed": 3.71}]
     },
     { 
         name: "Deogen", ev: ['box','writing','dots'], danger: "High", hunt: "40%", speed: "0.4-3.0 m/s", blink: "Normal", forced: "box",
@@ -225,7 +247,8 @@ const GHOSTS = [
         ability: "Always knows player locations - hiding in lockers/closets doesn't work! Moves at 3.0 m/s when far away but slows to 0.4 m/s when within a few meters. Spirit Box can be used anywhere (vs requiring dark).",
         test: "Hiding Test: Try to hide in a closet or locker. <span class='hl-red'>Deogen always knows where you are</span> — it will walk directly to your hiding spot every single time. Your only survival option is to loop it around furniture, as it slows to 0.4 m/s when within ~2.5m of a player. Spirit Box is forced evidence on Nightmare, and Deogen gives a <span class='hl-green'>unique heavy breathing/bull-like response</span> that sounds different from normal spirit box answers.",
         zeroEv: "Ghost immediately walking to exactly where every player is hiding — no hesitation, never searches. Very fast from distance (3 m/s) then dramatically slows to a crawl up close (0.4 m/s). Spirit Box gives a unique heavy breathing sound. Loop it around furniture to survive — never hide in enclosed spots.",
-        tags: ['fast', 'guarantee']
+        tags: ['fast', 'guarantee'],
+        speedStates: [{"label": "From distance", "speed": 3.0}, {"label": "Up close", "speed": 0.4}]
     },
     { 
         name: "Thaye", ev: ['orb','writing','dots'], danger: "High → Low", hunt: "75% → 15%", speed: "2.75 → 1.0 m/s", blink: "Normal", forced: null,
@@ -234,7 +257,8 @@ const GHOSTS = [
         ability: "Starts extremely active and dangerous: 75% hunt threshold and 2.75 m/s speed. Ages down every 1-2 minutes spent near players, eventually reaching 15% threshold and 1.0 m/s (slowest ghost). Can ask age on Ouija Board.",
         test: "Age Progression Test: Thaye starts young (75% hunt threshold, 2.75 m/s) and ages every 1–2 minutes <span class='hl-green'>only while players are nearby</span>. If the ghost was terrifyingly aggressive at the start but noticeably slowed and became passive over time, it's a Thaye. You can also ask its age on the Ouija Board — it will answer with a number. Older = slower and less active.",
         zeroEv: "Very high activity and aggression early on — hunts at 75% sanity and moves faster than almost any ghost. Activity and speed wind down progressively as time passes with players nearby. Late-game it may barely hunt at all (15% threshold, 1 m/s). Note: if no players are near the ghost room, it won't age — it stays young and dangerous.",
-        tags: ['fast', 'early']
+        tags: ['fast', 'early'],
+        speedStates: [{"label": "Young (start)", "speed": 2.75}, {"label": "Aged (end)", "speed": 1.0}]
     }
     ,
     { 
@@ -244,7 +268,8 @@ const GHOSTS = [
         ability: "When >10m from all players: behaves like a normal ghost (1.7 m/s with standard LOS speed-up). Within 10m: speeds up to 2.25 m/s if any player moves, or slows to 1.2 m/s if everyone stands still. Hunt threshold increases to 60% while players move near her, decreases to 45% when standing still. Always female model.",
         test: "Stand Still Test: During a hunt, when the ghost is within 10m, <span class='hl-green'>stop moving completely</span>. Dayan slows dramatically to 1.2 m/s when players stand still, and speeds back up to 2.25 m/s the instant you move. This speed swing is very noticeable. Also: if hunts start early while players are walking around (60% threshold while moving) but stop when you freeze, that's a strong tell. Dayan is always a female ghost model — check the name/gender in the journal.",
         zeroEv: "The most reliable test: freeze completely during a hunt. If the ghost abruptly slows to barely moving and then rockets forward again the instant you step, it's Dayan. Early hunts are more likely when players are moving near her, safer when standing still (45% vs 60% threshold). Always female gender — easy to check in journal.",
-        tags: ['fast']
+        tags: ['fast'],
+        speedStates: [{"label": "Player still", "speed": 1.2}, {"label": "Player moving", "speed": 2.25}]
     }
     ,
     { 
@@ -254,7 +279,8 @@ const GHOSTS = [
         ability: "Cycles through three states. Normal (1.7 m/s, 50% threshold): triggered into Enraged by salt (2s delay), incense, or crucifix. Enraged (1.96 m/s, 60% threshold, only 4s incense blind, -2m crucifix range): does NOT disturb salt. Stays enraged until the hunt ends, then goes to Weakened. Weakened (1.36 m/s, 40% threshold, 6s incense blind, +1m crucifix range): DOES disturb salt. Returns to Normal via salt (3s delay), incense, or crucifix.",
         test: "Provocation Test: Use a crucifix or smudge sticks deliberately. A Gallu enters an <span class='hl-red'>Enraged state</span> (60% threshold, 1.96 m/s, only 4s incense blind) when protective gear is used — or when it steps in salt. After the enraged hunt ends it drops to a <span class='hl-green'>Weakened state</span> (40% threshold, 1.36 m/s, 6s incense blind). Key tell: in Enraged state the Gallu does NOT disturb salt. If it walks through a pile and leaves no impression, it is Enraged.",
         zeroEv: "Ghost becoming more aggressive after you use defensive equipment. Three-phase cycle: Normal → Enraged (after salt/smudge/crucifix) → Weakened (after enraged hunt ends). Key tells: Enraged = won't disturb salt + 4s incense blind; Weakened = disturbs salt + 6s incense blind. Multiplayer note: only the HOST reliably sees Gallu disturb salt — non-host players may see it walk through without disturbing it.",
-        tags: ['early', 'fast']
+        tags: ['early', 'fast'],
+        speedStates: [{"label": "Normal", "speed": 1.7}, {"label": "Enraged", "speed": 1.96}, {"label": "Weakened", "speed": 1.36}]
     }
     ,
     { 
@@ -264,7 +290,8 @@ const GHOSTS = [
         ability: "Alternates between two states approximately every 2 minutes. Calm state: 10% hunt threshold, 1.45 m/s speed, very low activity. Aggressive state: 65% hunt threshold, 1.96 m/s speed, high activity. Can switch states mid-hunt!",
         test: "Phase Watch Test: Observe the ghost over at least 5–6 minutes. An Obambo switches between a <span class='hl-green'>Calm phase</span> (barely interacts, hunt threshold 10%, 1.45 m/s) and an <span class='hl-red'>Aggressive phase</span> (high activity, 65% threshold, 1.96 m/s) roughly every 2 minutes. If the ghost flip-flops dramatically between near-inactivity and intense hunting with no apparent cause, it's Obambo. It can also switch states mid-hunt.",
         zeroEv: "Wildly inconsistent behaviour that cycles in waves — very passive for a couple minutes, then suddenly very aggressive and hunting frequently, then passive again. Easy to mistake for Shade during calm phases or for an early hunter during aggressive phases. The key is the pattern repeating. If you've been watching long enough to see two full activity swings, it's almost certainly Obambo.",
-        tags: ['early']
+        tags: ['early'],
+        speedStates: [{"label": "Calm phase", "speed": 1.45}, {"label": "Aggressive phase", "speed": 1.96}]
     }
 ];
 
@@ -286,6 +313,138 @@ const ui = {
     timerFill: document.getElementById('timerFill'),
     timerBtn: document.getElementById('timerBtn')
 };
+
+
+// ─── FOOTSTEP TEMPO ENGINE ────────────────────────────────────────────────
+const TempoEngine = (() => {
+    let ctx = null;
+    let tickTimer = null;
+    let autoStopTimer = null;
+    let activeButton = null;
+    let beatIndicator = null;
+    let running = false;
+
+    // BPM formula from reference cheat sheet (default surface, 1.0 multiplier):
+    // BPM = 60 / ((1/speed) - 0.075)
+    function speedToBpm(speed) {
+        if (!speed || speed <= 0) return null;
+        const inv = (1 / speed) - 0.075;
+        if (inv <= 0) return null;
+        return 60 / inv;
+    }
+
+    function getIntervalMs(speed) {
+        const bpm = speedToBpm(speed);
+        if (!bpm) return null;
+        return (60 / bpm) * 1000;
+    }
+
+    function ensureCtx() {
+        if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (ctx.state === 'suspended') ctx.resume();
+    }
+
+    function playClick() {
+        ensureCtx();
+        const t = ctx.currentTime;
+
+        // Two-layer synthetic footstep click
+        const osc1 = ctx.createOscillator();
+        const g1   = ctx.createGain();
+        osc1.type = 'square';
+        osc1.frequency.setValueAtTime(900, t);
+        osc1.frequency.exponentialRampToValueAtTime(180, t + 0.045);
+        g1.gain.setValueAtTime(0.16, t);
+        g1.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+        osc1.connect(g1).connect(ctx.destination);
+        osc1.start(t); osc1.stop(t + 0.07);
+
+        const osc2 = ctx.createOscillator();
+        const g2   = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(100, t);
+        g2.gain.setValueAtTime(0.22, t);
+        g2.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+        osc2.connect(g2).connect(ctx.destination);
+        osc2.start(t); osc2.stop(t + 0.09);
+
+        // Flash beat indicator
+        if (beatIndicator) {
+            beatIndicator.classList.add('beat-flash');
+            setTimeout(() => beatIndicator && beatIndicator.classList.remove('beat-flash'), 80);
+        }
+    }
+
+    // Recursive setTimeout for drift-corrected timing
+    // Measures actual elapsed time and compensates on the next beat
+    function scheduleTick(intervalMs, expectedAt) {
+        if (!running) return;
+        playClick();
+        const now = performance.now();
+        const nextExpected = expectedAt + intervalMs;
+        const delay = Math.max(10, nextExpected - now);
+        tickTimer = setTimeout(() => scheduleTick(intervalMs, nextExpected), delay);
+    }
+
+    function start(speed, btn) {
+        stop();
+        const ms = getIntervalMs(speed);
+        if (!ms) return; // Variable speed ghost — nothing to play
+
+        running = true;
+        activeButton = btn;
+        if (btn) {
+            btn.classList.add('tempo-btn-active');
+            btn.querySelector('.tempo-btn-icon').textContent = '■';
+        }
+
+        scheduleTick(ms, performance.now());
+
+        // Auto-stop after 12 seconds
+        autoStopTimer = setTimeout(() => stop(), 12000);
+    }
+
+    function stop() {
+        running = false;
+        if (tickTimer) { clearTimeout(tickTimer); tickTimer = null; }
+        if (autoStopTimer) { clearTimeout(autoStopTimer); autoStopTimer = null; }
+        if (activeButton) {
+            activeButton.classList.remove('tempo-btn-active');
+            const icon = activeButton.querySelector('.tempo-btn-icon');
+            if (icon) icon.textContent = '▶';
+            activeButton = null;
+        }
+    }
+
+    function toggle(speed, btn) {
+        if (activeButton === btn && running) {
+            stop();
+        } else {
+            start(speed, btn);
+        }
+    }
+
+    function setBeatIndicator(el) { beatIndicator = el; }
+    function isActive() { return running; }
+    function speedToBpmRounded(speed) {
+        const bpm = speedToBpm(speed);
+        return bpm ? Math.round(bpm) : null;
+    }
+
+    return { toggle, stop, speedToBpm, speedToBpmRounded, setBeatIndicator, isActive };
+})();
+
+// Stop tempo when modal closes
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('ghostModal');
+    if (modal) {
+        modal.addEventListener('close', () => TempoEngine.stop());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) TempoEngine.stop();
+        });
+    }
+});
+// ─────────────────────────────────────────────────────────────────────────
 
 // --- 3. INIT ---
 function init() {
@@ -496,15 +655,44 @@ function updateBoard() {
 }
 
 function openGhostModal(g) {
+    TempoEngine.stop();
     document.getElementById('mName').textContent = g.name;
     const forcedNote = g.forced ? `<div style="margin-top:8px; padding:6px 10px; background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.3); border-radius:6px; font-size:0.82rem; color:var(--acc-cyan);">⚡ <strong>Guaranteed Evidence:</strong> This ghost <em>always</em> shows <strong>${g.forced.toUpperCase()}</strong> even on Nightmare/Insanity.</div>` : '';
+
+    // Build speed buttons for each state
+    const states = g.speedStates || [{ label: 'Normal', speed: 1.7 }];
+    const tempoButtons = states.map((s, i) => {
+        const bpm = TempoEngine.speedToBpmRounded(s.speed);
+        const isVariable = !bpm;
+        return `<button class="tempo-btn${isVariable ? ' tempo-btn-variable' : ''}"
+            data-speed="${s.speed}" data-idx="${i}"
+            onclick="${isVariable ? '' : `handleTempoBtn(this, ${s.speed})`}"
+            ${isVariable ? 'disabled style="cursor:default;opacity:0.6;"' : ''}
+            title="${isVariable ? 'Speed varies — copies the ghost being mimicked' : `Tap to hear ${s.label} footstep tempo`}">
+            <span class="tempo-btn-label">${s.label}</span>
+            <span class="tempo-btn-speed">${s.speed} m/s</span>
+            <span class="tempo-btn-bpm">${isVariable ? '— BPM' : bpm + ' BPM'}</span>
+            <span class="tempo-btn-icon">${isVariable ? '~' : '▶'}</span>
+        </button>`;
+    }).join('');
+
     document.getElementById('mContent').innerHTML = `
         <div class="stat-grid">
-            <div class="stat-box"><span class="stat-label">Speed</span><span class="stat-val" style="color:var(--acc-orange)">${g.speed}</span></div>
             <div class="stat-box"><span class="stat-label">Hunt Threshold</span><span class="stat-val" style="color:var(--acc-red)">${g.hunt}</span></div>
+            <div class="stat-box"><span class="stat-label">Speed</span><span class="stat-val" style="color:var(--acc-orange)">${g.speed}</span></div>
             <div class="stat-box"><span class="stat-label">Blink Rate</span><span class="stat-val">${g.blink}</span></div>
             <div class="stat-box"><span class="stat-label">Difficulty</span><span class="stat-val">${g.danger}</span></div>
         </div>
+
+        <div class="tempo-section">
+            <div class="tempo-header">
+                <span class="tempo-title">👟 FOOTSTEP TEMPO</span>
+                <div class="beat-indicator" id="beatIndicator"></div>
+                <span class="tempo-hint">Click a speed to hear it</span>
+            </div>
+            <div class="tempo-buttons">${tempoButtons}</div>
+        </div>
+
         <div class="section-header">Behavior</div>
         <div class="detail-text">${g.ability}</div>
         ${forcedNote}
@@ -513,7 +701,22 @@ function openGhostModal(g) {
         <div class="section-header">🔬 Confirmation Test</div>
         <div class="confirm-box detail-text">${g.test}</div>
     `;
+
+    // Register the beat indicator with the engine
+    TempoEngine.setBeatIndicator(document.getElementById('beatIndicator'));
     ui.ghostModal.showModal();
+}
+
+function handleTempoBtn(btn, speed) {
+    // Reset all other buttons before toggling
+    document.querySelectorAll('.tempo-btn').forEach(b => {
+        if (b !== btn) {
+            b.classList.remove('tempo-btn-active');
+            const icon = b.querySelector('.tempo-btn-icon');
+            if (icon) icon.textContent = '▶';
+        }
+    });
+    TempoEngine.toggle(speed, btn);
 }
 
 // --- 6. MANUAL CONTENT ---
