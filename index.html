@@ -46,6 +46,7 @@
                 <button class="nav-btn" onclick="showSection('equipment')" style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 6px 10px; font-family: var(--font-hud); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Equipment</button>
                 <button class="nav-btn" onclick="showSection('mechanics')" style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 6px 10px; font-family: var(--font-hud); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Mechanics</button>
                 <button class="nav-btn" onclick="showSection('strategy')" style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 6px 10px; font-family: var(--font-hud); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Strategy</button>
+                <button class="nav-btn" onclick="showSection('zeroev')" style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.5); color: #a78bfa; padding: 6px 10px; font-family: var(--font-hud); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">0 EV</button>
             </nav>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
@@ -187,7 +188,7 @@
                             <span class="info-tag">8 Rooms</span>
                             <span class="info-tag">1 Bone</span>
                         </div>
-                        <p class="map-desc">Tutorial map. Single-floor layout with basement. Great for learning basics. Truck is very close.</p>
+                        <p class="map-desc">Tutorial map. Ground floor + basement layout. Great for learning basics. Truck is very close to the entrance.</p>
                         <div class="map-tips">
                             <strong>Hiding Spots:</strong> Bedroom closets, basement storage, garage<br>
                             <strong>Tips:</strong> Perfect for beginners. Small enough to cover quickly.
@@ -224,6 +225,38 @@
                             <strong>Hiding Spots:</strong> Attic corners, bedroom closets, pantry<br>
                             <strong>Tips:</strong> Larger small map. Attic can be tricky to navigate.
                         </div>
+
+                    <div class="map-card">
+                        <div class="map-header">
+                            <h4>Grafton Farmhouse</h4>
+                            <span class="difficulty">★☆☆</span>
+                        </div>
+                        <div class="map-info">
+                            <span class="info-tag">2 Floors</span>
+                            <span class="info-tag">10 Rooms</span>
+                        </div>
+                        <p class="map-desc">Small farmhouse with a second floor. Compact layout similar to Bleasdale. Good for learning multi-floor navigation.</p>
+                        <div class="map-tips">
+                            <strong>Hiding Spots:</strong> Bedroom closets, bathroom, barn area<br>
+                            <strong>Tips:</strong> Ghost room frequently upstairs. Breaker usually in barn/outbuilding.
+                        </div>
+                    </div>
+
+                    <div class="map-card">
+                        <div class="map-header">
+                            <h4>13 Willow Street House</h4>
+                            <span class="difficulty">★☆☆</span>
+                        </div>
+                        <div class="map-info">
+                            <span class="info-tag">3 Floors</span>
+                            <span class="info-tag">14 Rooms</span>
+                        </div>
+                        <p class="map-desc">Three-storey townhouse — the only small map with 3 floors. Narrow stairwells make hunts trickier than other small maps.</p>
+                        <div class="map-tips">
+                            <strong>Hiding Spots:</strong> Closets on each floor, bathroom<br>
+                            <strong>Tips:</strong> Learn stairwell routes for quick floor changes. Ghost can be on any floor.
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -244,6 +277,23 @@
                         <div class="map-tips">
                             <strong>Hiding Spots:</strong> Bathroom stalls, classroom closets, some lockers<br>
                             <strong>Tips:</strong> Use sound sensors. Watch hallways during hunts.
+                        </div>
+                    </div>
+
+
+                    <div class="map-card">
+                        <div class="map-header">
+                            <h4>Camp Woodwind</h4>
+                            <span class="difficulty">★★☆</span>
+                        </div>
+                        <div class="map-info">
+                            <span class="info-tag">1 Floor</span>
+                            <span class="info-tag">Outdoor</span>
+                        </div>
+                        <p class="map-desc">Smaller outdoor campsite. More compact than Maple Lodge with a central lodge building. Mix of indoor and outdoor areas.</p>
+                        <div class="map-tips">
+                            <strong>Hiding Spots:</strong> Main lodge, storage cabin<br>
+                            <strong>Tips:</strong> Smaller than Maple Lodge but still outdoor-heavy. Use the lodge as your main base.
                         </div>
                     </div>
 
@@ -272,10 +322,10 @@
                             <span class="info-tag">1 Floor</span>
                             <span class="info-tag">22 Areas</span>
                         </div>
-                        <p class="map-desc">Outdoor campground. NO indoor safety. Freezing temps everywhere in winter.</p>
+                        <p class="map-desc">Outdoor campground with no solid interior spaces to hide in. Temperatures can drop with any ghost — not just in winter.</p>
                         <div class="map-tips">
-                            <strong>Hiding Spots:</strong> Cabins, tents (limited protection)<br>
-                            <strong>Tips:</strong> Entirely outdoor. Unique mechanics. Very challenging.
+                            <strong>Hiding Spots:</strong> Cabins and the main lodge only — tents provide <strong>no protection</strong> during hunts.<br>
+                            <strong>Tips:</strong> Entirely outdoor. No safe rooms. Ghost can hunt anywhere on the map.
                         </div>
                     </div>
                 </div>
@@ -307,7 +357,7 @@
                             <span class="difficulty">★★★</span>
                         </div>
                         <div class="map-info">
-                            <span class="info-tag">1 Floor</span>
+                            <span class="info-tag">Multi-floor</span>
                             <span class="info-tag">18 Areas</span>
                         </div>
                         <p class="map-desc">Lighthouse island. Weather effects. Indoor/outdoor mix. Unique layout.</p>
@@ -355,16 +405,21 @@
                         <ul>
                             <li>Lights OFF: <span class="hl-red">-0.12%/s</span></li>
                             <li>Lights ON: <span class="hl-green">0%/s</span></li>
-                            <li>Near Candle: <span class="hl-green">0%/s</span></li>
+                            <li>Near Firelight/Candle: <span class="hl-green">Reduced</span> (amount depends on tier)</li>
                         </ul>
                         
                         <h4>Hunt Thresholds</h4>
                         <ul>
-                            <li>Standard: 50%</li>
-                            <li>Demon: 70%</li>
+                            <li>Yokai: 80% (if talking nearby)</li>
+                            <li>Thaye: 75% → 15% (ages over time)</li>
+                            <li>Demon: 70% (can hunt any sanity rarely)</li>
+                            <li>Raiju: 65% (near active electronics)</li>
+                            <li>Onryo: 60% (any after 3 flames blown)</li>
                             <li>Mare: 60% (dark) / 40% (light)</li>
+                            <li>Standard: 50%</li>
+                            <li>Deogen: 40%</li>
                             <li>Shade: 35%</li>
-                            <li>Yokai: 80% (when talking)</li>
+                            <li>Banshee: Target's sanity only</li>
                         </ul>
                         
                         <h4>Restoration</h4>
@@ -391,15 +446,18 @@
                         <h4>Detection Range</h4>
                         <ul>
                             <li>Sight: Line of sight = chase</li>
-                            <li>Electronics: 12m (Yokai: 2.5m)</li>
+                            <li>Electronics: 12m (Yokai: 2.5m, Raiju disrupts from 15m)</li>
                             <li>Voice: 12m (Yokai: 2.5m)</li>
                             <li>Footsteps: Audible to ghost</li>
                         </ul>
                         
                         <h4>Hunt Duration</h4>
                         <ul>
-                            <li>Standard: 30-45 seconds</li>
-                            <li>Cooldown: 25s (Demon: 20s)</li>
+                            <li>Varies by difficulty + map size</li>
+                            <li>Amateur small: ~45s / Pro large: much longer</li>
+                            <li>Cursed hunts add +20s to duration</li>
+                            <li>Cooldown between hunts: 25s (Demon: 20s)</li>
+                            <li>Obambo: hunt duration −20% in aggressive state</li>
                         </ul>
                     </div>
                 </div>
@@ -435,14 +493,14 @@
                             <li><span class="hl-red">2 evidence only!</span></li>
                             <li>Fingerprints: 30s</li>
                             <li>Electronics malfunction</li>
-                            <li>No D.O.T.S visual</li>
+                            <li>One evidence type is hidden (may include D.O.T.S)</li>
                         </ul>
                         
                         <h4>Insanity (0.0x)</h4>
                         <ul>
                             <li><span class="hl-red">0% starting sanity</span></li>
-                            <li>Pills do nothing</li>
-                            <li>No rewards (challenge only)</li>
+                            <li>Pills don't restore sanity (still cure Moroi curse)</li>
+                            <li>0x money multiplier (used for Apocalypse challenges)</li>
                         </ul>
                     </div>
                 </div>
@@ -457,19 +515,19 @@
                         <p>Wind to summon. Ghost walks toward you. DON'T hold until empty!</p>
                         
                         <h4>Summoning Circle</h4>
-                        <p>Light all candles = ghost appears + GUARANTEED HUNT.</p>
+                        <p>Light all 5 candles = ghost appears, then ~5 second grace before cursed hunt. Warning: lighting final candle at &lt;16% sanity skips event and starts an immediate hunt.</p>
                         
                         <h4>Voodoo Doll</h4>
                         <p>10 pins. Each = interaction. HEART PIN = HUNT!</p>
                         
                         <h4>Monkey Paw</h4>
-                        <p>5 wishes. All have curses. Very risky!</p>
+                        <p>5 uses (fingers). 9 possible wish types, each usable once per contract. Every wish has a curse/penalty. Very risky.</p>
                         
                         <h4>Tarot Cards</h4>
                         <p>Random effects. Tower/Death = hunt. Sun = full sanity.</p>
                         
                         <h4>Haunted Mirror</h4>
-                        <p>Shows ghost location. MASSIVE sanity drain. Quick glances only!</p>
+                        <p>Shows the ghost's <strong>favourite room</strong> (not current location — that's the Ouija Board). MASSIVE sanity drain (7.5%/s). Breaks and triggers cursed hunt if sanity runs out while using it.</p>
                     </div>
                 </div>
             </div>
@@ -533,7 +591,7 @@
                         <li>Understand LoS mechanics - break vision to reset chase</li>
                         <li>On Nightmare, use behavior + 2 evidence to eliminate options</li>
                         <li>Practice solo investigations to understand ghost behavior better</li>
-                        <li>Use parabolic mic to identify Banshee/Moroi instantly</li>
+                        <li>Use parabolic mic to identify Banshee (unique wail) — but hearing Moroi sounds curses you (doubles sanity drain), so be ready to take pills</li>
                         <li>Leverage ghost weaknesses (Mare light sensitivity, etc)</li>
                     </ul>
                 </div>
@@ -547,7 +605,7 @@
                             <h4>During Hunts</h4>
                             <ul>
                                 <li>Break line of sight immediately</li>
-                                <li>Hide in closets/lockers (close door, stay quiet)</li>
+                                <li>Hide in closets/lockers (close door, stay quiet) — <strong>except vs Deogen</strong>, which always finds you regardless</li>
                                 <li>Loop furniture vs slow ghosts</li>
                                 <li>Smudge to blind and slow ghost</li>
                                 <li>Turn OFF electronics (flashlight, etc)</li>
@@ -560,7 +618,7 @@
                                 <li>Stay in lit areas when possible</li>
                                 <li>Light candles for safe zones</li>
                                 <li>Save pills for after evidence</li>
-                                <li>Avoid staring at Phantom</li>
+                                <li>Avoid staring at Phantom (extra sanity drain) — take a photo during events to make it vanish</li>
                                 <li>Leave before critical (25%) sanity</li>
                                 <li>Use pills to slow Moroi</li>
                             </ul>
@@ -570,7 +628,7 @@
                             <ul>
                                 <li>Place crucifixes in ghost room center</li>
                                 <li>Smudge in ghost room for 90s safety</li>
-                                <li>Drop EMF reader, don't carry it</li>
+                                <li>Drop EMF reader rather than carry it — carrying active equipment attracts Raiju and contributes to its speed boost</li>
                                 <li>Use glowsticks for constant UV coverage</li>
                                 <li>Salt in doorways tracks roaming</li>
                                 <li>Multiple cameras = better Orb detection</li>
@@ -587,6 +645,249 @@
                                 <li>Asylum: Can take 20+ minutes</li>
                             </ul>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ZERO EVIDENCE SECTION -->
+    <div class="main-section" id="section-zeroev" style="display: none;">
+        <div class="section-container">
+            <h2 class="page-title" style="color: #a78bfa;">🎲 NIGHTMARE MODE GUIDE</h2>
+            <p style="color: var(--text-muted); margin-bottom: 8px; font-size: 0.9rem;">On Nightmare you only get <strong>2 evidence</strong>. On Insanity, just <strong>1</strong>. That means you need to narrow down the ghost using <strong>behaviour</strong> — not evidence alone. This page covers every tool you have to do that.</p>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px;">
+                <div style="background:rgba(139,92,246,0.12); border:1px solid rgba(139,92,246,0.4); border-radius:6px; padding:8px 14px; font-size:0.8rem; color:#c4b5fd;"><strong>Nightmare:</strong> 2 evidence shown, 1 hidden</div>
+                <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.4); border-radius:6px; padding:8px 14px; font-size:0.8rem; color:#fca5a5;"><strong>Insanity:</strong> 1 evidence shown, 2 hidden</div>
+                <div style="background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.4); border-radius:6px; padding:8px 14px; font-size:0.8rem; color:#67e8f9;"><strong>Forced evidence</strong> on ghost cards = always shown regardless of difficulty</div>
+            </div>
+
+            <!-- LOADOUT -->
+            <div class="strategy-phase" style="border-color: rgba(139,92,246,0.35); background: rgba(139,92,246,0.04);">
+                <h3 class="phase-header" style="color: #a78bfa; border-color: rgba(139,92,246,0.3);">🎒 WHAT TO BRING</h3>
+                <div class="tip-grid" style="grid-template-columns: repeat(auto-fill,minmax(210px,1fr)); gap:12px; margin-top:12px;">
+                    <div class="tip-card" style="border-color:rgba(139,92,246,0.35);">
+                        <h4 style="color:#a78bfa;">Always Bring</h4>
+                        <ul>
+                            <li><strong>Smudge Sticks ×2</strong> — blocks hunts, times Spirit (180s) vs Demon (60s) vs standard (90s)</li>
+                            <li><strong>Crucifix ×2</strong> — critical against Demon, Thaye, any early hunter</li>
+                            <li><strong>Salt ×2</strong> — disturbed + no UV prints = Wraith confirmed</li>
+                            <li><strong>Photo Camera</strong> — Phantom disappears when photographed during event</li>
+                            <li><strong>Sanity Pills</strong> — removes Moroi curse, manage overall drain</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card" style="border-color:rgba(139,92,246,0.35);">
+                        <h4 style="color:#a78bfa;">Behaviour Tools</h4>
+                        <ul>
+                            <li><strong>Parabolic Mic</strong> — Banshee unique wail, Myling makes more sounds outside hunts</li>
+                            <li><strong>Spirit Box</strong> — Deogen gives unique heavy breathing; Moroi forced evidence on Nightmare</li>
+                            <li><strong>UV Flashlight</strong> — 6-finger print = Obake; salt footprint test for Wraith</li>
+                            <li><strong>Thermometer</strong> — find ghost room; support Hantu temperature test</li>
+                            <li><strong>Video Camera</strong> — Goryo D.O.T.S only visible through camera feed</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card" style="border-color:rgba(249,115,22,0.35);">
+                        <h4 style="color:var(--acc-orange);">Situational</h4>
+                        <ul>
+                            <li><strong>Firelight ×2</strong> — Onryo can't hunt near flames; keep 2 lit so one blow-out doesn't trigger a hunt</li>
+                            <li><strong>Motion Sensor</strong> — Yurei stays in room after smudge; Goryo short-roam verification</li>
+                            <li><strong>EMF Reader</strong> — Wraith teleport leaves EMF 2 near players</li>
+                            <li><strong>D.O.T.S Projector</strong> — Goryo camera-only test on Nightmare/Insanity</li>
+                            <li><strong>Ghost Writing Book</strong> — Shade won't write if player is in same room</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card" style="border-color:rgba(6,182,212,0.35);">
+                        <h4 style="color:var(--acc-cyan);">⏱️ Key Timings</h4>
+                        <ul>
+                            <li>Spirit smudge block: <span class="hl-green">180s</span></li>
+                            <li>Standard smudge block: <span class="hl-orange">90s</span></li>
+                            <li>Demon smudge block: <span class="hl-red">60s</span></li>
+                            <li>Demon hunt cooldown: <span class="hl-red">20s</span> (vs 25s normal)</li>
+                            <li>Moroi smudge blind: <span class="hl-orange">~7s</span> (vs 5s normal)</li>
+                            <li>Yurei room confinement: <span class="hl-green">~90s</span> after smudge</li>
+                            <li>Thaye ages every: <span class="hl-orange">1–2 min</span> near players</li>
+                            <li>Mimic switches ghost: <span class="hl-orange">30s–2min</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GHOST TELLS TABLE -->
+            <div class="strategy-phase" style="margin-top:20px;">
+                <h3 class="phase-header">👻 GHOST BEHAVIOUR TELLS</h3>
+                <p style="color:var(--text-muted); font-size:0.82rem; margin-bottom:16px;">Every ghost's behaviour-only signature and how to test for it. Click a row to expand the full procedure.</p>
+                <div id="zeroEvTable"></div>
+            </div>
+
+            <!-- SCENARIO STRATEGIES -->
+            <div class="strategy-phase" style="margin-top:20px;">
+                <h3 class="phase-header">🎭 IN-GAME SCENARIOS</h3>
+                <p style="color:var(--text-muted); font-size:0.82rem; margin-bottom:16px;">Something strange is happening and you don't know what it means? Find your situation below.</p>
+
+                <div class="zev-scenario" data-color="red">
+                    <div class="zev-scenario-title" onclick="this.parentElement.classList.toggle('open')">
+                        <span>🚨 Ghost is hunting way too early</span><span class="zev-arrow">▼</span>
+                    </div>
+                    <div class="zev-scenario-body">
+                        <p><strong>Suspects by threshold:</strong> Yokai 80% (if talking near ghost), Demon 70% (consistent), Thaye young 75% (only early game), Onryo 60% baseline or any sanity after 3 flame blow-outs, Mare 60% in darkness, Raiju 65% near electronics.</p>
+                        <ul>
+                            <li><strong>Rule out Yokai first:</strong> Stop all talking. If early hunts continue in complete silence, it's not Yokai — unless you're within 2m of it.</li>
+                            <li><strong>Distinguish Demon from Thaye:</strong> Thaye starts aggressive then progressively calms over 10+ minutes. Demon stays consistently aggressive throughout.</li>
+                            <li><strong>Confirm Demon:</strong> Smudge it, start timer. If it hunts 60–90s later (not 90s+), it's Demon. Also: crucifixes burn from 5m instead of 3m — if one burns from across a room, very suspicious.</li>
+                            <li><strong>Onryo vs Demon:</strong> Put Firelights near the ghost. If hunts stop while flames are lit and resume only when blown out, it's Onryo not Demon.</li>
+                            <li><strong>Survival:</strong> Demon has only 20s between hunts. Place crucifixes early. Smudge only gives 60s of protection — less than usual.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="zev-scenario" data-color="cyan">
+                    <div class="zev-scenario-title" onclick="this.parentElement.classList.toggle('open')">
+                        <span>🏃 Ghost speed feels wrong</span><span class="zev-arrow">▼</span>
+                    </div>
+                    <div class="zev-scenario-body">
+                        <ul>
+                            <li><strong>Fast with breaker ON, normal with breaker OFF:</strong> <span class="hl-green">Jinn.</span> Turn the power off mid-hunt to confirm the speed drop.</li>
+                            <li><strong>Fast near your equipment, slower elsewhere:</strong> <span class="hl-green">Raiju.</span> Turn off flashlights and pick up gear — speed should normalise.</li>
+                            <li><strong>Extremely slow while searching, then sprints when it sees you:</strong> <span class="hl-green">Revenant</span> (1 m/s → 3 m/s). Break LoS around a corner immediately.</li>
+                            <li><strong>Fast in cold rooms, slow in warm:</strong> <span class="hl-green">Hantu.</span> Keep breaker ON to heat the map. Look for frosty breath clouds from the ghost during hunts.</li>
+                            <li><strong>Gets faster across multiple hunts as sanity drops:</strong> <span class="hl-green">Moroi.</span> Pills remove the curse and will slow it down temporarily — confirm this.</li>
+                            <li><strong>Very fast at start, clearly slower after 10+ minutes:</strong> <span class="hl-green">Thaye.</span> It's aging. Players need to be nearby for it to age.</li>
+                            <li><strong>Fast from distance, nearly stops right next to you:</strong> <span class="hl-green">Deogen</span> (3 m/s → 0.4 m/s). Never hide — loop it around furniture.</li>
+                            <li><strong>Speed alternating noticeably between hunts:</strong> <span class="hl-green">Twins</span> — one twin is slower (~1.5 m/s) and one faster (~1.9 m/s), alternating who hunts.</li>
+                            <li><strong>Speeds up when you move, slows when you freeze:</strong> <span class="hl-green">Dayan.</span> Stand completely still during a hunt to confirm the dramatic slow-down.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="zev-scenario" data-color="yellow">
+                    <div class="zev-scenario-title" onclick="this.parentElement.classList.toggle('open')">
+                        <span>🔇 Ghost is barely doing anything</span><span class="zev-arrow">▼</span>
+                    </div>
+                    <div class="zev-scenario-body">
+                        <ul>
+                            <li><strong>Almost no activity at all, especially at high sanity:</strong> Classic <span class="hl-green">Shade.</span> Activity increases as sanity drops, but it still won't hunt while any player is in the same room.</li>
+                            <li><strong>Confirm Shade:</strong> Drop everyone's sanity below 35% and group up in the ghost room with a crucifix. If it refuses to hunt while grouped, that's a strong Shade indicator. Go solo to trigger events.</li>
+                            <li><strong>Was very busy early, now almost silent:</strong> <span class="hl-green">Thaye</span> that has aged fully. Consistent calm after an aggressive opening = Thaye, not Shade.</li>
+                            <li><strong>Quiet phases interrupted by sudden activity bursts:</strong> <span class="hl-green">Obambo.</span> Wait and watch — if it cycles back to aggressive every ~2 minutes, that's not a Shade.</li>
+                            <li><strong>Solo tip:</strong> Use the Parabolic Mic — Myling produces more paranormal sounds than average between hunts even when otherwise quiet.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="zev-scenario" data-color="green">
+                    <div class="zev-scenario-title" onclick="this.parentElement.classList.toggle('open')">
+                        <span>🕯️ Lights or flames are behaving strangely</span><span class="zev-arrow">▼</span>
+                    </div>
+                    <div class="zev-scenario-body">
+                        <ul>
+                            <li><strong>Lights constantly switching off, never on:</strong> <span class="hl-green">Mare.</span> It cannot turn lights ON — only off. Keep the ghost room lit to drop its hunt threshold from 60% to 40%. Note: the Mare does not actively seek dark rooms — it simply roams more when its current room is lit, so you'll often see it moving around a lot.</li>
+                            <li><strong>Confirm Mare:</strong> Turn a light on and watch it immediately go off. This pattern alone is very strong. Note: Mare can still interact with radios and TVs (though it currently cannot turn them on — a known bug) — it's specifically room light switches it turns off.</li>
+                            <li><strong>Firelights being blown out regularly:</strong> <span class="hl-green">Onryo.</span> Each blow-out is a blocked hunt attempt. Keep 2 Firelights active — when one blows out, the second blocks the follow-up hunt.</li>
+                            <li><strong>Confirm Onryo:</strong> Place a crucifix AND a Firelight both within range. If the flame blows out instead of the crucifix burning, it's Onryo — flames take priority over crucifixes for Onryo hunts.</li>
+                            <li><strong>Lights going both on AND off randomly:</strong> Not Mare (Mare only turns off). Could be general ghost interactions or a Jinn near the breaker. Check power state.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="zev-scenario" data-color="purple">
+                    <div class="zev-scenario-title" onclick="this.parentElement.classList.toggle('open')">
+                        <span>🎙️ Sound or voice-related weirdness</span><span class="zev-arrow">▼</span>
+                    </div>
+                    <div class="zev-scenario-body">
+                        <ul>
+                            <li><strong>One player gets chased every hunt while others are ignored:</strong> <span class="hl-green">Banshee.</span> It picks a single target at contract start. Keep the target's sanity above 50% — the Banshee checks only their sanity. Tip: crucifixes have 5m range vs Banshee (same as Demon), so they cover more ground.</li>
+                            <li><strong>Unique wail on Parabolic Mic (not a standard whisper):</strong> <span class="hl-green">Banshee</span> confirmed — no other ghost makes this sound.</li>
+                            <li><strong>Hunts starting while team is talking:</strong> Suspect <span class="hl-green">Yokai.</span> Stop all voice communication near the ghost room. If hunts stop, it was Yokai. If they continue, rule it out.</li>
+                            <li><strong>Ghost ignores your voice/flashlight from more than 2–3m during a hunt:</strong> <span class="hl-green">Yokai</span> — detection range drops to 2.5m during hunts. Talk loudly from 4m+ to test.</li>
+                            <li><strong>Sanity draining even in lit rooms:</strong> <span class="hl-green">Moroi curse</span> — someone triggered it via Spirit Box or Parabolic Mic. Take Sanity Pills immediately — pills are the only cure.</li>
+                            <li><strong>Ghost footsteps and vocals silent until it's almost on top of you:</strong> <span class="hl-green">Myling</span> — footsteps AND vocals only audible within 12m vs 20m for others. The Myling can still make sounds during hunts, they're just short-range. Drop a flashlight: if it flickers but you can't hear anything yet, that's Myling.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="zev-scenario" data-color="orange">
+                    <div class="zev-scenario-title" onclick="this.parentElement.classList.toggle('open')">
+                        <span>🧂 Physical evidence is telling you something</span><span class="zev-arrow">▼</span>
+                    </div>
+                    <div class="zev-scenario-body">
+                        <ul>
+                            <li><strong>Salt pile disturbed, NO UV footprints:</strong> <span class="hl-green">Wraith confirmed.</span> Only ghost that never leaves UV prints in salt. Also: EMF 2 reading appearing near a player far from the ghost room = Wraith teleport.</li>
+                            <li><strong>6-finger handprint on a door:</strong> <span class="hl-green">Obake confirmed.</span> No other ghost can do this. UV is Obake's forced evidence — will always appear on Nightmare.</li>
+                            <li><strong>UV fingerprints appearing less often or fading fast (around 30s):</strong> Suspect <span class="hl-green">Obake</span> — only 75% chance to leave prints, and halves the fade timer. Watch for model-change flickering during hunts too.</li>
+                            <li><strong>Outside/exit door closes fully without a hunt or event:</strong> <span class="hl-green">Yurei confirmed.</span> Only the Yurei can close exit doors outside of hunts. Watch for a 15% sanity drop alongside it.</li>
+                            <li><strong>Interior door closes smoothly (not during a hunt) and sanity drops:</strong> Likely <span class="hl-green">Yurei ability.</span> Smudge the room and put a motion sensor at the doorway — if it doesn't leave for ~90s, confirms Yurei weakness.</li>
+                            <li><strong>Salt disturbed WITH UV footprints:</strong> Rules out Wraith entirely. You're now looking at any ghost with UV in its evidence list.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="zev-scenario" data-color="cyan">
+                    <div class="zev-scenario-title" onclick="this.parentElement.classList.toggle('open')">
+                        <span>🧠 Still stuck between 2–3 suspects</span><span class="zev-arrow">▼</span>
+                    </div>
+                    <div class="zev-scenario-body">
+                        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:10px;">Use these hard eliminators — if you can observe any of these, cross a ghost off immediately.</p>
+                        <ul>
+                            <li><strong>Airball mist event happened — visually?</strong> → Eliminate <span class="hl-red">Oni</span>. You must actually <em>see</em> the floating mist ball. Walking manifestation events make the same hiss sound — the hiss alone is not enough to rule out Oni.</li>
+                            <li><strong>D.O.T.S silhouette visible to naked eye?</strong> → Eliminate <span class="hl-red">Goryo</span> — its silhouette is camera-only. (Note: on 0-evidence custom, Goryo shows no D.O.T.S at all.)</li>
+                            <li><strong>Ghost stepped in salt and LEFT UV prints?</strong> → Eliminate <span class="hl-red">Wraith</span> — Wraith never leaves UV prints in salt.</li>
+                            <li><strong>Ghost hunted while you were grouped in the ghost room?</strong> → Eliminate <span class="hl-red">Shade</span> — it cannot initiate a hunt when any player shares its room.</li>
+                            <li><strong>Ghost found you in a closet or locker immediately?</strong> → Strong <span class="hl-green">Deogen</span> — no other ghost reliably seeks out hidden players.</li>
+                            <li><strong>Smudge block lasted exactly 90s?</strong> → Eliminates <span class="hl-red">Spirit</span> (180s) and <span class="hl-red">Demon</span> (60s).</li>
+                            <li><strong>Smudge block lasted at least 180s consistently?</strong> → Strong <span class="hl-green">Spirit</span> indicator — Spirit always waits this long. Note: other ghosts can occasionally wait 180s by chance, so use the double-smudge method to confirm.</li>
+                            <li><strong>Ghost hasn't changed speed or activity after 10+ minutes with players nearby?</strong> → Eliminate <span class="hl-red">Thaye</span> (would have slowed) and <span class="hl-red">Obambo</span> (would have phase-switched).</li>
+                            <li><strong>3 flames blown out but no hunt followed?</strong> → Eliminate <span class="hl-red">Onryo</span> — it always triggers a hunt on the 3rd blow-out (unless blocked by another flame or crucifix).</li>
+                            <li><strong>Got 3 evidence pieces + Ghost Orbs on Nightmare?</strong> → <span class="hl-green">Mimic confirmed</span> — no other ghost produces 4 evidence.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- DANGER TIERS -->
+            <div class="strategy-phase" style="margin-top:20px;">
+                <h3 class="phase-header">⚠️ DANGER TIERS ON NIGHTMARE/INSANITY</h3>
+                <p style="color:var(--text-muted); font-size:0.82rem; margin-bottom:14px;">Knowing what you're up against changes how aggressively you should investigate.</p>
+                <div class="tip-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px;">
+                    <div class="tip-card" style="border-color:rgba(239,68,68,0.5); background:rgba(239,68,68,0.04);">
+                        <h4 style="color:var(--acc-red);">🔴 Extreme — Investigate fast, exit often</h4>
+                        <ul>
+                            <li><strong>Demon</strong> — 70% threshold, 20s cooldown, 60s smudge window</li>
+                            <li><strong>Deogen</strong> — knows your location always, hiding is useless</li>
+                            <li><strong>Thaye (young)</strong> — 75% threshold, 2.75 m/s early on</li>
+                            <li><strong>Onryo</strong> — any-sanity hunt after 3 flame blow-outs</li>
+                            <li><strong>Gallu</strong> — provoked and made more dangerous by your own protective gear</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card" style="border-color:rgba(249,115,22,0.5); background:rgba(249,115,22,0.04);">
+                        <h4 style="color:var(--acc-orange);">🟠 High — Respect it, manage sanity</h4>
+                        <ul>
+                            <li><strong>Revenant</strong> — 3 m/s on LoS, nearly uncatchable once seen</li>
+                            <li><strong>Moroi</strong> — fastest ghost in game at 0% sanity (3.71 m/s)</li>
+                            <li><strong>Raiju</strong> — 2.5 m/s near electronics, hunts at 65%</li>
+                            <li><strong>Yokai</strong> — 80% threshold if your team is talking</li>
+                            <li><strong>Obambo</strong> — unpredictable; safe then suddenly lethal</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card" style="border-color:rgba(234,179,8,0.4); background:rgba(234,179,8,0.03);">
+                        <h4 style="color:#eab308;">🟡 Medium — Stay aware</h4>
+                        <ul>
+                            <li><strong>Jinn</strong> — 2.5 m/s with breaker on, turn it off</li>
+                            <li><strong>Mare</strong> — 60% in darkness, keep the lights on</li>
+                            <li><strong>Hantu</strong> — 2.7 m/s in freezing rooms</li>
+                            <li><strong>Myling</strong> — silent approach, near-zero warning time</li>
+                            <li><strong>Dayan</strong> — punishes movement, freeze to survive</li>
+                        </ul>
+                    </div>
+                    <div class="tip-card" style="border-color:rgba(34,197,94,0.4); background:rgba(34,197,94,0.03);">
+                        <h4 style="color:#22c55e;">🟢 Lower — Still kill you, just more predictable</h4>
+                        <ul>
+                            <li><strong>Shade</strong> — 35% threshold, won't hunt in groups</li>
+                            <li><strong>Spirit</strong> — no special hunt mechanics, easy to smudge-stall</li>
+                            <li><strong>Banshee</strong> — safe for non-targets in multiplayer</li>
+                            <li><strong>Thaye (aged)</strong> — becomes 15% threshold and 1 m/s</li>
+                            <li><strong>Deogen</strong> — 0.4 m/s up close, consistently loopable</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -691,8 +992,11 @@
         function showSection(section) {
             document.querySelectorAll('.main-section').forEach(s => s.style.display = 'none');
             document.getElementById(`section-${section}`).style.display = 'flex';
-            document.querySelectorAll('.header-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            document.querySelectorAll('nav .nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.background = btn.dataset.section === section ? 'rgba(6,182,212,0.1)' : (btn.dataset.section === 'zeroev' ? 'rgba(139,92,246,0.15)' : 'transparent');
+            });
+            if (event && event.target) event.target.classList.add('active');
             
             // Initialize equipment section if switching to it
             if (section === 'equipment') {
@@ -702,6 +1006,75 @@
                     }
                 }, 50);
             }
+
+            // Build zero evidence table on first load
+            if (section === 'zeroev') {
+                buildZeroEvTable();
+            }
+        }
+
+        function buildZeroEvTable() {
+            const container = document.getElementById('zeroEvTable');
+            if (!container || container.dataset.built) return;
+            container.dataset.built = '1';
+
+            if (typeof GHOSTS === 'undefined') {
+                setTimeout(buildZeroEvTable, 200);
+                return;
+            }
+
+            const dangerColor = {
+                'Extreme': '#ef4444', 'High': '#f97316', 'High → Low': '#f97316',
+                'Med': '#eab308', 'Low': '#22c55e',
+                'Target Sanity': '#06b6d4', 'Variable': '#8b5cf6'
+            };
+
+            // Extract a clean one-liner from zeroEv — first sentence only
+            function shortSummary(text) {
+                // Strip HTML tags for the summary line
+                const stripped = text.replace(/<[^>]+>/g, '');
+                const dot = stripped.indexOf('.');
+                return dot > 0 && dot < 120 ? stripped.substring(0, dot + 1) : stripped.substring(0, 100) + '…';
+            }
+
+            container.innerHTML = GHOSTS.map(g => {
+                const dc = dangerColor[g.danger] || '#eab308';
+                const forcedBadge = g.forced
+                    ? `<span style="margin-left:6px; font-size:0.65rem; background:rgba(6,182,212,0.15); border:1px solid rgba(6,182,212,0.4); color:var(--acc-cyan); padding:2px 6px; border-radius:4px; font-family:var(--font-hud); font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">FORCED: ${g.forced}</span>` : '';
+                return `
+                <div class="zev-row">
+                    <div class="zev-row-head">
+                        <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:0;">
+                            <span style="font-family:var(--font-hud); font-weight:800; font-size:0.9rem; color:var(--text-main); min-width:105px;">${g.name}</span>
+                            <span style="font-size:0.7rem; color:${dc}; font-weight:700; font-family:var(--font-hud); white-space:nowrap; background:${dc}18; border:1px solid ${dc}44; padding:1px 6px; border-radius:4px;">${g.danger}</span>
+                            ${forcedBadge}
+                            <span class="zev-summary">${shortSummary(g.zeroEv)}</span>
+                        </div>
+                        <span class="zev-arrow-icon">▼</span>
+                    </div>
+                    <div class="zev-detail">
+                        <div class="zev-detail-section">
+                            <div class="zev-detail-label">🔍 BEHAVIOUR TELL</div>
+                            <div class="zev-detail-text">${g.zeroEv}</div>
+                        </div>
+                        <div class="zev-detail-section" style="margin-top:12px;">
+                            <div class="zev-detail-label">🧪 HOW TO TEST</div>
+                            <div class="confirm-box detail-text" style="margin:0; font-size:0.86rem;">${g.test}</div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+
+            container.querySelectorAll('.zev-row').forEach(row => {
+                const head = row.querySelector('.zev-row-head');
+                const detail = row.querySelector('.zev-detail');
+                const arrow = row.querySelector('.zev-arrow-icon');
+                head.addEventListener('click', () => {
+                    const isOpen = row.classList.contains('open');
+                    row.classList.toggle('open', !isOpen);
+                    arrow.textContent = isOpen ? '▼' : '▲';
+                });
+            });
         }
 
         // Equipment tab switching helper - calls the main function from script.js
