@@ -1010,6 +1010,7 @@ const EQUIPMENT = {
         { name: "Spirit Box", tier: "Starter", cost: "$50", usage: "Ask questions. Ghost may respond verbally. Evidence = any response.", mechanics: "Works in dark + alone (most ghosts) or anywhere (Deogen, Moroi). Must say trigger words.", tips: "Common questions: 'Where are you?', 'How old?', 'Give us a sign'. Be in dark, alone.", range: "Must be in same room as ghost" },
         { name: "UV Flashlight", tier: "Starter", cost: "$40", usage: "Reveals fingerprints on doors/windows. Evidence = ANY UV print.", mechanics: "Prints appear after ghost touches surface. Last 60s (30s Nightmare). Check doors/light switches.", tips: "Combine with glowsticks for constant coverage. Obake = 6 fingers.", range: "Shine directly on surface" },
         { name: "Photo Camera", tier: "Starter", cost: "$40", usage: "Take photos for money. Ghost photo, interactions, fingerprints, dead bodies.", mechanics: "10 photos max. Ghost photo = 3★ ($$$). Phantom vanishes in photo.", tips: "Save photos for ghost events/hunts. Bone photos = easy money.", range: "Must have subject in frame" },
+        { name: "Sound Recorder", tier: "Media", cost: "$30", usage: "Records paranormal audio for the Media tab and extra rewards.", mechanics: "Hold USE while aiming at/near valid sounds. Higher tiers make it easier to confirm successful recordings.", tips: "Use it for paranormal voices, Spirit Box responses, EMF 5 sounds, airball events, ghost writing, crucifix burns, and cursed item audio.", range: "Sound-based capture range" },
         { name: "Video Camera", tier: "Starter", cost: "$50", usage: "Monitor remotely for Ghost Orbs. Required for Goryo D.O.T.S", mechanics: "Place on tripod. Enable Night Vision. Check monitor in truck. Orbs = small white dots.", tips: "Cover multiple angles. Goryo DOTS only shows on camera, not naked eye.", range: "Based on camera view angle" },
         { name: "Thermometer", tier: "Starter", cost: "$30", usage: "Find cold rooms. Freezing Temps = below 0°C/32°F evidence.", mechanics: "Rooms cool over time. Breaker OFF = faster cooling. Yellow/Orange = room temp, Blue/Purple = ghost room", tips: "Sweep building early. Ghost room always coldest. Helps locate ghost quickly.", range: "Point and shoot - instant reading" },
         { name: "D.O.T.S Projector", tier: "Upgraded", cost: "$65", usage: "Projects green laser grid. Ghost silhouette = evidence.", mechanics: "Must be placed on wall/floor. Ghost walks through occasionally. Goryo = camera-only visibility.", tips: "Place facing open areas. Combine with video camera. May take time to show.", range: "~5m projection cone" },
@@ -1036,6 +1037,58 @@ const EQUIPMENT = {
     ]
 };
 
+// Equipment unlock levels based on the current Chronicle-era progression table.
+// Use aliases so the older labels in this site still show the correct modern item unlocks.
+const EQUIPMENT_UNLOCKS = {
+    "D.O.T.S Projector": { t1: "Starter", t2: 27, t3: 49, upgrade2: "$3,000", upgrade3: "$3,000" },
+    "EMF Reader": { t1: "Starter", t2: 18, t3: 46, upgrade2: "$3,000", upgrade3: "$4,500" },
+    "Ghost Writing Book": { t1: "Starter", t2: 23, t3: 55, upgrade2: "$3,000", upgrade3: "$3,000" },
+    "Spirit Box": { t1: "Starter", t2: 23, t3: 46, upgrade2: "$3,000", upgrade3: "$3,000" },
+    "Thermometer": { t1: "Starter", t2: 27, t3: 65, upgrade2: "$3,000", upgrade3: "$3,000" },
+    "UV Flashlight": { t1: "Starter", t2: 18, t3: 46, upgrade2: "$3,000", upgrade3: "$2,000", alias: "UV Light" },
+    "Glowstick": { t1: "Starter", t2: 18, t3: 46, upgrade2: "$3,000", upgrade3: "$2,000", alias: "UV Light" },
+    "Video Camera": { t1: "Starter", t2: 27, t3: 49, upgrade2: "$3,000", upgrade3: "$3,000" },
+    "Flashlight": { t1: "Starter", t2: 18, t3: 34, upgrade2: "$3,000", upgrade3: "$3,000" },
+    "Strong Flashlight": { t1: "Starter", t2: 18, t3: 34, upgrade2: "$3,000", upgrade3: "$3,000", alias: "Flashlight" },
+    "Crucifix": { t1: 7, t2: 34, t3: 80, upgrade2: "$4,000", upgrade3: "$20,000" },
+    "Candle": { t1: 12, t2: 37, t3: 75, upgrade2: "$3,000", upgrade3: "$10,000", alias: "Firelight" },
+    "Lighter": { t1: 12, t2: 37, t3: 52, upgrade2: "$500", upgrade3: "$750", alias: "Igniter" },
+    "Smudge Sticks": { t1: 14, t2: 37, t3: 80, upgrade2: "$3,500", upgrade3: "$15,000", alias: "Incense" },
+    "Incense": { t1: 14, t2: 37, t3: 80, upgrade2: "$3,500", upgrade3: "$15,000" },
+    "Motion Sensor": { t1: 3, t2: 42, t3: 70, upgrade2: "$2,500", upgrade3: "$8,000" },
+    "Parabolic Microphone": { t1: 5, t2: 32, t3: 70, upgrade2: "$3,000", upgrade3: "$5,000" },
+    "Photo Camera": { t1: 2, t2: 23, t3: 55, upgrade2: "$3,000", upgrade3: "$5,000" },
+    "Salt": { t1: 8, t2: 39, t3: 65, upgrade2: "$2,500", upgrade3: "$5,000" },
+    "Sanity Pills": { t1: 14, t2: 39, t3: 75, upgrade2: "$2,000", upgrade3: "$5,000", alias: "Sanity Medication" },
+    "Sound Recorder": { t1: 4, t2: 39, t3: 60, upgrade2: "$3,000", upgrade3: "$5,000" },
+    "Sound Sensor": { t1: 10, t2: 32, t3: 52, upgrade2: "$3,000", upgrade3: "$1,500" },
+    "Tripod": { t1: 9, t2: 34, t3: 60, upgrade2: "$5,000", upgrade3: "$3,000" },
+    "Head Mounted Camera": { t1: 13, t2: 42, t3: 80, upgrade2: "$10,000", upgrade3: "$10,000", alias: "Head Gear" }
+};
+
+function formatUnlockLevel(value) {
+    return value === "Starter" ? "Default" : `Lvl ${value}`;
+}
+
+function renderUnlocks(item) {
+    const unlock = EQUIPMENT_UNLOCKS[item.name];
+    if (!unlock) return '';
+
+    const aliasNote = unlock.alias ? `<div class="unlock-alias">Modern name: ${unlock.alias}</div>` : '';
+
+    return `
+        <div class="unlock-panel">
+            <div class="unlock-title">Unlock Levels</div>
+            <div class="unlock-row">
+                <div class="unlock-tier"><span>T1</span><strong>${formatUnlockLevel(unlock.t1)}</strong></div>
+                <div class="unlock-tier"><span>T2</span><strong>${formatUnlockLevel(unlock.t2)}</strong><small>${unlock.upgrade2 || ''}</small></div>
+                <div class="unlock-tier"><span>T3</span><strong>${formatUnlockLevel(unlock.t3)}</strong><small>${unlock.upgrade3 || ''}</small></div>
+            </div>
+            ${aliasNote}
+        </div>
+    `;
+}
+
 // Equipment Tab Rendering
 window.showEquipTab = function(category) {
     const content = document.getElementById('equip-content');
@@ -1053,9 +1106,11 @@ window.showEquipTab = function(category) {
                     <div class="equip-badges">
                         <span class="tier-badge">${item.tier}</span>
                         <span class="cost-badge">${item.cost}</span>
+                        ${EQUIPMENT_UNLOCKS[item.name] ? `<span class="unlock-badge">${formatUnlockLevel(EQUIPMENT_UNLOCKS[item.name].t1)}</span>` : ''}
                     </div>
                 </div>
                 <p class="equip-usage"><strong>Usage:</strong> ${item.usage}</p>
+                ${renderUnlocks(item)}
                 <p class="equip-mechanics"><strong>Mechanics:</strong> ${item.mechanics}</p>
                 ${item.range ? `<p class="equip-detail"><strong>Range:</strong> ${item.range}</p>` : ''}
                 ${item.battery ? `<p class="equip-detail"><strong>Battery:</strong> ${item.battery}</p>` : ''}
