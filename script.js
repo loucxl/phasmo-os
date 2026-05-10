@@ -116,7 +116,7 @@ const GHOSTS = [
         desc: "The most aggressive ghost. Hunts very early (70% sanity) and very frequently. Can rarely hunt at ANY sanity level! Use crucifixes early.",
         ability: "Hunts at 70% sanity (vs normal 50%). Only 20-second cooldown between hunts (vs normal 25s). Has a rare ability to hunt at 100% sanity (very rare). Smudging only prevents hunts for 60s (vs 90s). Crucifix range is 50% larger against Demon: T1 4.5m, T2 6m, T3 7.5m",
         test: "Smudge Timing Test: Smudge the ghost when it's NOT hunting and start a timer. If it initiates a hunt <span class='hl-red'>between 60–90 seconds</span> after being smudged (vs Spirit's 180s or standard 90s), it's likely a Demon. Also watch for hunts at high sanity (70%+) and very short gaps between consecutive hunts (20s cooldown vs 25s normally).",
-        zeroEv: "Frequent hunts starting at 60–70% sanity — you'll be hunted way earlier than expected. Very short cooldown between hunts. Smudge blocks hunting for only 60 seconds. Crucifix range is 5m (vs 3m) so it burns crucifixes from further away. Rare chance to hunt at ANY sanity, even 100%.",
+        zeroEv: "Frequent hunts starting at 60–70% sanity — you'll be hunted way earlier than expected. Very short cooldown between hunts. Smudge blocks hunting for only 60 seconds. Crucifix range is 50% larger against Demon: T1 4.5m, T2 6m, T3 7.5m. Rare chance to hunt at ANY sanity, even 100%.",
         tags: ['early'],
         speedStates: [{"label": "Normal", "speed": 1.7}]
     },
