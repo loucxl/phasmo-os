@@ -2054,9 +2054,11 @@ async function handleNicknameSubmit(e) {
     
     const nickname = document.getElementById('nicknameInput').value.trim();
     const errorEl = document.getElementById('nicknameError');
+    const submitBtn = e.submitter || document.querySelector('#nicknameForm button[type="submit"]');
     
     // Clear error
     errorEl.classList.remove('show');
+    errorEl.textContent = '';
     
     // Validate
     if (nickname.length < 3 || nickname.length > 20) {
@@ -2070,20 +2072,50 @@ async function handleNicknameSubmit(e) {
         errorEl.classList.add('show');
         return;
     }
+
+    if (!currentUser || !currentUser.uid) {
+        errorEl.textContent = "Login is still loading. Please wait a second and try again.";
+        errorEl.classList.add('show');
+        return;
+    }
     
     try {
-        // Save nickname to Firebase
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+        }
+
         const userRef = firebase.database().ref(`users/${currentUser.uid}`);
-        const snapshot = await userRef.once('value');
-        const userData = snapshot.val() || {};
-        
-        await userRef.update({
-            nickname: nickname,
-            email: currentUser.email,
-            photoURL: currentUser.photoURL,
-            updatedAt: Date.now(),
-            stats: userData.stats || { total: 0, wins: 0, losses: 0 }
-        });
+
+        // Save the required field first, on its own. This avoids a full-profile update failing
+        // because of stricter Firebase rules around optional fields like email/photoURL/stats.
+        await userRef.child('nickname').set(nickname);
+
+        // Optional profile metadata. These are nice to have, but nickname save should not fail
+        // just because rules reject one of these fields.
+        const optionalProfile = {
+            updatedAt: Date.now()
+        };
+        if (currentUser.photoURL) optionalProfile.photoURL = currentUser.photoURL;
+        if (currentUser.email) optionalProfile.email = currentUser.email;
+
+        try {
+            await userRef.update(optionalProfile);
+        } catch (profileError) {
+            console.warn('Nickname saved, but optional profile metadata was not saved:', profileError);
+        }
+
+        // Create starter stats only if the user does not already have any. Failure here should
+        // not block login/nickname creation.
+        try {
+            const statsRef = userRef.child('stats');
+            const statsSnapshot = await statsRef.once('value');
+            if (!statsSnapshot.exists()) {
+                await statsRef.set({ total: 0, wins: 0, losses: 0, xp: 0, level: 1 });
+            }
+        } catch (statsError) {
+            console.warn('Nickname saved, but starter stats were not saved:', statsError);
+        }
         
         currentUserNickname = nickname;
         
@@ -2097,8 +2129,14 @@ async function handleNicknameSubmit(e) {
         
     } catch (error) {
         console.error("Error saving nickname:", error);
-        errorEl.textContent = "Failed to save nickname";
+        const message = error && (error.message || error.code) ? `Failed to save nickname: ${error.message || error.code}` : "Failed to save nickname";
+        errorEl.textContent = message;
         errorEl.classList.add('show');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'SET NICKNAME';
+        }
     }
 }
 
