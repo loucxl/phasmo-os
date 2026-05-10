@@ -255,6 +255,128 @@ header {
     text-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
 }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   SITE SEARCH
+   ═══════════════════════════════════════════════════════════════ */
+.site-search-panel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin: 0 0 16px 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.ghost-search-panel {
+    margin: 0 0 14px 0;
+}
+
+.equipment-search-panel {
+    margin-bottom: 14px;
+}
+
+.site-search-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(6, 182, 212, 0.12);
+    border: 1px solid rgba(6, 182, 212, 0.25);
+}
+
+.site-search-input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: var(--text-main);
+    font-family: var(--font-hud);
+    font-size: 0.95rem;
+    letter-spacing: 0.2px;
+}
+
+.site-search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.site-search-clear {
+    background: rgba(239, 68, 68, 0.10);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: var(--text-muted);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-family: var(--font-hud);
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.site-search-clear:hover {
+    color: #fff;
+    border-color: var(--acc-red);
+    background: rgba(239, 68, 68, 0.18);
+}
+
+.site-search-meta {
+    margin: -4px 0 16px 2px;
+    color: var(--text-muted);
+    font-family: var(--font-hud);
+    font-size: 0.78rem;
+    letter-spacing: 0.4px;
+}
+
+.search-empty-state {
+    grid-column: 1 / -1;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 28px;
+    background: rgba(15, 23, 42, 0.82);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.search-empty-state strong {
+    color: var(--acc-cyan);
+    font-family: var(--font-hud);
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.search-empty-state span {
+    max-width: 520px;
+    line-height: 1.5;
+}
+
+.category-badge {
+    background: rgba(139, 92, 246, 0.15);
+    color: #c4b5fd;
+    border: 1px solid rgba(139, 92, 246, 0.35);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-family: var(--font-hud);
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    GHOSTS SECTION (Evidence Bar)
    ═══════════════════════════════════════════════════════════════ */
@@ -1343,6 +1465,19 @@ dialog::backdrop {
         padding: 20px 20px 100px 20px;
     }
     
+    .site-search-panel {
+        align-items: stretch;
+        flex-wrap: wrap;
+    }
+
+    .site-search-icon {
+        display: none;
+    }
+
+    .site-search-clear {
+        width: 100%;
+    }
+
     .equipment-list {
         grid-template-columns: 1fr;
     }
