@@ -299,7 +299,8 @@ const GHOSTS = [
 let app = {
     evidence: { emf:0, box:0, uv:0, orb:0, writing:0, freezing:0, dots:0 },
     activeFilters: new Set(),
-    timer: { int: null, dur: 90 }
+    timer: { int: null, dur: 90 },
+    search: { ghosts: '', equipment: '', equipmentTab: 'detection' }
 };
 
 const ui = {
@@ -523,6 +524,41 @@ function init() {
         });
     }
 
+    // Search boxes
+    const ghostSearchInput = document.getElementById('ghostSearchInput');
+    const ghostSearchClear = document.getElementById('ghostSearchClear');
+    if (ghostSearchInput) {
+        ghostSearchInput.addEventListener('input', () => {
+            app.search.ghosts = ghostSearchInput.value.trim().toLowerCase();
+            updateBoard();
+        });
+    }
+    if (ghostSearchClear) {
+        ghostSearchClear.addEventListener('click', () => {
+            app.search.ghosts = '';
+            if (ghostSearchInput) ghostSearchInput.value = '';
+            updateBoard();
+            ghostSearchInput?.focus();
+        });
+    }
+
+    const equipmentSearchInput = document.getElementById('equipmentSearchInput');
+    const equipmentSearchClear = document.getElementById('equipmentSearchClear');
+    if (equipmentSearchInput) {
+        equipmentSearchInput.addEventListener('input', () => {
+            app.search.equipment = equipmentSearchInput.value.trim().toLowerCase();
+            if (window.showEquipTab) window.showEquipTab(app.search.equipmentTab || 'detection');
+        });
+    }
+    if (equipmentSearchClear) {
+        equipmentSearchClear.addEventListener('click', () => {
+            app.search.equipment = '';
+            if (equipmentSearchInput) equipmentSearchInput.value = '';
+            if (window.showEquipTab) window.showEquipTab(app.search.equipmentTab || 'detection');
+            equipmentSearchInput?.focus();
+        });
+    }
+
     // Initial manual content
     document.getElementById('manualContent').innerHTML = MANUAL_DB.ev;
 }
@@ -558,6 +594,32 @@ function renderFilters() {
 }
 
 // --- 5. LOGIC ---
+function stripHtml(text) {
+    return String(text || '').replace(/<[^>]*>/g, ' ');
+}
+
+function normaliseSearchText(text) {
+    return stripHtml(text).toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+function ghostMatchesSearch(g, query) {
+    if (!query) return true;
+
+    // Search only the ghost card name.
+    // This prevents searches like "Spirit" from matching every ghost with Spirit Box evidence.
+    const searchable = normaliseSearchText(g.name);
+    return query.split(/\s+/).every(term => searchable.includes(term));
+}
+
+function equipmentMatchesSearch(item, category, query) {
+    if (!query) return true;
+
+    // Search only the equipment card name.
+    // This prevents searches like "Read" from matching card body text/mechanics.
+    const searchable = normaliseSearchText(item.name);
+    return query.split(/\s+/).every(term => searchable.includes(term));
+}
+
 function toggleEv(id, val, e) {
     e.preventDefault();
     app.evidence[id] = (app.evidence[id] === val) ? 0 : val;
@@ -582,6 +644,10 @@ function updateBoard() {
             });
         }
 
+        if(possible && !ghostMatchesSearch(g, app.search.ghosts)) {
+            possible = false;
+        }
+
         if(possible) {
             matches.push(g);
             g.ev.forEach(e => possibleEv.add(e));
@@ -590,6 +656,17 @@ function updateBoard() {
     });
 
     ui.count.textContent = matches.length;
+
+    const ghostSearchMeta = document.getElementById('ghostSearchMeta');
+    if (ghostSearchMeta) {
+        if (app.search.ghosts) {
+            ghostSearchMeta.style.display = 'block';
+            ghostSearchMeta.textContent = `Showing ${matches.length} ghost${matches.length === 1 ? '' : 's'} with name matching “${app.search.ghosts}”`;
+        } else {
+            ghostSearchMeta.style.display = 'none';
+            ghostSearchMeta.textContent = '';
+        }
+    }
 
     // Update evidence counter
     const selectedEvidence = Object.values(app.evidence).filter(v => v === 1).length;
@@ -611,6 +688,14 @@ function updateBoard() {
     });
 
     ui.ghostGrid.innerHTML = '';
+    if (matches.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'search-empty-state';
+        empty.innerHTML = `<strong>No ghosts found</strong><span>Search now only checks ghost names. Try a ghost name, clear ruled-out evidence, or remove an active filter.</span>`;
+        ui.ghostGrid.appendChild(empty);
+        return;
+    }
+
     matches.forEach(g => {
         const card = document.createElement('div');
         card.className = 'card';
@@ -1093,17 +1178,49 @@ function renderUnlocks(item) {
 window.showEquipTab = function(category) {
     const content = document.getElementById('equip-content');
     if (!content) return;
-    
-    const items = EQUIPMENT[category] || [];
-    
+
+    app.search.equipmentTab = category;
+    const query = app.search.equipment || '';
+
+    let itemsWithCategory = [];
+    if (query) {
+        Object.entries(EQUIPMENT).forEach(([cat, items]) => {
+            items.forEach(item => {
+                if (equipmentMatchesSearch(item, cat, query)) {
+                    itemsWithCategory.push({ item, category: cat });
+                }
+            });
+        });
+    } else {
+        itemsWithCategory = (EQUIPMENT[category] || []).map(item => ({ item, category }));
+    }
+
+    const meta = document.getElementById('equipmentSearchMeta');
+    if (meta) {
+        if (query) {
+            meta.style.display = 'block';
+            meta.textContent = `Showing ${itemsWithCategory.length} equipment item${itemsWithCategory.length === 1 ? '' : 's'} with name matching “${query}” across all tabs`;
+        } else {
+            meta.style.display = 'none';
+            meta.textContent = '';
+        }
+    }
+
+    if (itemsWithCategory.length === 0) {
+        content.innerHTML = `<div class="search-empty-state"><strong>No equipment found</strong><span>Search now only checks equipment names. Try the card name, e.g. EMF, Reader, Crucifix, or Flashlight.</span></div>`;
+        return;
+    }
+
     let html = '<div class="equipment-list">';
-    
-    items.forEach(item => {
+
+    itemsWithCategory.forEach(({ item, category: itemCategory }) => {
+        const categoryLabel = itemCategory.charAt(0).toUpperCase() + itemCategory.slice(1);
         html += `
             <div class="equipment-card">
                 <div class="equip-header">
                     <h3 class="equip-name">${item.name}</h3>
                     <div class="equip-badges">
+                        ${query ? `<span class="category-badge">${categoryLabel}</span>` : ''}
                         <span class="tier-badge">${item.tier}</span>
                         <span class="cost-badge">${item.cost}</span>
                         ${EQUIPMENT_UNLOCKS[item.name] ? `<span class="unlock-badge">${formatUnlockLevel(EQUIPMENT_UNLOCKS[item.name].t1)}</span>` : ''}
@@ -1122,11 +1239,10 @@ window.showEquipTab = function(category) {
             </div>
         `;
     });
-    
+
     html += '</div>';
     content.innerHTML = html;
 };
-
 // exposed for HTML onclick
 // exposed for HTML onclick
 window.showManualTab = (key, btn) => {
