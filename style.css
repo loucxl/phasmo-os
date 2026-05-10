@@ -2663,3 +2663,78 @@ nav .nav-btn[onclick*="zeroev"]:focus {
 .tempo-btn-active {
     animation: tempo-pulse 0.8s ease-in-out infinite;
 }
+
+
+/* Equipment unlock level cards */
+.unlock-badge {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid var(--acc-purple);
+    color: #c4b5fd;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+}
+
+.unlock-panel {
+    margin: 12px 0 16px;
+    padding: 12px;
+    border: 1px solid rgba(168, 85, 247, 0.28);
+    border-radius: 8px;
+    background: rgba(168, 85, 247, 0.08);
+}
+
+.unlock-title {
+    color: #c4b5fd;
+    font-family: var(--font-hud);
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.unlock-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.unlock-tier {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 7px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.unlock-tier span {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+}
+
+.unlock-tier strong {
+    color: #fff;
+    font-family: var(--font-hud);
+    font-size: 0.95rem;
+}
+
+.unlock-tier small {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+}
+
+.unlock-alias {
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-style: italic;
+}
