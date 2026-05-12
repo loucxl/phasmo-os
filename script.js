@@ -3435,7 +3435,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 4. NAVIGATION HIGHLIGHTING
     // ============================================================
     function highlightActiveSection() {
-        const sections = ['ghosts', 'maps', 'equipment', 'mechanics', 'strategy'];
+        const sections = ['ghosts', 'maps', 'equipment', 'mechanics', 'strategy', 'zeroev', 'updates'];
         
         sections.forEach(sectionId => {
             const section = document.getElementById(`section-${sectionId}`);
