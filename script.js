@@ -301,7 +301,7 @@ const GHOSTS = [
         ability: "Coming soon",
         test: "Coming soon",
         zeroEv: "Coming soon.",
-        tags: ['early'],
+        tags: ['fast'],
         speedStates: [{"label": "normal", "speed": 1.7}]
     }
             ,
