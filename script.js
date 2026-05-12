@@ -299,7 +299,7 @@ const GHOSTS = [
         traits: ["Fastest When Chasing", "?", "?"],
         desc: "When an Aswang spots its target, it gains speed while pursuing them but are more focused on chasing visible players than searching hiding spots.",
         ability: "Coming soon",
-        test: "Coming soon",
+        test: "Tests and Ghost speeds to be tested.",
         zeroEv: "Coming soon.",
         tags: ['fast'],
         speedStates: [{"label": "normal", "speed": 1.7}]
@@ -308,7 +308,7 @@ const GHOSTS = [
     { 
         name: "Kormos", ev: ['orb','box','uv'], danger: "Med", hunt: "?", speed: "1.7 m/s", blink: "Normal", forced: null,
         traits: ["Strong Hearing", "Nearly blind", "?"],
-        desc: "Kormos have extremely strong hearing but have very poor vision, making them less reliable at tracking by sight. You can hide basically anywhere as long as you're not moving. This ghost can still kill the player while they are standing still.",
+        desc: "Kormos have extremely strong hearing but have very poor vision, making them less reliable at tracking by sight. You can hide basically anywhere as long as you're not moving. This ghost can still kill the player while they are standing still. The Kormos is one of three ghosts — alongside the Hantu and Onryo — where finding all three pieces of evidence still does not rule out The Mimic.",
         ability: "Coming soon",
         test: "Coming soon",
         zeroEv: "Coming soon.",
