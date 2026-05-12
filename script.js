@@ -296,8 +296,8 @@ const GHOSTS = [
         ,
     { 
         name: "Aswang", ev: ['freezing','writing','dots'], danger: "Med", hunt: "10% / 65%", speed: "1.45 / 1.96 m/s", blink: "Normal", forced: null,
-        traits: ["?", "?", "?"],
-        desc: "Coming soon",
+        traits: ["Fastest When Chasing", "?", "?"],
+        desc: "When an Aswang spots its target, it gains speed while pursuing them but are more focused on chasing visible players than searching hiding spots.",
         ability: "Coming soon",
         test: "Coming soon",
         zeroEv: "Coming soon.",
@@ -307,8 +307,8 @@ const GHOSTS = [
             ,
     { 
         name: "Kormos", ev: ['orb','box','uv'], danger: "Med", hunt: "10% / 65%", speed: "1.45 / 1.96 m/s", blink: "Normal", forced: null,
-        traits: ["?", "?", "?"],
-        desc: "Coming soon",
+        traits: ["Strong Hearing", "Nearly blind", "?"],
+        desc: "Kormos have extremely strong hearing but have very poor vision, making them less reliable at tracking by sight. You can hide basically anywhere as long as you're not moving. This ghost can still kill the player while they are standing still.",
         ability: "Coming soon",
         test: "Coming soon",
         zeroEv: "Coming soon.",
@@ -863,7 +863,7 @@ const MANUAL_DB = {
         <div class="manual-entry">
             <h4>Ghost Writing</h4>
             <p class="detail-text">
-                Ghost writes in the book. Thrown books or kicked books are <span class="hl-red">not</span> evidence.
+                Ghost writes in the book. Thrown books or ed books are <span class="hl-red">not</span> evidence.
                 <br><span class="hl-blue">Tip:</span> Use two books in the ghost room to speed this up, especially for shy ghosts.
             </p>
         </div>
@@ -1282,6 +1282,9 @@ function resetTimer() {
     ui.timerFill.style.width = "0%";
     ui.timerFill.style.background = "var(--acc-cyan)";
 }
+
+// Sort ghosts alphabetically
+GHOSTS.sort((a, b) => a.name.localeCompare(b.name));
 
 // kick off
 init();
@@ -3296,9 +3299,6 @@ async function viewFriendStats(friendUid, friendNickname) {
 // ═══════════════════════════════════════════════════════════════
 // COMPLETE NEW TOP BAR INTEGRATION
 // ═══════════════════════════════════════════════════════════════
-
-// Sort ghosts alphabetically
-GHOSTS.sort((a, b) => a.name.localeCompare(b.name));
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Initializing new top bar...');
