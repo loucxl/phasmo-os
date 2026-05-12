@@ -10,7 +10,7 @@ const EVIDENCE = [
 ];
 
 const FILTERS = [
-    { id: 'fast', label: '🏃 Fast Speed' },
+    { id: 'fast', label: '⚡ Speed Change' },
     { id: 'early', label: '⚠️ Early Hunter' },
     { id: 'quiet', label: '🤫 Quiet Footsteps (Myling)' },
     { id: 'guarantee', label: '✨ Guaranteed Ev' }
@@ -227,7 +227,7 @@ const GHOSTS = [
         ability: "Mimics the traits, abilities, speeds, and hunt patterns of other ghost types, changing which ghost it copies every 30 seconds to 2 minutes. ALWAYS has Ghost Orbs as forced 4th evidence.",
         test: "Fourth Evidence Test: The Mimic <span class='hl-green'>ALWAYS produces Ghost Orbs</span> as a fake 4th piece of evidence — even on 0-evidence custom runs. If you see Ghost Orbs AND collect 2 other evidence on Nightmare, suspect Mimic strongly. Watch for wildly inconsistent behavior across different hunts: speed, hunt threshold, and abilities all changing every 30s–2min as it mimics a new ghost type.",
         zeroEv: "Behaviour that dramatically shifts — one hunt it's slow, then fast, then it can't be hidden from, then hunts at high sanity. Ghost Orbs will always be present even on Nightmare. The mimic changes which ghost it copies every 30 seconds to 2 minutes (never mid-hunt). Cannot copy Goryo's camera-only D.O.T.S behaviour.",
-        tags: ['guarantee'],
+        tags: ['fast', 'guarantee'],
         speedStates: [{"label": "Copies host ghost", "speed": 0}]
     },
     { 
@@ -290,30 +290,30 @@ const GHOSTS = [
         ability: "Alternates between two states approximately every 2 minutes. Calm state: 10% hunt threshold, 1.45 m/s speed, very low activity. Aggressive state: 65% hunt threshold, 1.96 m/s speed, high activity. Can switch states mid-hunt!",
         test: "Phase Watch Test: Observe the ghost over at least 5–6 minutes. An Obambo switches between a <span class='hl-green'>Calm phase</span> (barely interacts, hunt threshold 10%, 1.45 m/s) and an <span class='hl-red'>Aggressive phase</span> (high activity, 65% threshold, 1.96 m/s) roughly every 2 minutes. If the ghost flip-flops dramatically between near-inactivity and intense hunting with no apparent cause, it's Obambo. It can also switch states mid-hunt.",
         zeroEv: "Wildly inconsistent behaviour that cycles in waves — very passive for a couple minutes, then suddenly very aggressive and hunting frequently, then passive again. Easy to mistake for Shade during calm phases or for an early hunter during aggressive phases. The key is the pattern repeating. If you've been watching long enough to see two full activity swings, it's almost certainly Obambo.",
-        tags: ['early'],
+        tags: ['fast', 'early'],
         speedStates: [{"label": "Calm phase", "speed": 1.45}, {"label": "Aggressive phase", "speed": 1.96}]
     }
         ,
     { 
-        name: "Aswang", ev: ['freezing','writing','dots'], danger: "Med", hunt: "?", speed: "1.7 m/s", blink: "Normal", forced: null,
-        traits: ["Fastest When Chasing", "?", "?"],
-        desc: "When an Aswang spots its target, it gains speed while pursuing them but are more focused on chasing visible players than searching hiding spots.",
-        ability: "Coming soon",
-        test: "Tests and Ghost speeds to be tested.",
-        zeroEv: "Coming soon.",
+        name: "Aswang", ev: ['freezing','writing','dots'], danger: "High", hunt: "50%", speed: "1.53 → ~2.53 m/s", blink: "Normal", forced: null,
+        traits: ["Faster LoS Acceleration", "Chase-Focused", "New Ghost"],
+        desc: "A chase-focused ghost that starts slightly slower than normal, but reaches its maximum line-of-sight speed much faster than most ghosts once it has spotted a player.",
+        ability: "The Aswang has a base hunt speed of 1.53 m/s and can still reach its normal maximum line-of-sight speed of about 2.53 m/s. The key difference is acceleration: it reaches max LoS speed in about 17.33 seconds instead of the standard 26 seconds. This makes long straight chases especially dangerous.",
+        test: "Line-of-Sight Speed Test: During a hunt, listen for a slightly slower starting pace that ramps up quickly once the ghost sees someone. It does not have a higher max LoS speed than expected for its base speed — it simply reaches that max much faster, in about 17.33s rather than 26s. Break line-of-sight quickly to stop it building speed.",
+        zeroEv: "On 0 evidence, look for a ghost that starts around 1.53 m/s but reaches its max line-of-sight speed much quicker than normal. It prefers chasing visible players over searching, so breaking line-of-sight and hiding cleanly is important. <span class='hl-red'>New ghost data is still being reviewed and may change.</span>",
         tags: ['fast'],
-        speedStates: [{"label": "normal", "speed": 1.7}]
+        speedStates: [{"label": "Base speed", "speed": 1.53}, {"label": "Max LoS (~17.33s)", "speed": 2.53}]
     }
-            ,
+    ,
     { 
-        name: "Kormos", ev: ['orb','box','uv'], danger: "Med", hunt: "?", speed: "1.7 m/s", blink: "Normal", forced: null,
-        traits: ["Strong Hearing", "Nearly blind", "?"],
-        desc: "Kormos have extremely strong hearing but have very poor vision, making them less reliable at tracking by sight. You can hide basically anywhere as long as you're not moving. This ghost can still kill the player while they are standing still. The Kormos is one of three ghosts — alongside the Hantu and Onryo — where finding all three pieces of evidence still does not rule out The Mimic.",
-        ability: "Coming soon",
-        test: "Coming soon",
-        zeroEv: "Coming soon.",
-        tags: ['early'],
-        speedStates: [{"label": "normal", "speed": 1.7}]
+        name: "Kormos", ev: ['orb','box','uv'], danger: "High", hunt: "50%", speed: "1.7 / 2.21 m/s", blink: "Normal", forced: null,
+        traits: ["Strong Hearing", "Nearly Blind", "Movement Detection"],
+        desc: "A nearly blind ghost with extremely strong hearing. It does not use normal line-of-sight tracking, but can detect players through voice, active electronics, and movement at different ranges.",
+        ability: "The Kormos is completely blind and detects players using sound and electronics instead of normal line-of-sight. It has normal electronic and voice detection ranges, but movement detection depends on how you move: crouch-walking can be detected from 10m, normal walking from 15m, and sprinting from 30m. If you are completely still, silent, and not holding/using active electronics, it should not detect you directly unless it physically paths into you. Its speed is 1.7 m/s by default and 2.21 m/s after detecting a player.",
+        test: "Movement Detection Test: During a hunt, stay silent, turn off/avoid active electronics, and stop moving. A Kormos should struggle to locate you by sight alone. Then compare movement: crouch-walking can alert it from 10m, walking from 15m, and sprinting from 30m. If the ghost reacts strongly to movement but cannot visually track a still, silent player, suspect Kormos.",
+        zeroEv: "On 0 evidence, Kormos is identified by its unusual hunting senses: completely blind to normal line-of-sight, but very sensitive to movement, voice, and active electronics. Stand still and stay quiet to test it. The Kormos is also one of three ghosts — alongside Hantu and Onryo — where collecting its full evidence set still does not rule out The Mimic, because Mimic Orbs can overlap with that evidence combination. <span class='hl-red'>New ghost data is still being reviewed and may change.</span>",
+        tags: ['fast'],
+        speedStates: [{"label": "Undetected", "speed": 1.7}, {"label": "After detection", "speed": 2.21}]
     }
 ];
 
@@ -3508,7 +3508,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div style="display: flex; flex-direction: column; gap: 6px;">
                 <button onclick="toggleFilter('fast')" data-filter="fast" class="sidebar-btn">
                     <span style="font-size: 1rem;">⚡</span>
-                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main);">Fast Speed</span>
+                    <span style="font-family: var(--font-hud); font-size: 0.75rem; font-weight: 600; color: var(--text-main);">Speed Change</span>
                 </button>
                 <button onclick="toggleFilter('early')" data-filter="early" class="sidebar-btn">
                     <span style="font-size: 1rem;">⚠️</span>
