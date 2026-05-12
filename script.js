@@ -293,6 +293,28 @@ const GHOSTS = [
         tags: ['early'],
         speedStates: [{"label": "Calm phase", "speed": 1.45}, {"label": "Aggressive phase", "speed": 1.96}]
     }
+        ,
+    { 
+        name: "Aswang", ev: ['freezing','writing','dots'], danger: "Med", hunt: "10% / 65%", speed: "1.45 / 1.96 m/s", blink: "Normal", forced: null,
+        traits: ["?", "?", "?"],
+        desc: "Coming soon",
+        ability: "Coming soon",
+        test: "Coming soon",
+        zeroEv: "Coming soon.",
+        tags: ['early'],
+        speedStates: [{"label": "normal", "speed": 1.7}]
+    }
+            ,
+    { 
+        name: "Kormos", ev: ['orb','box','uv'], danger: "Med", hunt: "10% / 65%", speed: "1.45 / 1.96 m/s", blink: "Normal", forced: null,
+        traits: ["?", "?", "?"],
+        desc: "Coming soon",
+        ability: "Coming soon",
+        test: "Coming soon",
+        zeroEv: "Coming soon.",
+        tags: ['early'],
+        speedStates: [{"label": "normal", "speed": 1.7}]
+    }
 ];
 
 // --- 2. STATE ---
