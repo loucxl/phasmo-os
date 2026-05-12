@@ -295,7 +295,7 @@ const GHOSTS = [
     }
         ,
     { 
-        name: "Aswang", ev: ['freezing','writing','dots'], danger: "Med", hunt: "10% / 65%", speed: "1.45 / 1.96 m/s", blink: "Normal", forced: null,
+        name: "Aswang", ev: ['freezing','writing','dots'], danger: "Med", hunt: "?", speed: "1.7 m/s", blink: "Normal", forced: null,
         traits: ["Fastest When Chasing", "?", "?"],
         desc: "When an Aswang spots its target, it gains speed while pursuing them but are more focused on chasing visible players than searching hiding spots.",
         ability: "Coming soon",
@@ -306,7 +306,7 @@ const GHOSTS = [
     }
             ,
     { 
-        name: "Kormos", ev: ['orb','box','uv'], danger: "Med", hunt: "10% / 65%", speed: "1.45 / 1.96 m/s", blink: "Normal", forced: null,
+        name: "Kormos", ev: ['orb','box','uv'], danger: "Med", hunt: "?", speed: "1.7 m/s", blink: "Normal", forced: null,
         traits: ["Strong Hearing", "Nearly blind", "?"],
         desc: "Kormos have extremely strong hearing but have very poor vision, making them less reliable at tracking by sight. You can hide basically anywhere as long as you're not moving. This ghost can still kill the player while they are standing still.",
         ability: "Coming soon",
