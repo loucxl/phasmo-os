@@ -2873,3 +2873,223 @@ nav .nav-btn[onclick*="zeroev"]:focus {
     font-size: 0.78rem;
     font-style: italic;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   UPDATES PAGE
+   ═══════════════════════════════════════════════════════════════ */
+.updates-page {
+    max-width: 1100px;
+}
+
+.updates-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 24px;
+    padding: 22px;
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(139, 92, 246, 0.08));
+}
+
+.updates-kicker {
+    margin: 0 0 8px;
+    color: var(--acc-cyan);
+    font-family: var(--font-hud);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+}
+
+.updates-intro {
+    max-width: 720px;
+    margin: 8px 0 0;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.updates-version-card {
+    min-width: 160px;
+    padding: 14px 16px;
+    border: 1px solid rgba(6, 182, 212, 0.35);
+    border-radius: 14px;
+    background: rgba(6, 182, 212, 0.08);
+    text-align: center;
+}
+
+.updates-version-label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+    font-family: var(--font-hud);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.updates-version-card strong {
+    color: var(--acc-cyan);
+    font-family: var(--font-mono);
+    font-size: 1.7rem;
+}
+
+.updates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.update-card {
+    margin-bottom: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--bg-card);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.update-card[open] {
+    border-color: rgba(6, 182, 212, 0.55);
+    box-shadow: 0 0 24px rgba(6, 182, 212, 0.12);
+}
+
+.update-card summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    user-select: none;
+}
+
+.update-card summary::-webkit-details-marker {
+    display: none;
+}
+
+.update-card summary::before {
+    content: "▶";
+    color: var(--acc-cyan);
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+}
+
+.update-card[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.update-summary-main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.update-version {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: var(--acc-cyan);
+    color: #001014;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.update-title {
+    color: var(--text-main);
+    font-family: var(--font-hud);
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.update-date-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 190px;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    text-align: right;
+}
+
+.update-date-stack strong {
+    color: var(--acc-orange);
+}
+
+.update-body {
+    border-top: 1px solid var(--border);
+    padding: 16px 22px 20px 56px;
+    color: var(--text-muted);
+    line-height: 1.65;
+}
+
+.update-body p {
+    margin: 0 0 12px;
+    color: var(--text-main);
+}
+
+.update-body ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.update-body li {
+    margin-bottom: 7px;
+}
+
+.update-body li:last-child {
+    margin-bottom: 0;
+}
+
+.update-body h3 {
+    margin: 18px 0 10px;
+    color: var(--acc-cyan);
+    font-family: var(--font-hud);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.update-body h4 {
+    margin: 16px 0 8px;
+    color: #fef3c7;
+    font-family: var(--font-hud);
+    letter-spacing: 0.4px;
+}
+
+@media (max-width: 800px) {
+    .updates-hero,
+    .update-card summary,
+    .update-summary-main {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .updates-version-card,
+    .update-date-stack {
+        width: 100%;
+        min-width: 0;
+        text-align: left;
+    }
+
+    .update-title {
+        white-space: normal;
+    }
+
+    .update-body {
+        padding: 14px 18px 18px;
+    }
+}
