@@ -3093,3 +3093,65 @@ nav .nav-btn[onclick*="zeroev"]:focus {
         padding: 14px 18px 18px;
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   DYNAMIC GAME UPDATE LOG HELPERS
+   ═══════════════════════════════════════════════════════════════ */
+.update-editor-hint {
+    margin: 18px 0 22px;
+    padding: 14px 16px;
+    border: 1px solid rgba(6, 182, 212, 0.28);
+    border-radius: 12px;
+    background: rgba(6, 182, 212, 0.06);
+    color: var(--text-muted);
+    line-height: 1.55;
+}
+
+.update-editor-hint strong {
+    color: var(--acc-cyan);
+}
+
+.update-editor-hint code {
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.22);
+    color: #fef3c7;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+}
+
+.update-section-block {
+    margin-bottom: 22px;
+}
+
+.update-section-block:last-child {
+    margin-bottom: 0;
+}
+
+.update-section-block h4 {
+    margin: 0 0 10px;
+    color: #fef3c7;
+    font-family: var(--font-hud);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.update-section-block p {
+    margin: 0 0 10px;
+    color: var(--text-main);
+}
+
+.update-section-block ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.update-section-block li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.update-section-block li:last-child {
+    margin-bottom: 0;
+}
