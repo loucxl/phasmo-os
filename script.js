@@ -3555,6 +3555,240 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(syncSidebar, 100);
 });
 
+
+// ═══════════════════════════════════════════════════════════════
+// GAME UPDATE LOG DATA
+// Add new game updates here. Newest update should be first.
+// Only the newest update needs open: true.
+// ═══════════════════════════════════════════════════════════════
+const GAME_UPDATES = [
+    {
+        version: "Hotfix v0.17.1.1",
+        title: "Phasmophobia - Hotfix v0.17.1.1",
+        logAdded: "13 May 2026",
+        gameRelease: "13 May 2026",
+        open: true,
+        sections: [
+            {
+                heading: "Fixes",
+                items: [
+                    "Fixed an issue that caused held equipment/items to visually stutter when moving.",
+                    "Fixed several issues that could lead to game crashes.",
+                    "Fixed an issue that caused the Kormos to detect dead players and attempt to kill them.",
+                    "Fixed an issue where the Kormos could detect sound from dead players.",
+                    "Fixed an issue where the Coffee World tent names were incorrect.",
+                    "Other fixes and improvements."
+                ]
+            }
+        ]
+    },
+    {
+        version: "v0.17.1.0",
+        title: "Player Character Update - Fixes & Changes",
+        logAdded: "12 May 2026",
+        gameRelease: "12 May 2026",
+        open: false,
+        sections: [
+            {
+                heading: "New",
+                items: [
+                    "Added a 5 second delay after you die to allow you to select a ghost in the journal."
+                ]
+            },
+            {
+                heading: "Changes",
+                items: [
+                    "Salt will now get instantly placed at the start of the animation instead of the end.",
+                    "Most equipment hold poses have been changed to fix several visual issues including wrists, elbows, arms and the equipment's position on the screen.",
+                    "The T3 Sanity Medication animation will no longer play in Multiplayer.",
+                    "The Tier 1 Igniter is now open so you can see how many matches are left.",
+                    "Removed the inventory swapping animation to allow for instant swapping of held equipment.",
+                    "Prestige cosmetics are now free after they are unlocked based on your Prestige level."
+                ]
+            },
+            {
+                heading: "Character Model Fixes",
+                items: [
+                    "Fixed an issue that caused the heads of character models to look incorrect when the player looks up and down.",
+                    "Fixed an issue that caused problems with the character rig upon being revived while crouched.",
+                    "Fixed an issue that caused character models to fall down incorrectly upon death.",
+                    "Fixed an issue that caused Non-VR player character's feet to clip below the ground when standing still.",
+                    "The player characters feet will no longer float in some areas.",
+                    "Fixed the characters walking animation when below 50% player speed.",
+                    "Fixed an issue that caused character model mouths to be open when the player moves to the right."
+                ]
+            },
+            {
+                heading: "Ghost Fixes",
+                items: [
+                    "Fixed an issue that prevented the Yurei from fully closing doors.",
+                    "Fixed an issue that caused the Raiju to flicker lights outside of Hunts.",
+                    "Fixed an issue on 42 Edgefield Road that caused the Ghost to get stuck in multiple rooms and not be able to reach players in the garage lockers.",
+                    "Fixed an issue where Ghosts in the Grafton Farmhouse Attic would wander too often outside their room."
+                ]
+            },
+            {
+                heading: "Environment Fixes",
+                items: [
+                    "Fixed an issue that caused doors to move incorrectly when holding the Tarot Cards.",
+                    "Fixed an issue that caused doors to be blocked by other players.",
+                    "Fixed an issue that prevented some doors on Bleasdale Farmhouse from opening correctly.",
+                    "Fixed an issue that caused doors to become detached from their hinges.",
+                    "Fixed an issue that caused Sunny Meadows Restricted to load into the full Sunny Meadows location.",
+                    "Fixed an issue that caused two boomboxes to be displayed in the lobby.",
+                    "Fixed several issues that caused inconsistencies with the animations when grabbing objects."
+                ]
+            },
+            {
+                heading: "Equipment Fixes",
+                items: [
+                    "Fixed an issue that caused held equipment to stutter when turning.",
+                    "Fixed an issue that caused Head Gear to be misaligned while crouching.",
+                    "Fixed an issue that prevented players from being seen on the CCTV through Tier 1 Head Gear.",
+                    "Fixed an issue that caused the Tier 1 Firelight being blown out to be heard throughout the map.",
+                    "Fixed an issue that caused the Tier 2 Photo Camera audio to play when using other equipment.",
+                    "Fixed several issues that prevented the Tier 2 and 3 Firelight from working correctly.",
+                    "Fixed an issue that caused the CCTV screen to be displayed on a Video Camera when first grabbed.",
+                    "Fixed an issue that caused usability issues with the Head Gear after toggling night vision on/off on a Video Camera.",
+                    "Fixed an issue related to the above that caused the Tripod to become invisible.",
+                    "Fixed an issue that caused the Ouija Board planchette to float.",
+                    "Fixed an issue that caused the watch's timer to desync upon death and revival.",
+                    "Fixed an issue that caused the Ouija Board and Haunted Mirror to drop on their sides.",
+                    "Fixed an issue that caused the wrong Tarot Card to be seen by other players when drawn by the player using them.",
+                    "Fixed several visual issues when grabbing an Igniter while holding a Flashlight.",
+                    "Fixed an issue that caused Flashlights to become invisible when being dropped to pick up another item.",
+                    "Fixed an issue that caused the Flashlight to appear when holding the Journal and pressing using the Flashlight.",
+                    "Fixed an issue that caused Spirit Box responses to be heard incorrectly.",
+                    "Fixed an issue that caused a still image to be displayed on the Tier 3 Video Camera when leaving the Van.",
+                    "Fixed an issue that caused the wrong exterior doors to lock on Bleasdale Farmhouse."
+                ]
+            },
+            {
+                heading: "VR Fixes",
+                items: [
+                    "Fixed an issue that prevented VR players from opening the upstairs hallway left side closet door.",
+                    "Fixed an issue where VR Players had to grab objects twice to pick them up.",
+                    "Fixed an issue that caused Head Gear to disappear from the player's hands when grabbed.",
+                    "Fixed an issue that caused a VR player's screen to spin when dying or reviving if immersive animations are enabled.",
+                    "Fixed an issue where the audio of a VR player dying could be heard across the map.",
+                    "Fixed an issue that caused objects to appear incorrect in a player's hand.",
+                    "Fixed an issue that caused items dropped by a VR player after they die to not appear for other players."
+                ]
+            },
+            {
+                heading: "Other Fixes",
+                items: [
+                    "Fixed an issue that prevented Voice Chat from working when the player was Dead.",
+                    "Fixed an issue that would cause the Journal to remain in the player's hand while Dead, if it was opened while dying.",
+                    "Fixed an issue that caused misaligned text with photo names in the Journal.",
+                    "Fixed an issue that caused the light from a Dead player's Journal from being visible to players that are alive.",
+                    "Fixed an issue with the Journal that made it difficult to navigate between pages and tabs.",
+                    "Fixed an issue that prevented the Welcome Back audio from playing.",
+                    "Fixed an issue that prevented the Doors Starting Open custom difficulty setting from working correctly.",
+                    "Fixed an issue that caused players to hear Dead players opening and closing their Journals.",
+                    "Fixed an issue that caused a soft lock if Alt + Tab was used during the death animation.",
+                    "Fixed an issue that prevented the Legacy Badge menu options from being selected.",
+                    "Fixed an issue that caused the journal objectives tick colour to be incorrect.",
+                    "Fixed an issue that caused door sounds to play when not moving and be heard across the map.",
+                    "Fixed an issue that caused the ID Card foil animation to not render correctly."
+                ]
+            },
+            {
+                heading: "Developer Roadmap Notes",
+                text: [
+                    "The developers noted that the update contains more than these fixes and changes, but wanted to share what has been worked on while feedback has been coming in.",
+                    "They have reviewed the roadmap and plan to release a second Player Character Update with additional content and changes."
+                ],
+                items: [
+                    "Additional cosmetic options to allow you to further personalize your characters.",
+                    "Improved character animations, aimed at quality and speeding up the gameplay.",
+                    "Adding the legacy badge customisation to the shop customisation screen.",
+                    "Improving equipment usability and speed.",
+                    "Various quality of life improvements to the player character and overall gameplay.",
+                    "Many other new features, fixes and improvements."
+                ]
+            }
+        ]
+    },
+    {
+        version: "v0.17.1.0",
+        title: "Phasmophobia by Alan Wake",
+        logAdded: "12 May 2026",
+        gameRelease: "12 May 2026",
+        open: false,
+        sections: [
+            {
+                heading: "Summary",
+                items: [
+                    "Alan Wake themed event/update released.",
+                    "Ghost fixes included Yurei door closing, Raiju light flicker behaviour, and several room/pathing fixes.",
+                    "Equipment fixes included Firelight, Head Gear, Video Camera, Flashlight, Tripod, Igniter, and Spirit Box related issues.",
+                    "Kormos and Aswang information is being tracked and should stay marked as subject to change while testing continues."
+                ]
+            }
+        ]
+    }
+];
+
+function escapeUpdateHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function renderGameUpdates() {
+    const container = document.getElementById("updatesList");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    GAME_UPDATES.forEach((update, index) => {
+        const card = document.createElement("details");
+        card.className = "update-card";
+        card.open = update.open === true || index === 0;
+
+        const sectionsHtml = (update.sections || []).map(section => {
+            const paragraphsHtml = (section.text || [])
+                .map(paragraph => `<p>${escapeUpdateHtml(paragraph)}</p>`)
+                .join("");
+            const itemsHtml = (section.items || [])
+                .map(item => `<li>${escapeUpdateHtml(item)}</li>`)
+                .join("");
+
+            return `
+                <div class="update-section-block">
+                    <h4>${escapeUpdateHtml(section.heading)}</h4>
+                    ${paragraphsHtml}
+                    ${itemsHtml ? `<ul>${itemsHtml}</ul>` : ""}
+                </div>
+            `;
+        }).join("");
+
+        card.innerHTML = `
+            <summary>
+                <div class="update-summary-main">
+                    <span class="update-version">${escapeUpdateHtml(update.version)}</span>
+                    <span class="update-title">${escapeUpdateHtml(update.title)}</span>
+                </div>
+                <div class="update-date-stack">
+                    <span><strong>Log Added:</strong> ${escapeUpdateHtml(update.logAdded)}</span>
+                    <span><strong>Game Release:</strong> ${escapeUpdateHtml(update.gameRelease)}</span>
+                </div>
+            </summary>
+            <div class="update-body">
+                ${sectionsHtml}
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", renderGameUpdates);
+
 // ============================================================
 // SIDEBAR SYNC FUNCTION
 // ============================================================
