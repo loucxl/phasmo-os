@@ -153,3 +153,10 @@ Phasmophobia and all related trademarks are property of Kinetic Games.
 ---
 
 **Made with ❤️ for ghost hunters everywhere**
+
+## Online Hunters Counter
+
+The top bar includes an **Online Hunters** badge powered by Firebase Realtime Database presence. Each open browser session writes a temporary heartbeat under `onlineHunters`, updates it every 10 seconds, and is removed automatically on disconnect where supported. Stale sessions are cleaned up after roughly 60 seconds.
+
+If the counter stays at 0, check that the Firebase Realtime Database rules allow public read/write access for the `onlineHunters` path.
+
