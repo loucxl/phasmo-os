@@ -2599,13 +2599,11 @@ updateUserCount = function() {
 // FRIENDS SYSTEM WITH FRIEND CODES
 // ═══════════════════════════════════════════════════════════════
 
-// FRIENDS SYSTEM WITH FRIEND CODES
-// Uses a small /friendCodes lookup index plus per-user notification inboxes.
-
 let currentFriends = [];
 let pendingRequests = { incoming: [], outgoing: [] };
 let friendsSystemBound = false;
 let friendListenersBoundFor = null;
+let lastFriendIndexWarning = '';
 
 function escapeHTML(value) {
     return String(value ?? '')
@@ -2632,6 +2630,19 @@ function generateFriendCode() {
     return code;
 }
 
+function setFriendCodeStatus(message, isWarning = false) {
+    const statusEl = document.getElementById('friendCodeStatus');
+    if (statusEl) {
+        statusEl.textContent = message || 'Share this code with friends to add them!';
+        statusEl.classList.toggle('warning', Boolean(isWarning));
+        return;
+    }
+
+    const codeEl = document.getElementById('yourFriendCode');
+    const helper = codeEl?.closest('.friend-code-card')?.querySelector('p');
+    if (helper) helper.textContent = message || 'Share this code with friends to add them!';
+}
+
 async function getPublicUserProfile(uid) {
     const snapshot = await firebase.database().ref(`users/${uid}`).once('value');
     const data = snapshot.val() || {};
@@ -2643,68 +2654,37 @@ async function getPublicUserProfile(uid) {
     };
 }
 
-async function claimFriendCodeIndex(code, uid) {
-    // /friendCodes is a helpful lookup index, but the friends system must not
-    // break if that optional path is missing or blocked by older database rules.
+async function tryClaimFriendCodeIndex(code, uid) {
+    const normalised = normaliseFriendCode(code);
+    const codeRef = firebase.database().ref(`friendCodes/${normalised}`);
+
     try {
-        const codeRef = firebase.database().ref(`friendCodes/${code}`);
         const snapshot = await codeRef.once('value');
-        if (snapshot.exists() && snapshot.val() !== uid) return false;
+        const existingUid = snapshot.val();
+
+        if (existingUid && existingUid !== uid) return false;
         await codeRef.set(uid);
         return true;
     } catch (error) {
-        console.warn('Friend-code index unavailable; using user profile fallback:', error);
+        lastFriendIndexWarning = error?.message || String(error);
+        console.warn('Friend code index could not be synced:', error);
         return null;
     }
-}
-
-async function findUserByFriendCodeFromProfiles(code) {
-    const normalised = normaliseFriendCode(code);
-    try {
-        const usersSnapshot = await firebase.database().ref('users').once('value');
-        let match = null;
-        usersSnapshot.forEach((child) => {
-            if (match) return;
-            const data = child.val() || {};
-            if (normaliseFriendCode(data.friendCode || '') === normalised) {
-                match = {
-                    uid: child.key,
-                    nickname: data.nickname || 'Unknown Hunter',
-                    photoURL: data.photoURL || '',
-                    friendCode: normalised
-                };
-            }
-        });
-        return match;
-    } catch (error) {
-        console.warn('Could not search user profiles for friend code:', error);
-        return null;
-    }
-}
-
-async function friendCodeExistsOnAnotherProfile(code, uid) {
-    const match = await findUserByFriendCodeFromProfiles(code);
-    return !!(match && match.uid !== uid);
 }
 
 async function lookupFriendCode(code) {
     const normalised = normaliseFriendCode(code);
 
-    // Fast path: use /friendCodes when available.
     try {
         const snapshot = await firebase.database().ref(`friendCodes/${normalised}`).once('value');
         const uid = snapshot.val();
-        if (uid) {
-            const profile = await getPublicUserProfile(uid);
-            return { uid, ...profile, friendCode: normalised };
-        }
+        if (!uid) return null;
+        const profile = await getPublicUserProfile(uid);
+        return { uid, ...profile };
     } catch (error) {
-        console.warn('Friend-code index lookup failed; trying profile fallback:', error);
+        console.error('Could not read friend-code lookup index:', error);
+        throw new Error('friend_code_index_unavailable');
     }
-
-    // Fallback path: search the visible user profiles. This fixes newly generated
-    // codes when /friendCodes has not been created by the database rules yet.
-    return await findUserByFriendCodeFromProfiles(normalised);
 }
 
 async function initializeFriendCode() {
@@ -2712,42 +2692,50 @@ async function initializeFriendCode() {
 
     const codeEl = document.getElementById('yourFriendCode');
     if (codeEl) codeEl.textContent = 'Loading...';
+    setFriendCodeStatus('Checking your friend code...');
+
+    const userRef = firebase.database().ref(`users/${currentUser.uid}`);
 
     try {
-        const userRef = firebase.database().ref(`users/${currentUser.uid}`);
         const snapshot = await userRef.once('value');
         const userData = snapshot.val() || {};
+        let code = userData.friendCode ? normaliseFriendCode(userData.friendCode) : '';
 
-        // Existing code: trust the user's own profile value and display it even if
-        // the optional /friendCodes index cannot be updated.
-        if (userData.friendCode) {
-            const existingCode = normaliseFriendCode(userData.friendCode);
-            if (existingCode !== userData.friendCode) {
-                try { await userRef.child('friendCode').set(existingCode); } catch (error) { console.warn('Could not normalise stored friend code:', error); }
-            }
-            claimFriendCodeIndex(existingCode, currentUser.uid);
-            if (codeEl) codeEl.textContent = existingCode;
-            return existingCode;
-        }
-
-        // New code: create it on the user's own profile first. The /friendCodes
-        // lookup is then attempted separately and can fail without making the UI
-        // show "Unavailable".
-        let code = generateFriendCode();
-        for (let attempts = 0; attempts < 20; attempts++) {
-            const collision = await friendCodeExistsOnAnotherProfile(code, currentUser.uid);
-            if (!collision) break;
+        if (!/^[A-Z]{4}-[0-9]{4}$/.test(code)) {
             code = generateFriendCode();
+
+            // Save to the user's own profile first. This is what prevents the UI from ever
+            // getting stuck at "Unavailable" just because the lookup index is blocked.
+            await userRef.child('friendCode').set(code);
+        } else if (code !== userData.friendCode) {
+            await userRef.child('friendCode').set(code);
         }
 
-        await userRef.child('friendCode').set(code);
-        claimFriendCodeIndex(code, currentUser.uid);
+        // Keep trying to reserve the lookup index. If a rare collision happens, generate a new
+        // profile code and try again. If rules block /friendCodes, we still show the user's code
+        // but warn that adding by code will not work until rules are fixed.
+        let indexResult = await tryClaimFriendCodeIndex(code, currentUser.uid);
+        for (let attempts = 0; indexResult === false && attempts < 20; attempts++) {
+            code = generateFriendCode();
+            await userRef.child('friendCode').set(code);
+            indexResult = await tryClaimFriendCodeIndex(code, currentUser.uid);
+        }
 
         if (codeEl) codeEl.textContent = code;
+
+        if (indexResult === true) {
+            setFriendCodeStatus('Share this code with friends to add them!');
+        } else if (indexResult === null) {
+            setFriendCodeStatus('Code created, but the friend-code lookup is blocked by database rules. Add Friend will not work until /friendCodes is readable/writable for logged-in users.', true);
+        } else {
+            setFriendCodeStatus('Could not reserve a unique friend code. Refresh and try again.', true);
+        }
+
         return code;
     } catch (error) {
         console.error('Error initialising friend code:', error);
         if (codeEl) codeEl.textContent = 'Unavailable';
+        setFriendCodeStatus('Could not create your friend code. Check the /users/$uid/friendCode write rule.', true);
         return null;
     }
 }
@@ -2837,9 +2825,11 @@ async function sendFriendRequest(e) {
     if (submitBtn) submitBtn.disabled = true;
 
     try {
+        await initializeFriendCode();
         const friend = await lookupFriendCode(code);
+
         if (!friend) {
-            if (errorEl) errorEl.textContent = 'No hunter found with that friend code.';
+            if (errorEl) errorEl.textContent = 'No hunter found with that friend code. Ask them to open Friends once, then try again.';
             return;
         }
 
@@ -2871,9 +2861,7 @@ async function sendFriendRequest(e) {
         const myProfile = await getPublicUserProfile(currentUser.uid);
         const now = Date.now();
 
-        // Save the sender-side outgoing request first. Then notify the recipient.
-        // Keeping these separate prevents one blocked cross-user write from making
-        // the whole request silently fail.
+        // Save our outgoing request first. This is our own path and should be allowed by rules.
         await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friend.uid}`).set({
             toUid: friend.uid,
             toNickname: friend.nickname || 'Unknown Hunter',
@@ -2881,6 +2869,7 @@ async function sendFriendRequest(e) {
             timestamp: now
         });
 
+        // Then notify the other user. Their client turns this into an incoming request.
         try {
             await firebase.database().ref(`users/${friend.uid}/friendRequestReceived/${currentUser.uid}`).set({
                 fromUid: currentUser.uid,
@@ -2888,10 +2877,10 @@ async function sendFriendRequest(e) {
                 fromPhotoURL: myProfile.photoURL || currentUser.photoURL || '',
                 timestamp: now
             });
-        } catch (notifyError) {
-            console.error('Could not notify recipient of friend request:', notifyError);
+        } catch (deliveryError) {
             await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friend.uid}`).remove();
-            if (errorEl) errorEl.textContent = 'Friend code found, but the request could not be delivered. Add the friendRequestReceived database rule.';
+            console.error('Could not deliver friend request:', deliveryError);
+            if (errorEl) errorEl.textContent = 'Found that hunter, but Firebase blocked the request delivery path. Check users/$uid/friendRequestReceived write rules.';
             return;
         }
 
@@ -2901,7 +2890,13 @@ async function sendFriendRequest(e) {
         await loadFriends();
     } catch (error) {
         console.error('Error sending friend request:', error);
-        if (errorEl) errorEl.textContent = 'Could not send the request. Please check the friend-system database rules.';
+        if (errorEl) {
+            if (error.message === 'friend_code_index_unavailable') {
+                errorEl.textContent = 'Friend-code lookup is blocked. Add /friendCodes read/write rules, then ask both accounts to open Friends once.';
+            } else {
+                errorEl.textContent = 'Could not send the request. Please check the friend-system database rules.';
+            }
+        }
     } finally {
         if (submitBtn) submitBtn.disabled = false;
     }
@@ -2917,6 +2912,8 @@ async function acceptFriendRequest(friendUid) {
         ]);
         const since = Date.now();
 
+        // Update this account first so Accept does not fail just because the remote notification
+        // path is blocked.
         await firebase.database().ref().update({
             [`users/${currentUser.uid}/friends/${friendUid}`]: {
                 nickname: friendProfile.nickname,
@@ -2935,14 +2932,14 @@ async function acceptFriendRequest(friendUid) {
                 since
             });
         } catch (notifyError) {
-            console.warn('Accepted locally, but could not notify the other hunter:', notifyError);
+            console.warn('Friend accepted locally, but the other account could not be notified:', notifyError);
         }
 
         await loadFriends();
         alert(`You and ${friendProfile.nickname} are now friends!`);
     } catch (error) {
         console.error('Error accepting friend request:', error);
-        alert('Could not accept the friend request.');
+        alert('Could not accept the friend request. Please check the friend-system database rules.');
     }
 }
 
@@ -2953,25 +2950,26 @@ async function declineFriendRequest(friendUid) {
         const incomingSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`).once('value');
         const outgoingSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`).once('value');
 
-        const localUpdates = {};
-        if (incomingSnapshot.exists()) {
-            localUpdates[`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`] = null;
-            localUpdates[`users/${currentUser.uid}/friendRequestReceived/${friendUid}`] = null;
-        }
-        if (outgoingSnapshot.exists()) {
-            localUpdates[`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`] = null;
-        }
-        await firebase.database().ref().update(localUpdates);
+        await firebase.database().ref().update({
+            [`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`]: null,
+            [`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`]: null,
+            [`users/${currentUser.uid}/friendRequestReceived/${friendUid}`]: null
+        });
 
-        try {
-            if (incomingSnapshot.exists()) {
+        if (incomingSnapshot.exists()) {
+            try {
                 await firebase.database().ref(`users/${friendUid}/friendRequestDeclined/${currentUser.uid}`).set({ timestamp: Date.now() });
+            } catch (notifyError) {
+                console.warn('Declined locally, but sender could not be notified:', notifyError);
             }
-            if (outgoingSnapshot.exists()) {
+        }
+
+        if (outgoingSnapshot.exists()) {
+            try {
                 await firebase.database().ref(`users/${friendUid}/friendRequestCancelled/${currentUser.uid}`).set({ timestamp: Date.now() });
+            } catch (notifyError) {
+                console.warn('Cancelled locally, but receiver could not be notified:', notifyError);
             }
-        } catch (notifyError) {
-            console.warn('Request updated locally, but the other hunter could not be notified:', notifyError);
         }
 
         await loadFriends();
@@ -2987,13 +2985,13 @@ async function removeFriend(friendUid, friendNickname) {
     if (!confirmed) return;
 
     try {
-        // Remove locally first so this button always works for the signed-in user.
+        // Local removal happens first and is not tied to the remote notification.
         await firebase.database().ref(`users/${currentUser.uid}/friends/${friendUid}`).remove();
 
         try {
             await firebase.database().ref(`users/${friendUid}/friendRemoved/${currentUser.uid}`).set({ timestamp: Date.now() });
         } catch (notifyError) {
-            console.warn('Removed locally, but could not notify the other hunter:', notifyError);
+            console.warn('Friend removed locally, but the other account could not be notified:', notifyError);
         }
 
         await loadFriends();
@@ -3147,10 +3145,10 @@ function listenToFriendRequests() {
         const requestData = snapshot.val();
         if (!senderUid || !requestData) return;
         try {
-            const updates = {};
-            updates[`users/${uid}/friendRequests/incoming/${senderUid}`] = requestData;
-            updates[`users/${uid}/friendRequestReceived/${senderUid}`] = null;
-            await firebase.database().ref().update(updates);
+            await firebase.database().ref().update({
+                [`users/${uid}/friendRequests/incoming/${senderUid}`]: requestData,
+                [`users/${uid}/friendRequestReceived/${senderUid}`]: null
+            });
         } catch (error) {
             console.error('Error processing received friend request:', error);
         }
@@ -3161,15 +3159,15 @@ function listenToFriendRequests() {
         const friendData = snapshot.val();
         if (!friendUid || !friendData) return;
         try {
-            const updates = {};
-            updates[`users/${uid}/friends/${friendUid}`] = {
-                nickname: friendData.nickname || 'Unknown Hunter',
-                photoURL: friendData.photoURL || '',
-                since: friendData.since || Date.now()
-            };
-            updates[`users/${uid}/friendRequests/outgoing/${friendUid}`] = null;
-            updates[`users/${uid}/friendAccepted/${friendUid}`] = null;
-            await firebase.database().ref().update(updates);
+            await firebase.database().ref().update({
+                [`users/${uid}/friends/${friendUid}`]: {
+                    nickname: friendData.nickname || 'Unknown Hunter',
+                    photoURL: friendData.photoURL || '',
+                    since: friendData.since || Date.now()
+                },
+                [`users/${uid}/friendRequests/outgoing/${friendUid}`]: null,
+                [`users/${uid}/friendAccepted/${friendUid}`]: null
+            });
         } catch (error) {
             console.error('Error processing accepted friend request:', error);
         }
@@ -3178,28 +3176,40 @@ function listenToFriendRequests() {
     firebase.database().ref(`users/${uid}/friendRequestDeclined`).on('child_added', async (snapshot) => {
         const friendUid = snapshot.key;
         if (!friendUid) return;
-        const updates = {};
-        updates[`users/${uid}/friendRequests/outgoing/${friendUid}`] = null;
-        updates[`users/${uid}/friendRequestDeclined/${friendUid}`] = null;
-        await firebase.database().ref().update(updates);
+        try {
+            await firebase.database().ref().update({
+                [`users/${uid}/friendRequests/outgoing/${friendUid}`]: null,
+                [`users/${uid}/friendRequestDeclined/${friendUid}`]: null
+            });
+        } catch (error) {
+            console.error('Error processing declined friend request:', error);
+        }
     });
 
     firebase.database().ref(`users/${uid}/friendRequestCancelled`).on('child_added', async (snapshot) => {
         const friendUid = snapshot.key;
         if (!friendUid) return;
-        const updates = {};
-        updates[`users/${uid}/friendRequests/incoming/${friendUid}`] = null;
-        updates[`users/${uid}/friendRequestCancelled/${friendUid}`] = null;
-        await firebase.database().ref().update(updates);
+        try {
+            await firebase.database().ref().update({
+                [`users/${uid}/friendRequests/incoming/${friendUid}`]: null,
+                [`users/${uid}/friendRequestCancelled/${friendUid}`]: null
+            });
+        } catch (error) {
+            console.error('Error processing cancelled friend request:', error);
+        }
     });
 
     firebase.database().ref(`users/${uid}/friendRemoved`).on('child_added', async (snapshot) => {
         const friendUid = snapshot.key;
         if (!friendUid) return;
-        const updates = {};
-        updates[`users/${uid}/friends/${friendUid}`] = null;
-        updates[`users/${uid}/friendRemoved/${friendUid}`] = null;
-        await firebase.database().ref().update(updates);
+        try {
+            await firebase.database().ref().update({
+                [`users/${uid}/friends/${friendUid}`]: null,
+                [`users/${uid}/friendRemoved/${friendUid}`]: null
+            });
+        } catch (error) {
+            console.error('Error processing removed friend:', error);
+        }
     });
 }
 
