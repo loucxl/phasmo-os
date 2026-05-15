@@ -6,7 +6,7 @@ A comprehensive web-based toolkit for Phasmophobia investigators — built for g
 
 Visible site/tracker version: **v2.5**
 
-PHASMO.OS v2.5 updates the 0EV strategy flow and aligns newer ghost notes, including Kormos, with the current ghost-card data.
+PHASMO.OS is a fast, practical Phasmophobia helper for ghost behaviour, maps, mechanics, strategy, no-evidence runs, and group investigations.
 
 ## ✨ Features
 
@@ -42,10 +42,10 @@ This filter is for ghosts with non-standard hunt speed behaviour, including ghos
 ### 👥 Multiplayer / Account Features
 - Google login support.
 - Nickname system for group sessions.
-- Group Journal sharing via Firebase.
+- Group Journal sharing for team investigations.
 - Friends and player stats systems.
 
-## Newer Ghost Reference
+## New Ghosts / Under Review
 
 ### Aswang
 - **Evidence:** D.O.T.S Projector, Freezing Temperatures, Ghost Writing
@@ -62,6 +62,7 @@ This filter is for ghosts with non-standard hunt speed behaviour, including ghos
 **How to Identify:**
 - During hunts, listen for a ghost that starts around 1.53 m/s but ramps to max LoS speed unusually quickly.
 - Break line-of-sight quickly to stop it building speed.
+- Current info is still being reviewed and may change with further testing.
 
 ### Kormos
 - **Evidence:** Ghost Orbs, Spirit Box, Ultraviolet
@@ -100,7 +101,7 @@ Update cards use collapsible sections:
 ## 🛠️ Tech Stack
 
 - **Frontend:** HTML5, CSS3, and vanilla JavaScript
-- **Auth / Sync:** Firebase Authentication and Firebase Realtime Database
+- **Auth / Sync:** Account login and live sync services
 - **Hosting:** Static-site friendly; works on GitHub Pages or similar hosting
 - **No build process required:** Open `index.html` directly or deploy the files as-is
 
@@ -135,7 +136,7 @@ Ghost mechanics and behaviours are checked against:
 - Community testing and research
 - Ty Bayn / Zero-Network style cheat sheet references where useful
 
-Because Phasmophobia changes frequently, some details may become outdated after updates. Newer ghost notes are kept aligned with the site's current ghost-card data.
+Because Phasmophobia changes frequently, some details may become outdated after updates. Check recent patch notes when the game receives a major balance update.
 
 ## ⚠️ Disclaimer
 
@@ -155,5 +156,5 @@ Phasmophobia and all related trademarks are property of Kinetic Games.
 
 ## Online Hunters Counter
 
-The top bar includes an **Online Hunters** badge that shows how many active visitors are currently on the site. It is intended as a lightweight community/activity indicator for live use.
+The top bar includes an **Online Hunters** badge that shows how many hunters currently have the site open. Each open browser session sends a temporary heartbeat, updates it every few seconds, and is automatically removed when the session ends or becomes stale.
 
