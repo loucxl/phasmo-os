@@ -5,6 +5,7 @@ A comprehensive web-based toolkit for Phasmophobia investigators — built for g
 ## Current Version
 
 Visible site/tracker version: **v2.5**
+**Friendlist update now available!**
 
 PHASMO.OS is a fast, practical Phasmophobia helper for ghost behaviour, maps, mechanics, strategy, no-evidence runs, and group investigations.
 
@@ -43,6 +44,7 @@ This filter is for ghosts with non-standard hunt speed behaviour, including ghos
 - Google login support.
 - Nickname system for group sessions.
 - Group Journal sharing for team investigations.
+- **Friendlist update now available:** log in, open Friends, and share your friend code to connect with other hunters to view their stats.
 - Friends and player stats systems.
 
 ## New Ghosts / Under Review
@@ -108,7 +110,7 @@ Update cards use collapsible sections:
 ## 🚀 Getting Started
 
 ### Option 1: Use the Live Site
-Visit the hosted version at: `[Your URL Here]`
+Visit the hosted version at: https://loucxl.github.io/phasmo-os/
 
 ### Option 2: Run Locally
 1. Clone this repository:
