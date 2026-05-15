@@ -4,9 +4,9 @@ A comprehensive web-based toolkit for Phasmophobia investigators — built for g
 
 ## Current Version
 
-Visible site/tracker version: **v2.4**
+Visible site/tracker version: **v2.5**
 
-PHASMO.OS is currently being updated for the latest Phasmophobia game data. **All ghost data is being reviewed**, and information for the two newest ghosts, **Aswang** and **Kormos**, is subject to change as more testing is confirmed.
+PHASMO.OS v2.5 updates the 0EV strategy flow and aligns newer ghost notes, including Kormos, with the current ghost-card data.
 
 ## ✨ Features
 
@@ -45,7 +45,7 @@ This filter is for ghosts with non-standard hunt speed behaviour, including ghos
 - Group Journal sharing via Firebase.
 - Friends and player stats systems.
 
-## New Ghosts / Under Review
+## Newer Ghost Reference
 
 ### Aswang
 - **Evidence:** D.O.T.S Projector, Freezing Temperatures, Ghost Writing
@@ -62,7 +62,6 @@ This filter is for ghosts with non-standard hunt speed behaviour, including ghos
 **How to Identify:**
 - During hunts, listen for a ghost that starts around 1.53 m/s but ramps to max LoS speed unusually quickly.
 - Break line-of-sight quickly to stop it building speed.
-- Current info is still being reviewed and may change with further testing.
 
 ### Kormos
 - **Evidence:** Ghost Orbs, Spirit Box, Ultraviolet
@@ -86,7 +85,7 @@ Kormos is one of the ghosts where collecting its full evidence set does **not** 
 
 - Kormos evidence is **Orbs + Spirit Box + UV**.
 - The Mimic has **Spirit Box + Freezing + UV** and always produces fake Ghost Orbs.
-- If you find Orbs + Spirit Box + UV, check carefully for Freezing before locking in Kormos.
+- In 0 Evidence, The Mimic still shows fake Ghost Orbs; normal UV does not appear.
 
 ## Game Updates Page
 
@@ -136,7 +135,7 @@ Ghost mechanics and behaviours are checked against:
 - Community testing and research
 - Ty Bayn / Zero-Network style cheat sheet references where useful
 
-Because Phasmophobia changes frequently, some details may become outdated after updates. New ghost data should be treated as under review until it has been tested and confirmed.
+Because Phasmophobia changes frequently, some details may become outdated after updates. Newer ghost notes are kept aligned with the site's current ghost-card data.
 
 ## ⚠️ Disclaimer
 
@@ -156,7 +155,5 @@ Phasmophobia and all related trademarks are property of Kinetic Games.
 
 ## Online Hunters Counter
 
-The top bar includes an **Online Hunters** badge powered by Firebase Realtime Database presence. Each open browser session writes a temporary heartbeat under `onlineHunters`, updates it every 10 seconds, and is removed automatically on disconnect where supported. Stale sessions are cleaned up after roughly 60 seconds.
-
-If the counter stays at 0, check that the Firebase Realtime Database rules allow public read/write access for the `onlineHunters` path.
+The top bar includes an **Online Hunters** badge that shows how many active visitors are currently on the site. It is intended as a lightweight community/activity indicator for live use.
 
