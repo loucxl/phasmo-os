@@ -3582,7 +3582,7 @@ const GAME_UPDATES = [
         title: "Phasmophobia - Hotfix v0.17.1.1",
         logAdded: "13 May 2026",
         gameRelease: "13 May 2026",
-        open: true,
+        open: false,
         sections: [
             {
                 heading: "Fixes",
