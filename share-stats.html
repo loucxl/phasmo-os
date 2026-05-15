@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phasmo-OS Hunter Card</title>
+  <style>
+    :root {
+      --page-bg: #071225;
+      --card-black: #1a1a19;
+      --card-paper: #eeeeec;
+      --card-line: rgba(0,0,0,0.055);
+      --card-muted: #787d7b;
+      --card-border: #636865;
+      --cyan: #18c8ee;
+      --white: #f5f5f0;
+      --ink: #080808;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(24,200,238,0.16), transparent 30%),
+        radial-gradient(circle at 90% 100%, rgba(24,200,238,0.09), transparent 26%),
+        var(--page-bg);
+    }
+
+    .actions {
+      width: min(1100px, 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .actions p {
+      margin: 0;
+      color: rgba(255,255,255,0.78);
+      font-size: 0.95rem;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .action-buttons button {
+      border: 1px solid rgba(24,200,238,0.55);
+      background: rgba(24,200,238,0.13);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+    }
+
+    .action-buttons button:hover { background: rgba(24,200,238,0.22); }
+
+    .id-card {
+      width: min(1100px, 100%);
+      aspect-ratio: 1100 / 590;
+      min-height: 500px;
+      overflow: hidden;
+      border-radius: 46px;
+      border: 2px solid rgba(255,255,255,0.10);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+      background: var(--card-paper);
+      color: var(--ink);
+      position: relative;
+    }
+
+    .id-header {
+      height: 88px;
+      background: var(--card-black);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid rgba(0,0,0,0.35);
+    }
+
+    .id-header h1 {
+      margin: 0;
+      font-size: clamp(2.1rem, 4vw, 3rem);
+      line-height: 1;
+      letter-spacing: 0.28em;
+      text-indent: 0.28em;
+      font-weight: 900;
+      text-shadow: 0 3px 0 rgba(0,0,0,0.35);
+    }
+
+    .id-body {
+      position: absolute;
+      inset: 88px 0 0 0;
+      padding: 34px 44px 30px;
+      background:
+        radial-gradient(circle at 78% 45%, rgba(0,0,0,0.045) 0 53px, transparent 54px),
+        radial-gradient(circle at 93% 48%, rgba(0,0,0,0.045) 0 45px, transparent 46px),
+        linear-gradient(30deg, transparent 0 48%, var(--card-line) 48.4% 49.4%, transparent 49.8%),
+        linear-gradient(150deg, transparent 0 48%, var(--card-line) 48.4% 49.4%, transparent 49.8%),
+        linear-gradient(90deg, transparent 0 48%, var(--card-line) 48.4% 49.4%, transparent 49.8%),
+        var(--card-paper);
+      background-size: auto, auto, 112px 64px, 112px 64px, 112px 64px, auto;
+    }
+
+    .id-main {
+      display: grid;
+      grid-template-columns: 254px minmax(0, 1fr);
+      gap: 24px;
+      height: calc(100% - 74px);
+      min-height: 0;
+    }
+
+    .photo-box {
+      width: 254px;
+      height: 360px;
+      border: 5px solid var(--card-border);
+      background: #d7d9d5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      align-self: start;
+    }
+
+    .photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #d7d9d5;
+    }
+
+    .fallback-face {
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #d8dad6, #f3f3f0);
+      color: #1b1b1b;
+      font-size: 5rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+    }
+
+    .id-info {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-width: 0;
+    }
+
+    .label {
+      font-size: clamp(1.35rem, 2.5vw, 2rem);
+      line-height: 1;
+      color: var(--ink);
+      letter-spacing: 0.03em;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .name {
+      margin-top: 8px;
+      font-size: clamp(2.15rem, 4.3vw, 3.4rem);
+      line-height: 1.05;
+      color: var(--ink);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      word-break: break-word;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      align-self: center;
+      margin: 18px 0;
+    }
+
+    .mini-stat {
+      border-left: 4px solid var(--cyan);
+      background: rgba(255,255,255,0.45);
+      padding: 12px 12px 10px;
+      min-width: 0;
+    }
+
+    .mini-stat-value {
+      font-size: clamp(1.35rem, 2.6vw, 2.3rem);
+      line-height: 1;
+      font-weight: 900;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .mini-stat-label {
+      margin-top: 7px;
+      font-size: 0.72rem;
+      line-height: 1.15;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 800;
+    }
+
+    .level-block {
+      align-self: end;
+      margin-bottom: 6px;
+    }
+
+    .level-text {
+      margin-top: 6px;
+      font-size: clamp(2.9rem, 6vw, 5rem);
+      line-height: 0.96;
+      color: #000;
+      font-weight: 900;
+      letter-spacing: -0.045em;
+    }
+
+    .level-sub {
+      margin-top: 8px;
+      display: inline-flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: #444;
+      font-weight: 800;
+      font-size: 0.96rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .xp-bar {
+      height: 58px;
+      border: 3px solid #151515;
+      background: #171716;
+      position: absolute;
+      left: 40px;
+      right: 34px;
+      bottom: 28px;
+      overflow: hidden;
+    }
+
+    .xp-fill {
+      height: 100%;
+      width: 0%;
+      background: #787d7b;
+      transition: width 0.35s ease;
+    }
+
+    .xp-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: clamp(1.9rem, 3.9vw, 3rem);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.35);
+    }
+
+    .generated-note {
+      position: absolute;
+      right: 42px;
+      top: 18px;
+      color: rgba(0,0,0,0.38);
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 860px) {
+      .id-card {
+        aspect-ratio: auto;
+        min-height: 0;
+        border-radius: 28px;
+      }
+
+      .id-header { height: 76px; }
+      .id-header h1 { font-size: 2rem; }
+      .id-body { position: relative; inset: auto; padding: 24px 22px 106px; }
+      .id-main { grid-template-columns: 1fr; height: auto; }
+      .photo-box { width: 210px; height: 250px; }
+      .stats-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .xp-bar { left: 22px; right: 22px; bottom: 24px; }
+      .generated-note { display: none; }
+    }
+
+    @media (max-width: 520px) {
+      body { padding: 14px; }
+      .stats-row { grid-template-columns: 1fr; }
+      .id-header h1 { letter-spacing: 0.16em; text-indent: 0.16em; }
+      .photo-box { width: 180px; height: 210px; }
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .actions { display: none; }
+      .id-card { width: 100%; box-shadow: none; border: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="actions">
+    <p>Share your hunter stats as a Phasmo-OS ID card.</p>
+    <div class="action-buttons">
+      <button type="button" id="btnCopyLink">Copy Share Link</button>
+      <button type="button" id="btnDownloadPng">Download PNG</button>
+      <button type="button" id="btnPrintCard">Print / Save</button>
+    </div>
+  </div>
+
+  <main class="id-card" id="shareCard" aria-label="Phasmo-OS hunter stats card">
+    <section class="id-header">
+      <h1>HUNTER</h1>
+    </section>
+
+    <section class="id-body">
+      <div class="generated-note">Phasmo-OS v<span id="versionText">2.5</span></div>
+
+      <div class="id-main">
+        <div class="photo-box">
+          <img id="avatarImage" alt="Hunter avatar" referrerpolicy="no-referrer">
+          <div class="fallback-face" id="fallbackFace">?</div>
+        </div>
+
+        <div class="id-info">
+          <div>
+            <div class="label">Name</div>
+            <div class="name" id="nameText">Hunter</div>
+          </div>
+
+          <div class="stats-row">
+            <div class="mini-stat">
+              <div class="mini-stat-value" id="totalText">0</div>
+              <div class="mini-stat-label">Investigations</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-value" id="winsText">0</div>
+              <div class="mini-stat-label">Correct</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-value" id="lossesText">0</div>
+              <div class="mini-stat-label">Incorrect</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-value" id="rateText">0%</div>
+              <div class="mini-stat-label">Win Rate</div>
+            </div>
+          </div>
+
+          <div class="level-block">
+            <div class="label">Level</div>
+            <div class="level-text" id="levelText">1</div>
+            <div class="level-sub">
+              <span id="investigatorRank">Investigator</span>
+              <span id="caseSummary">0 Cases</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="xp-bar" aria-label="XP progress">
+        <div class="xp-fill" id="xpFill"></div>
+        <div class="xp-text" id="xpText">0 / 100</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const CARD_W = 1100;
+    const CARD_H = 590;
+
+    function getNumberParam(name, fallback = 0) {
+      const value = Number(params.get(name));
+      return Number.isFinite(value) ? value : fallback;
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function clampNumber(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function initialsFromName(name) {
+      const parts = name.trim().split(/\s+/).filter(Boolean);
+      if (!parts.length) return '?';
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function rankFromLevel(level) {
+      if (level >= 100) return 'Elite Investigator';
+      if (level >= 50) return 'Veteran Hunter';
+      if (level >= 25) return 'Senior Investigator';
+      if (level >= 10) return 'Field Investigator';
+      return 'Intern';
+    }
+
+    function drawRoundRect(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, radius);
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+    }
+
+    function fillTextFit(ctx, text, x, y, maxWidth, maxSize, minSize, weight = '900', family = 'Arial') {
+      let size = maxSize;
+      do {
+        ctx.font = `${weight} ${size}px ${family}`;
+        if (ctx.measureText(text).width <= maxWidth || size <= minSize) break;
+        size -= 2;
+      } while (size > minSize);
+      ctx.fillText(text, x, y);
+      return size;
+    }
+
+    const data = {
+      name: (params.get('name') || 'Hunter').slice(0, 40),
+      avatar: params.get('avatar') || '',
+      level: getNumberParam('level', 1),
+      total: getNumberParam('total', 0),
+      wins: getNumberParam('wins', 0),
+      losses: getNumberParam('losses', 0),
+      rate: getNumberParam('rate', 0),
+      xpCurrent: getNumberParam('xpCurrent', 0),
+      xpNext: Math.max(1, getNumberParam('xpNext', 100)),
+      version: params.get('version') || '2.5'
+    };
+
+    if (!params.has('rate') && data.total > 0) {
+      data.rate = Math.round((data.wins / data.total) * 100);
+    }
+
+    data.rate = clampNumber(data.rate, 0, 100);
+    data.progress = clampNumber(Math.round((data.xpCurrent / data.xpNext) * 100), 0, 100);
+    data.rank = rankFromLevel(data.level);
+    data.initials = initialsFromName(data.name);
+
+    setText('nameText', data.name);
+    setText('levelText', data.level.toLocaleString());
+    setText('totalText', data.total.toLocaleString());
+    setText('winsText', data.wins.toLocaleString());
+    setText('lossesText', data.losses.toLocaleString());
+    setText('rateText', `${data.rate}%`);
+    setText('xpText', `${data.xpCurrent.toLocaleString()} / ${data.xpNext.toLocaleString()}`);
+    setText('versionText', data.version);
+    setText('investigatorRank', data.rank);
+    setText('caseSummary', `${data.total.toLocaleString()} Cases`);
+    document.getElementById('xpFill').style.width = `${data.progress}%`;
+
+    const avatarImage = document.getElementById('avatarImage');
+    const fallbackFace = document.getElementById('fallbackFace');
+    if (data.avatar) {
+      avatarImage.src = data.avatar;
+      avatarImage.onerror = () => {
+        avatarImage.style.display = 'none';
+        fallbackFace.style.display = 'flex';
+        fallbackFace.textContent = data.initials;
+      };
+    } else {
+      avatarImage.style.display = 'none';
+      fallbackFace.style.display = 'flex';
+      fallbackFace.textContent = data.initials;
+    }
+
+    function drawPattern(ctx) {
+      ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+      ctx.lineWidth = 1;
+      const w = 112;
+      const h = 64;
+      for (let x = 0; x < CARD_W + w; x += w) {
+        for (let y = 88; y < CARD_H + h; y += h) {
+          ctx.beginPath();
+          ctx.moveTo(x, y + h / 2);
+          ctx.lineTo(x + w / 2, y);
+          ctx.lineTo(x + w, y + h / 2);
+          ctx.lineTo(x + w / 2, y + h);
+          ctx.closePath();
+          ctx.stroke();
+        }
+      }
+
+      ctx.fillStyle = 'rgba(0,0,0,0.035)';
+      ctx.beginPath(); ctx.arc(815, 330, 58, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(1015, 340, 48, 0, Math.PI * 2); ctx.fill();
+    }
+
+    function drawCanvasCard() {
+      const canvas = document.createElement('canvas');
+      canvas.width = CARD_W;
+      canvas.height = CARD_H;
+      const ctx = canvas.getContext('2d');
+
+      // Rounded outer clipping shape.
+      ctx.save();
+      drawRoundRect(ctx, 0, 0, CARD_W, CARD_H, 46);
+      ctx.clip();
+
+      ctx.fillStyle = '#eeeeec';
+      ctx.fillRect(0, 0, CARD_W, CARD_H);
+      ctx.fillStyle = '#1a1a19';
+      ctx.fillRect(0, 0, CARD_W, 88);
+
+      ctx.fillStyle = '#f5f5f0';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = '900 44px Arial';
+      ctx.letterSpacing = '10px';
+      ctx.fillText('HUNTER', CARD_W / 2, 47);
+      ctx.letterSpacing = '0px';
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 88, CARD_W, CARD_H - 88);
+      ctx.clip();
+      drawPattern(ctx);
+      ctx.restore();
+
+      ctx.fillStyle = 'rgba(0,0,0,0.38)';
+      ctx.textAlign = 'right';
+      ctx.font = '800 13px Arial';
+      ctx.fillText(`PHASMO-OS v${data.version}`, 1058, 117);
+
+      // Photo frame + initials fallback for reliable PNG downloads.
+      ctx.fillStyle = '#d7d9d5';
+      ctx.fillRect(44, 122, 254, 360);
+      ctx.strokeStyle = '#636865';
+      ctx.lineWidth = 5;
+      ctx.strokeRect(46.5, 124.5, 249, 355);
+      ctx.fillStyle = '#1a1a19';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = '900 86px Arial';
+      ctx.fillText(data.initials, 171, 300);
+      ctx.fillStyle = 'rgba(24,200,238,0.24)';
+      ctx.beginPath(); ctx.arc(171, 300, 75, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#0c2030';
+      ctx.fillText(data.initials, 171, 300);
+
+      ctx.textBaseline = 'alphabetic';
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#080808';
+      ctx.font = '500 34px Arial';
+      ctx.fillText('NAME', 322, 147);
+      fillTextFit(ctx, data.name.toUpperCase(), 322, 209, 705, 50, 28);
+
+      const statY = 254;
+      const statW = 168;
+      const stats = [
+        ['INVESTIGATIONS', data.total.toLocaleString()],
+        ['CORRECT', data.wins.toLocaleString()],
+        ['INCORRECT', data.losses.toLocaleString()],
+        ['WIN RATE', `${data.rate}%`]
+      ];
+      stats.forEach(([label, value], index) => {
+        const x = 322 + index * (statW + 10);
+        ctx.fillStyle = 'rgba(255,255,255,0.50)';
+        ctx.fillRect(x, statY, statW, 82);
+        ctx.fillStyle = '#18c8ee';
+        ctx.fillRect(x, statY, 4, 82);
+        ctx.fillStyle = '#080808';
+        ctx.font = '900 31px Arial';
+        ctx.fillText(value, x + 14, statY + 38);
+        ctx.fillStyle = '#555';
+        ctx.font = '800 12px Arial';
+        ctx.fillText(label, x + 14, statY + 64);
+      });
+
+      ctx.fillStyle = '#080808';
+      ctx.font = '500 34px Arial';
+      ctx.fillText('LEVEL', 322, 401);
+      ctx.font = '900 70px Arial';
+      ctx.fillText(data.level.toLocaleString(), 322, 466);
+      ctx.fillStyle = '#444';
+      ctx.font = '800 15px Arial';
+      ctx.fillText(`${data.rank.toUpperCase()}   •   ${data.total.toLocaleString()} CASES`, 322, 492);
+
+      // XP bar.
+      const barX = 44;
+      const barY = 503;
+      const barW = 1024;
+      const barH = 58;
+      ctx.fillStyle = '#171716';
+      ctx.fillRect(barX, barY, barW, barH);
+      ctx.strokeStyle = '#151515';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(barX + 1.5, barY + 1.5, barW - 3, barH - 3);
+      ctx.fillStyle = '#787d7b';
+      ctx.fillRect(barX + 3, barY + 3, Math.round((barW - 6) * data.progress / 100), barH - 6);
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = '900 42px Arial';
+      ctx.fillText(`${data.xpCurrent.toLocaleString()} / ${data.xpNext.toLocaleString()}`, CARD_W / 2, barY + 30);
+
+      ctx.restore();
+      return canvas;
+    }
+
+    async function downloadPng() {
+      const canvas = drawCanvasCard();
+      const safeName = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'hunter';
+      const link = document.createElement('a');
+      link.download = `phasmo-os-${safeName}-stats-card.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    document.getElementById('btnCopyLink').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        const btn = document.getElementById('btnCopyLink');
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = original, 1500);
+      } catch (error) {
+        alert('Could not copy the link automatically.');
+      }
+    });
+
+    document.getElementById('btnDownloadPng').addEventListener('click', downloadPng);
+    document.getElementById('btnPrintCard').addEventListener('click', () => window.print());
+  </script>
+</body>
+</html>
