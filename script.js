@@ -3562,6 +3562,21 @@ document.addEventListener('DOMContentLoaded', function() {
 // Only the newest update needs open: true.
 // ═══════════════════════════════════════════════════════════════
 const GAME_UPDATES = [
+        {
+        version: "Hotfix v0.17.1.2",
+        title: "Phasmophobia - Hotfix v0.17.1.2",
+        logAdded: "15 May 2026",
+        gameRelease: "15 May 2026",
+        open: true,
+        sections: [
+            {
+                heading: "Fixes",
+                items: [
+                    "Fixed an issue that was causing a crash across all platforms."
+                ]
+            }
+        ]
+    },
     {
         version: "Hotfix v0.17.1.1",
         title: "Phasmophobia - Hotfix v0.17.1.1",
