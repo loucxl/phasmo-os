@@ -33,10 +33,10 @@ const GHOSTS = [
     { 
         name: "Wraith", ev: ['emf','box','dots'], danger: "Med", hunt: "50%", speed: "1.7 m/s", blink: "Normal", forced: null,
         traits: ["Teleports to Players", "Never Leaves Salt Footprints"],
-        desc: "A floating ghost that can teleport to players. NEVER leaves UV footprints when stepping in salt - easiest ghost to identify!",
-        ability: "Can randomly teleport to within 3 meters of any player, triggering an EMF 2 reading at the teleport location (EMF 5 if the Wraith has EMF5 as one of its evidence types). Because it floats, it never leaves UV footprints in salt (all other ghosts do).",
-        test: "Salt Test: Place salt piles in doorways in/near the ghost room. If salt gets disturbed (you'll see the pile scatter) but shining UV on it reveals <span class='hl-red'>NO footprints at all</span>, it's a confirmed Wraith — it's the ONLY ghost that won't leave UV prints in salt. All other ghosts do. Also watch for EMF 2 spikes appearing near players in different rooms (teleport).",
-        zeroEv: "Watch for random EMF readings appearing right next to a player in a room far from the ghost room — that's a Wraith teleport. Disturbed salt piles with zero UV footprints when scanned is the cleanest tell.",
+        desc: "A floating ghost that can teleport to players. Never steps in or disturbs salt, making salt the key physical test.",
+        ability: "Can randomly teleport to within 3 meters of any player, triggering an EMF 2 reading at the teleport location (EMF 5 if the Wraith has EMF5 as one of its evidence types). Because it floats, it never steps in or disturbs salt.",
+        test: "Salt Test: Place salt piles across likely walking paths. If the ghost repeatedly walks through salt without disturbing it, suspect Wraith. If it disturbs salt, rule Wraith out. Also watch for EMF 2 spikes appearing near players in different rooms (teleport).",
+        zeroEv: "Watch for random EMF readings appearing right next to a player in a room far from the active area — that's a Wraith teleport. In 0EV, use salt as a physical test: Wraith should not disturb it at all.",
         tags: ['guarantee'],
         speedStates: [{"label": "Normal", "speed": 1.7}]
     },
@@ -55,7 +55,7 @@ const GHOSTS = [
         traits: ["Throws Many Objects", "Very Active"],
         desc: "Extremely active ghost that loves throwing objects. Can throw many items at once, draining sanity with each throw. Useless in empty rooms!",
         ability: "Can throw multiple objects simultaneously in a 3-meter radius. Each thrown item drains 2% sanity from nearby players. Will also throw objects during hunts. Completely ineffective in empty rooms with nothing to throw.",
-        test: "Pile Test: Create a large pile of throwable objects in the ghost room. A Poltergeist can 'explode' the entire pile, scattering items in all directions simultaneously. Also note that Poltergeists throw objects <span class='hl-green'>every 0.5 seconds</span> during hunts (100% chance each interval) vs other ghosts' 50% chance — much more frequent mid-hunt throwing.",
+        test: "Pile Test: Create a large pile of throwable objects in the active area. A Poltergeist can 'explode' the entire pile, scattering items in all directions simultaneously. Also note that Poltergeists throw objects <span class='hl-green'>every 0.5 seconds</span> during hunts (100% chance each interval) vs other ghosts' 50% chance — much more frequent mid-hunt throwing.",
         zeroEv: "Constant, heavy object throwing — way more than any other ghost. Objects thrown during hunts very frequently. Each thrown object drains 2% sanity from nearby players, so rapid sanity loss in a cluttered room is suspicious. Exploding a pile of objects is a near-certain tell.",
         tags: ['vis'],
         speedStates: [{"label": "Normal", "speed": 1.7}]
@@ -65,7 +65,7 @@ const GHOSTS = [
         traits: ["Targets One Player", "Unique Scream"],
         desc: "Chooses ONE player as its target at the start and focuses exclusively on them. Hunt threshold uses the target's sanity, NOT the team's average!",
         ability: "Randomly picks one player as its 'target' at contract start. Focuses exclusively on this player during hunts. Uses the TARGET's sanity only (not team average) to decide when to hunt. Target changes when any player dies (not just the target dying).",
-        test: "Parabolic Mic Test: Point the parabolic mic toward the ghost room from outside. If you hear a <span class='hl-green'>unique screech/wail sound</span> that other ghosts don't make, it's a Banshee. Important: <strong>any player</strong> can hear this scream — not just the target. In multiplayer, watch who the ghost chases during hunts — it will always ignore other players and beeline for its target, even walking past them.",
+        test: "Parabolic Mic Test: Point the parabolic mic toward the active area from outside. If you hear a <span class='hl-green'>unique screech/wail sound</span> that other ghosts don't make, it's a Banshee. Important: <strong>any player</strong> can hear this scream — not just the target. In multiplayer, watch who the ghost chases during hunts — it will always ignore other players and beeline for its target, even walking past them.",
         zeroEv: "In multiplayer: one player always gets chased regardless of others being nearby, and the ghost ignores everyone else mid-hunt. The Banshee hunts using its TARGET's sanity only (not team average), so it can hunt early if one player has low sanity even while others are high. Unique screech on parabolic mic is audible to any player, not just the target — a reliable solo and team tell.",
         tags: ['guarantee'],
         speedStates: [{"label": "Normal", "speed": 1.7}]
@@ -85,7 +85,7 @@ const GHOSTS = [
         traits: ["Fears Light", "Hunts Earlier in Dark"],
         desc: "Empowered by darkness, weakened by light. Hunts earlier in dark rooms (60%) and less often in lit rooms (40%). Will immediately switch lights OFF and frequently breaks bulbs. Does not actively seek dark rooms — it roams more when its current room is lit, which tends to move it around frequently.",
         ability: "Hunts at 60% sanity in DARK rooms but only 40% sanity in LIT rooms. Will immediately turn lights OFF (within seconds) and frequently shatters bulbs. Can NEVER turn lights ON — only off. Note: despite patch notes suggesting otherwise, the Mare currently cannot turn TVs or computers on either (a known in-game bug).",
-        test: "Light Test: Switch ON a light in the ghost room. A Mare can <span class='hl-red'>immediately</span> turn a light back off after you switch it on; repeated instant shut-offs are a strong tell. — it cannot turn lights ON, only off. You can also test hunt threshold: if it hunts in a lit room, sanity must be below 40%. In a dark room, it can hunt at 60%. Keeping the ghost room lit forces it to a lower hunt threshold.",
+        test: "Light Test: Switch ON a light in the active area. A Mare can <span class='hl-red'>immediately</span> turn a light back off after you switch it on; repeated instant shut-offs are a strong tell. — it cannot turn lights ON, only off. You can also test hunt threshold: if it hunts in a lit room, sanity must be below 40%. In a dark room, it can hunt at 60%. Keeping the active area lit forces it to a lower hunt threshold.",
         zeroEv: "Lights constantly being switched off, never turned on. Frequent light bulb breaking events. Hunts earlier in dark areas (60%) but safer if room is lit (40% threshold). If a light goes off almost immediately after you turn it on, that's a strong Mare indicator. Note: the Mare does not seek out dark rooms — it simply roams more when its current room is lit, which tends to move it around the map frequently.",
         tags: ['early'],
         speedStates: [{"label": "Normal", "speed": 1.7}]
@@ -105,7 +105,7 @@ const GHOSTS = [
         traits: ["Very Shy", "Low Activity", "Won't Hunt in Groups"],
         desc: "The shyest ghost. Very low activity. Cannot initiate a hunt OR produce an EMF reading while any player is in the same room. This checks the Shade’s current room, not necessarily the favourite room. It may still interact through walls from an adjacent room Safer in groups — but it can still reach back into the room to interact with objects from an adjacent room.",
         ability: "Cannot initiate a hunt if any player is in the same room as it — even a single player prevents it from hunting. Hunts at only 35% sanity (lower than normal 50%). Generally very passive with low activity levels.",
-        test: "Group Test: Stay in the ghost room as a team with a crucifix placed. Let sanity drop below 35%. If the ghost refuses to hunt while any player is in the room despite very low sanity, it's very likely a Shade. You can also try placing a Ghost Writing book alone — the Shade won't write in it if a player is in the room. Send one person in solo to trigger activity.",
+        test: "Group Test: Stay in the active area as a team with a crucifix placed. Let sanity drop below 35%. If the ghost refuses to hunt while any player is in the room despite very low sanity, it's very likely a Shade. You can also try placing a Ghost Writing book alone — the Shade won't write in it if a player is in the room. Send one person in solo to trigger activity.",
         zeroEv: "Extremely passive — very low ghost activity, rare interactions, barely any events. Will not hunt OR produce EMF readings while any player is in the same room (not just the favourite room). It can still reach into the room from an adjacent one to interact with objects. If activity is near-zero while players are present but picks up when the room is empty, suspect Shade.",
         tags: [],
         speedStates: [{"label": "Normal", "speed": 1.7}]
@@ -125,7 +125,7 @@ const GHOSTS = [
         traits: ["Slams Doors Shut", "Heavy Sanity Drain"],
         desc: "Drains sanity by fully slamming doors shut. Each full door slam drains 15% sanity from nearby players.",
         ability: "Can smoothly close a door fully (without creaking) and drain 15% sanity from nearby players — this is its unique ability. Only ghost that can close EXIT doors outside of hunts. When smudged, trapped in its room for ~90 seconds. Bug: can partially open locker doors.",
-        test: "Door Slam Test: Leave doors in the ghost room propped open at 45°. A Yurei can <span class='hl-green'>fully close a door in one smooth motion</span> (no creaking) while draining 15% sanity from nearby players — this is its unique ability. Critically, if a door leading OUTSIDE the building fully closes without a hunt or event, it's <span class='hl-green'>100% a Yurei</span> (only ghost that can do this). Smudge it and place motion sensors at doorways — if it doesn't leave for 90s, supports Yurei.",
+        test: "Door Slam Test: Leave doors in the active area propped open at 45°. A Yurei can <span class='hl-green'>fully close a door in one smooth motion</span> (no creaking) while draining 15% sanity from nearby players — this is its unique ability. Critically, if a door leading OUTSIDE the building fully closes without a hunt or event, it's <span class='hl-green'>100% a Yurei</span> (only ghost that can do this). Smudge it and place motion sensors at doorways — if it doesn't leave for 90s, supports Yurei.",
         zeroEv: "A door closing fully and smoothly (not slamming during a hunt/event) with a sudden 15% sanity drop is the clearest tell. Watch exit/building doors especially — only Yurei closes those outside of hunts. After smudging, the Yurei gets temporarily confined to its room (use motion sensors to verify it hasn't left).",
         tags: [],
         speedStates: [{"label": "Normal", "speed": 1.7}]
@@ -145,8 +145,8 @@ const GHOSTS = [
         traits: ["Triggered by Talking", "Deaf During Hunts"],
         desc: "Attracted to player voices. Talking near it can trigger hunts at 80% sanity! But during hunts, it's nearly deaf - only hears within 2.5m.",
         ability: "If players talk within 2m of the Yokai, it can hunt at 80% sanity instead of 50%. Silence = 50% threshold. During hunts, can only detect voice and electronics within 2.5m (vs 12m normal) — very easy to hide from if quiet. Bug: Music Box triggers Yokai event at standard 5m range instead of its 2.5m reduced range.",
-        test: "Voice Detection Test: During a hunt, hide in a nearby room and talk loudly or use your microphone. A normal ghost can detect voices from <span class='hl-green'>12m away</span>. If the ghost completely ignores your talking from more than 2.5m, it's a Yokai. Also: if hunts start very early (80% sanity) when players are talking near the ghost room, that confirms it.",
-        zeroEv: "Hunts at 80% sanity if players are talking within 2m of the ghost — stop talking near the ghost room! During hunts, Yokai can only hear voices and detect electronics within 2.5m (vs 12m normally), making it very easy to hide from if you stay quiet and keep distance. Both early hunts AND 'deaf' hunting behavior together strongly suggest Yokai.",
+        test: "Voice Detection Test: During a hunt, hide in a nearby room and talk loudly or use your microphone. A normal ghost can detect voices from <span class='hl-green'>12m away</span>. If the ghost completely ignores your talking from more than 2.5m, it's a Yokai. Also: if hunts start very early (80% sanity) when players are talking near the active area, that confirms it.",
+        zeroEv: "Hunts at 80% sanity if players are talking within 2m of the ghost — stop talking near the active area! During hunts, Yokai can only hear voices and detect electronics within 2.5m (vs 12m normally), making it very easy to hide from if you stay quiet and keep distance. Both early hunts AND 'deaf' hunting behavior together strongly suggest Yokai.",
         tags: ['early'],
         speedStates: [{"label": "Normal", "speed": 1.7}]
     },
@@ -163,10 +163,10 @@ const GHOSTS = [
     { 
         name: "Goryo", ev: ['emf','uv','dots'], danger: "Low", hunt: "50%", speed: "1.7 m/s", blink: "Normal", forced: "dots",
         traits: ["D.O.T.S Camera Only", "Never Roams Far"],
-        desc: "D.O.T.S evidence ONLY shows on video camera, never with naked eye. Very territorial - doesn't roam far from ghost room.",
+        desc: "D.O.T.S evidence ONLY shows on video camera, never with naked eye. Very territorial - doesn't roam far from active area.",
         ability: "D.O.T.S silhouette is only visible through a video camera (not with your eyes directly). The effect only shows when no players are in the room. Goryo will not roam far from its favorite room.",
         test: "Camera-Only D.O.T.S Test (Nightmare/Insanity only): Set up a video camera pointing at the D.O.T.S projector and leave the room. If you see the D.O.T.S silhouette <span class='hl-green'>ONLY through the camera feed</span> and NEVER with your naked eyes, it's a Goryo. The D.O.T.S also only appears when NO players are in the room. <span class='hl-red'>IMPORTANT: On 0-evidence custom difficulty, Goryo shows NO D.O.T.S at all</span> — the only tell is that it never changes favourite room and only performs short roams.",
-        zeroEv: "<span class='hl-red'>On 0 evidence: Goryo is nearly impossible to confirm.</span> D.O.T.S does not appear at all. Your only tells are behavioural: it will never change its ghost room, only performs short roams (use salt/motion sensors to observe), and has the highest interaction rate of any ghost. On Nightmare/Insanity (1–2 ev), if D.O.T.S is one of the shown evidences, it will ONLY appear via video camera — never to the naked eye.",
+        zeroEv: "<span class='hl-red'>On 0 evidence: Goryo is nearly impossible to confirm.</span> D.O.T.S does not appear at all. Your only tells are behavioural: it will never change its active area, only performs short roams (use salt/motion sensors to observe), and has the highest interaction rate of any ghost. On Nightmare/Insanity (1–2 ev), if D.O.T.S is one of the shown evidences, it will ONLY appear via video camera — never to the naked eye.",
         tags: ['guarantee'],
         speedStates: [{"label": "Normal", "speed": 1.7}]
     },
@@ -185,7 +185,7 @@ const GHOSTS = [
         traits: ["Fears Fire", "Flame-Triggered Hunts"],
         desc: "Fears fire - lit flames block hunts like crucifixes. But blowing out 3 flames triggers a hunt at ANY sanity level! Keep flames lit!",
         ability: "Lit candles/lighters within 4m prevent the Onryo from hunting (work like crucifixes). However, if it blows out 3 flames total (tracked across the whole game), it will hunt at ANY sanity level! Each flame blocks one hunt attempt.",
-        test: "Firelight Test: Light a Firelight near the ghost room. The Onryo treats flames like crucifixes — it <span class='hl-green'>cannot hunt while a flame is within 4m</span> of it. Instead, it blows the flame out. Every time it blows out a flame to stop a hunt, that counts toward a tally. On the <span class='hl-red'>3rd blow-out</span>, it hunts regardless of sanity. To confirm: place a crucifix AND a Firelight. If the flame blows out first instead of the crucifix burning, it's an Onryo.",
+        test: "Firelight Test: Light a Firelight near the active area. The Onryo treats flames like crucifixes — it <span class='hl-green'>cannot hunt while a flame is within 4m</span> of it. Instead, it blows the flame out. Every time it blows out a flame to stop a hunt, that counts toward a tally. On the <span class='hl-red'>3rd blow-out</span>, it hunts regardless of sanity. To confirm: place a crucifix AND a Firelight. If the flame blows out first instead of the crucifix burning, it's an Onryo.",
         zeroEv: "Flames being blown out regularly — each blow-out is a blocked hunt attempt. Keep 2 Firelights active so blow-out of one is blocked by the other. After 3 total blow-outs it can hunt at any sanity. Tier II Firelights (3 candles) are much more likely to be blown out (~96% combined chance) — but still count as 1 flame for Onryo mechanics. Onryo cannot light any fire sources.",
         tags: ['early'],
         speedStates: [{"label": "Normal", "speed": 1.7}]
@@ -196,7 +196,7 @@ const GHOSTS = [
         desc: "Actually a single ghost with two interaction ranges. Can interact in two places at once. When hunting, one twin is slower (1.5 m/s) and the other faster (1.9 m/s) — they alternate who hunts.",
         ability: "Two ghosts: Main entity (1.5 m/s) and Decoy entity (1.9 m/s). They alternate which one hunts. Can interact with environment in two different locations simultaneously.",
         test: "Dual Interaction Test: Watch for interactions happening in <span class='hl-green'>two different rooms simultaneously</span> — this is only possible with the Twins. You may see EMF readings or object interactions in different locations at once. During hunts, listen for speed variation across different hunts: one hunt may feel slower (~1.53 m/s) and the next faster (~1.87 m/s) — this is the two twins alternating who initiates.",
-        zeroEv: "Simultaneous interactions in separate rooms are the clearest tell — e.g. a door in one room and an object in another moving at the same time. Hunt speeds will feel inconsistent across hunts (one is 10% slower, one is 10% faster than normal 1.7 m/s). The ghost may also start a hunt from an unexpected location far from the ghost room.",
+        zeroEv: "Simultaneous interactions in separate rooms are the clearest tell — e.g. a door in one room and an object in another moving at the same time. Hunt speeds will feel inconsistent across hunts (one is 10% slower, one is 10% faster than normal 1.7 m/s). The ghost may also start a hunt from an unexpected location far from the active area.",
         tags: ['fast'],
         speedStates: [{"label": "Slow twin", "speed": 1.5}, {"label": "Fast twin", "speed": 1.9}]
     },
@@ -205,7 +205,7 @@ const GHOSTS = [
         traits: ["Powered by Electronics", "Early Hunter"],
         desc: "Powered by electronics! Moves faster near active equipment and can hunt earlier (65% vs 50%) when near electronics. Turn equipment OFF!",
         ability: "Near active electronics, moves at 2.5 m/s and can hunt at 65% sanity instead of 50%. Disrupts electronics from 15m away (vs normal 10m). Note: only held/carried electronics trigger the early hunt threshold — placed DOTS T2/T3, motion sensors, and sound sensors do not count.",
-        test: "Electronics Speed Test: Leave active equipment (flashlights, D.O.T.S, EMF readers) on the floor in/near the ghost room. During a hunt, if the ghost moves at <span class='hl-green'>2.5 m/s near your gear</span> and slows to 1.7 m/s away from it, it's a Raiju. Also: you'll hear your heartbeat from 15m away (vs 10m for other ghosts) and electronics flicker from further away (15m vs 10m). Note: Most active electronics count. Exceptions include motion sensors, sound sensors, and DOTS projectors when thrown/held; don’t rely on those for a Raiju test.",
+        test: "Electronics Speed Test: Leave active equipment (flashlights, D.O.T.S, EMF readers) on the floor in/near the active area. During a hunt, if the ghost moves at <span class='hl-green'>2.5 m/s near your gear</span> and slows to 1.7 m/s away from it, it's a Raiju. Also: you'll hear your heartbeat from 15m away (vs 10m for other ghosts) and electronics flicker from further away (15m vs 10m). Note: Most active electronics count. Exceptions include motion sensors, sound sensors, and DOTS projectors when thrown/held; don’t rely on those for a Raiju test.",
         zeroEv: "Very fast movement during hunts specifically near active electronics — slows noticeably when away from gear. Electronics flickering from unusually long range (15m). Can hunt at 65% sanity if active equipment is nearby. To slow it down, turn off flashlights and pick up any active equipment during a hunt.",
         tags: ['fast', 'early'],
         speedStates: [{"label": "Normal", "speed": 1.7}, {"label": "Near electronics", "speed": 2.5}]
@@ -216,7 +216,7 @@ const GHOSTS = [
         desc: "A shapeshifter that can leave 6-finger handprints! Only has 75% chance to leave UV evidence (vs 100% normal). Changes appearance during hunts.",
         ability: "Can leave 6-finger handprints instead of normal 5-finger (rare but confirms it). Only 75% chance to leave UV evidence at all (vs 100% for others). Changes ghost model/appearance during hunts. UV evidence disappears faster (half the normal time).",
         test: "Fingerprint Test: Check all doors and surfaces the ghost touches for UV fingerprints. Obake has a <span class='hl-red'>75% chance to leave fingerprints</span> (not 100% like other ghosts), and those prints fade in ~30s instead of 60s. If you find a <span class='hl-green'>6-finger handprint</span> on a door, it's 100% confirmed Obake. During hunts, watch for the ghost's model briefly changing to a different ghost — this happens at least once per hunt.",
-        zeroEv: "Fingerprints appearing less often than expected or fading very quickly (half the normal time). Watching the ghost during a hunt and seeing its model flicker into a different ghost type. A 6-fingered handprint is a guaranteed Obake. UV is forced evidence on Nightmare so it will always appear even if reduced evidence is selected.",
+        zeroEv: "In 0EV, fingerprints and UV footprints do not appear. Watch the ghost during hunts: Obake can briefly blink/model-shift into a different ghost model. That visual tell is the useful no-evidence check.",
         tags: ['guarantee'],
         speedStates: [{"label": "Normal", "speed": 1.7}]
     },
@@ -226,7 +226,7 @@ const GHOSTS = [
         desc: "Copies/mimics other ghost types every 30s-2min. ALWAYS shows Ghost Orbs as a 4th evidence - if you have 3 evidence + Orbs, it's a Mimic!",
         ability: "Mimics the traits, abilities, speeds, and hunt patterns of other ghost types, changing which ghost it copies every 30 seconds to 2 minutes. ALWAYS has Ghost Orbs as forced 4th evidence.",
         test: "Fourth Evidence Test: The Mimic <span class='hl-green'>ALWAYS produces Ghost Orbs</span> as a fake 4th piece of evidence — even on 0-evidence custom runs. If you see Ghost Orbs AND collect 2 other evidence on Nightmare, suspect Mimic strongly. Watch for wildly inconsistent behavior across different hunts: speed, hunt threshold, and abilities all changing every 30s–2min as it mimics a new ghost type.",
-        zeroEv: "Behaviour that dramatically shifts — one hunt it's slow, then fast, then it can't be hidden from, then hunts at high sanity. Ghost Orbs will always be present even on Nightmare. The mimic changes which ghost it copies every 30 seconds to 2 minutes (never mid-hunt). Cannot copy Goryo's camera-only D.O.T.S behaviour.",
+        zeroEv: "Behaviour that dramatically shifts — one hunt it's slow, then fast, then it can't be hidden from, then hunts at high sanity. Mimic Orbs can still appear even when normal evidence is disabled, because they behave like part of The Mimic's ability rather than standard evidence. The mimic changes which ghost it copies every 30 seconds to 2 minutes (never mid-hunt). Cannot copy Goryo's camera-only D.O.T.S behaviour.",
         tags: ['fast', 'guarantee'],
         speedStates: [{"label": "Copies host ghost", "speed": 0}]
     },
@@ -256,18 +256,18 @@ const GHOSTS = [
         desc: "Ages every 1-2 minutes, becoming slower and less active over time. Starts VERY aggressive (75%, 2.75 m/s) but becomes weakest ghost! Wait it out!",
         ability: "Starts extremely active and dangerous: 75% hunt threshold and 2.75 m/s speed. Ages down every 1-2 minutes spent near players, eventually reaching 15% threshold and 1.0 m/s (slowest ghost). Can ask age on Ouija Board.",
         test: "Age Progression Test: Thaye starts young (75% hunt threshold, 2.75 m/s) and ages every 1–2 minutes <span class='hl-green'>only while players are nearby</span>. If the ghost was terrifyingly aggressive at the start but noticeably slowed and became passive over time, it's a Thaye. You can also ask its age on the Ouija Board — it will answer with a number. Older = slower and less active.",
-        zeroEv: "Very high activity and aggression early on — hunts at 75% sanity and moves faster than almost any ghost. Activity and speed wind down progressively as time passes with players nearby. Late-game it may barely hunt at all (15% threshold, 1 m/s). Note: if no players are near the ghost room, it won't age — it stays young and dangerous.",
+        zeroEv: "Very high activity and aggression early on — hunts at 75% sanity and moves faster than almost any ghost. Activity and speed wind down progressively as time passes with players nearby. Late-game it may barely hunt at all (15% threshold, 1 m/s). Note: if no players are near the active area, it won't age — it stays young and dangerous.",
         tags: ['fast', 'early'],
         speedStates: [{"label": "Young (start)", "speed": 2.75}, {"label": "Aged (end)", "speed": 1.0}]
     }
     ,
     { 
-        name: "Dayan", ev: ['emf','orb','box'], danger: "Med", hunt: "45-60%", speed: "1.2-2.25 m/s", blink: "Normal", forced: null,
+        name: "Dayan", ev: ['emf','orb','box'], danger: "Med", hunt: "45/50/65%", speed: "1.2-2.25 m/s", blink: "Normal", forced: null,
         traits: ["Reacts to Movement", "Female Only", "Proximity Sensitive"],
         desc: "A hyper-vigilant spirit that reacts to player movement. Speeds up dramatically when players move near her (10m), but slows way down when standing still!",
-        ability: "When >10m from all players: behaves like a normal ghost (1.7 m/s with standard LOS speed-up). Within 10m: speeds up to 2.25 m/s if any player moves, or slows to 1.2 m/s if everyone stands still. Hunt threshold increases to 60% while players move near her, decreases to 45% when standing still. Always female model.",
-        test: "Stand Still Test: During a hunt, when the ghost is within 10m, <span class='hl-green'>stop moving completely</span>. Dayan slows dramatically to 1.2 m/s when players stand still, and speeds back up to 2.25 m/s the instant you move. This speed swing is very noticeable. Also: if hunts start early while players are walking around (60% threshold while moving) but stop when you freeze, that's a strong tell. Dayan is always a female ghost model — check the name/gender in the journal.",
-        zeroEv: "The most reliable test: freeze completely during a hunt. If the ghost abruptly slows to barely moving and then rockets forward again the instant you step, it's Dayan. Early hunts are more likely when players are moving near her, safer when standing still (45% vs 60% threshold). Always female gender — easy to check in journal.",
+        ability: "When >10m from all players: behaves like a normal ghost (1.7 m/s with standard LOS speed-up). Within 10m: speeds up to 2.25 m/s if any player moves, or slows to 1.2 m/s if everyone stands still. Hunt threshold changes by proximity/movement: 65% if a nearby player is moving, 45% if nearby players are standing still, and 50% when no players are within range. Always female model.",
+        test: "Stand Still Test: During a hunt, when the ghost is within 10m, <span class='hl-green'>stop moving completely</span>. Dayan slows dramatically to 1.2 m/s when players stand still, and speeds back up to 2.25 m/s the instant you move. This speed swing is very noticeable. Also: if hunts start early while players are moving nearby (65% threshold while moving) but stop when you freeze, that's a strong tell. Dayan is always a female ghost model — check the name/gender in the journal.",
+        zeroEv: "The most reliable test: freeze completely during a hunt. If the ghost abruptly slows to barely moving and then rockets forward again the instant you step, it's Dayan. Early hunts are more likely when players are moving near her, safer when standing still (45% vs 65% threshold). Always female gender — easy to check in journal.",
         tags: ['fast'],
         speedStates: [{"label": "Player still", "speed": 1.2}, {"label": "Player moving", "speed": 2.25}]
     }
@@ -300,7 +300,7 @@ const GHOSTS = [
         desc: "A chase-focused ghost that starts slightly slower than normal, but reaches its maximum line-of-sight speed much faster than most ghosts once it has spotted a player.",
         ability: "The Aswang has a base hunt speed of 1.53 m/s and can still reach its normal maximum line-of-sight speed of about 2.53 m/s. The key difference is acceleration: it reaches max LoS speed in about 17.33 seconds instead of the standard 26 seconds. This makes long straight chases especially dangerous.",
         test: "Line-of-Sight Speed Test: During a hunt, listen for a slightly slower starting pace that ramps up quickly once the ghost sees someone. It does not have a higher max LoS speed than expected for its base speed — it simply reaches that max much faster, in about 17.33s rather than 26s. Break line-of-sight quickly to stop it building speed.",
-        zeroEv: "On 0 evidence, look for a ghost that starts around 1.53 m/s but reaches its max line-of-sight speed much quicker than normal. It prefers chasing visible players over searching, so breaking line-of-sight and hiding cleanly is important. <span class='hl-red'>New ghost data is still being reviewed and may change.</span>",
+        zeroEv: "On 0 evidence, look for a ghost that starts around 1.53 m/s but reaches its max line-of-sight speed much quicker than normal. It prefers chasing visible players over searching, so breaking line-of-sight and hiding cleanly is important.",
         tags: ['fast'],
         speedStates: [{"label": "Base speed", "speed": 1.53}, {"label": "Max LoS (~17.33s)", "speed": 2.53}]
     }
@@ -311,7 +311,7 @@ const GHOSTS = [
         desc: "A nearly blind ghost with extremely strong hearing. It does not use normal line-of-sight tracking, but can detect players through voice, active electronics, and movement at different ranges.",
         ability: "The Kormos is completely blind and detects players using sound and electronics instead of normal line-of-sight. It has normal electronic and voice detection ranges, but movement detection depends on how you move: crouch-walking can be detected from 10m, normal walking from 15m, and sprinting from 30m. If you are completely still, silent, and not holding/using active electronics, it should not detect you directly unless it physically paths into you. Its speed is 1.7 m/s by default and 2.21 m/s after detecting a player.",
         test: "Movement Detection Test: During a hunt, stay silent, turn off/avoid active electronics, and stop moving. A Kormos should struggle to locate you by sight alone. Then compare movement: crouch-walking can alert it from 10m, walking from 15m, and sprinting from 30m. If the ghost reacts strongly to movement but cannot visually track a still, silent player, suspect Kormos.",
-        zeroEv: "On 0 evidence, Kormos is identified by its unusual hunting senses: completely blind to normal line-of-sight, but very sensitive to movement, voice, and active electronics. Stand still and stay quiet to test it. The Kormos is also one of three ghosts — alongside Hantu and Onryo — where collecting its full evidence set still does not rule out The Mimic, because Mimic Orbs can overlap with that evidence combination. <span class='hl-red'>New ghost data is still being reviewed and may change.</span>",
+        zeroEv: "On 0 evidence, Kormos is identified by its unusual hunting senses: completely blind to normal line-of-sight, but very sensitive to movement, voice, and active electronics. Stand still, stay quiet, and turn off/avoid active electronics to test it. Then compare movement: crouch-walking can alert it from 10m, walking from 15m, and sprinting from 30m. The Kormos is also one of three ghosts — alongside Hantu and Onryo — where collecting its full evidence set still does not rule out The Mimic, because Mimic Orbs can overlap with that evidence combination.",
         tags: ['fast'],
         speedStates: [{"label": "Undetected", "speed": 1.7}, {"label": "After detection", "speed": 2.21}]
     }
@@ -856,7 +856,7 @@ const MANUAL_DB = {
             <h4>Ghost Orbs</h4>
             <p class="detail-text">
                 Small floating spheres seen only on video cameras with Night Vision.
-                Orbs spawn in or near the <span class="hl-green">current ghost room.</span>
+                Orbs spawn in or near the <span class="hl-green">current active area.</span>
                 <br><span class="hl-blue">Tip:</span> Place camera at head height pointing into the room, then check from the truck or a monitor.
             </p>
         </div>
@@ -864,14 +864,14 @@ const MANUAL_DB = {
             <h4>Ghost Writing</h4>
             <p class="detail-text">
                 Ghost writes in the book. Thrown books or ed books are <span class="hl-red">not</span> evidence.
-                <br><span class="hl-blue">Tip:</span> Use two books in the ghost room to speed this up, especially for shy ghosts.
+                <br><span class="hl-blue">Tip:</span> Use two books in the active area to speed this up, especially for shy ghosts.
             </p>
         </div>
         <div class="manual-entry">
             <h4>Freezing Temperatures</h4>
             <p class="detail-text">
                 Must read <span class="hl-red">below 0°C/32°F</span> on a thermometer. <span class="hl-red">Visible breath is NOT evidence</span> — since v0.9.0, player breath appears below 5°C regardless of ghost type. Do not rely on breath alone.
-                <br><span class="hl-blue">Tip:</span> Check multiple rooms. The ghost room is usually the coldest. Breaker ON warms rooms over time, making freezing temps harder to find if left on too long.
+                <br><span class="hl-blue">Tip:</span> Check multiple rooms. The active area is usually the coldest. Breaker ON warms rooms over time, making freezing temps harder to find if left on too long.
             </p>
         </div>
         <div class="manual-entry">
@@ -879,7 +879,7 @@ const MANUAL_DB = {
             <p class="detail-text">
                 Green silhouette running through the projector area.
                 Some ghosts are more visible on camera than to the naked eye.
-                <br><span class="hl-blue">Tip:</span> Place DOTS in the center of the ghost room and watch from camera for a while.
+                <br><span class="hl-blue">Tip:</span> Place DOTS in the center of the active area and watch from camera for a while.
             </p>
         </div>
     `,
@@ -963,13 +963,13 @@ const MANUAL_DB = {
                 <br>&bull; Brings the ghost within 5m causing it to manifest and walk toward the box. If it reaches the box or player, or the event lasts >5 seconds, a cursed hunt starts.
                 <br>&bull; <span class="hl-red">Do NOT throw it</span> — throwing (slamming shut) immediately starts a cursed hunt. Always place it gently.
                 <br>&bull; Being at 0% sanity while the box plays also triggers a cursed hunt.
-                <br><span class="hl-blue">Tip:</span> Use to pinpoint the ghost room, but make sure your hiding route is planned first.
+                <br><span class="hl-blue">Tip:</span> Use to pinpoint the active area, but make sure your hiding route is planned first.
             </p>
         </div>
         <div class="manual-entry">
             <h4>Haunted Mirror</h4>
             <p class="detail-text">
-                Shows the ghost room through the mirror.
+                Shows the active area through the mirror.
                 <br>&bull; Using it drains sanity rapidly while held up.
                 <br>&bull; If sanity gets too low or used too long, it will shatter and trigger a hunt.
                 <br><span class="hl-blue">Tip:</span> Peek briefly to learn the room, then stop before it cracks.
@@ -1010,7 +1010,7 @@ const MANUAL_DB = {
                 Prevents hunts from starting within range.
                 <br>&bull; Default radius ~3m, <span class="hl-red">5m for Demon.</span>
                 <br>&bull; Each use burns one arm &mdash; two uses and it is destroyed.
-                <br><span class="hl-blue">Tip:</span> Place on the floor where the ghost stands most often (center of ghost room or favorite hallway).
+                <br><span class="hl-blue">Tip:</span> Place on the floor where the ghost stands most often (center of active area or favorite hallway).
             </p>
         </div>
         <div class="manual-entry">
@@ -1019,7 +1019,7 @@ const MANUAL_DB = {
                 Burn to repel or blind the ghost.
                 <br>&bull; During a hunt, blinds and slows the ghost for a few seconds.
                 <br>&bull; Outside hunts, prevents hunts for 90s (<span class="hl-green">180s for Spirit</span>, 60s for Demon). During a hunt, blinds ghost for ~5s (~7s for Moroi).
-                <br><span class="hl-blue">Tip:</span> Use on the ghost room to buy investigation time, or as an escape tool while looping during hunts.
+                <br><span class="hl-blue">Tip:</span> Use on the active area to buy investigation time, or as an escape tool while looping during hunts.
             </p>
         </div>
         <div class="manual-entry">
@@ -1045,7 +1045,7 @@ const MANUAL_DB = {
             <p class="detail-text">
                 Detects ghost interactions and certain abilities.
                 <br>&bull; EMF 5 is evidence, lower levels are still useful for tracking interactions.
-                <br><span class="hl-blue">Tip:</span> Drop EMF in the ghost room and check it after noises, door moves, or thrown items.
+                <br><span class="hl-blue">Tip:</span> Drop EMF in the active area and check it after noises, door moves, or thrown items.
             </p>
         </div>
         <div class="manual-entry">
@@ -1113,23 +1113,23 @@ const MANUAL_DB = {
 // --- EQUIPMENT DATABASE ---
 const EQUIPMENT = {
     detection: [
-        { name: "EMF Reader", tier: "Starter", cost: "$45", usage: "Detects ghost interactions and EMF Level 5 evidence", mechanics: "EMF 2: Interaction, EMF 3: Thrown object, EMF 5: EVIDENCE (ghost ability)", tips: "Drop in ghost room. Check after every interaction. Level 5 is rare but unmistakable.", range: "~5m detection radius" },
+        { name: "EMF Reader", tier: "Starter", cost: "$45", usage: "Detects ghost interactions and EMF Level 5 evidence", mechanics: "EMF 2: Interaction, EMF 3: Thrown object, EMF 5: EVIDENCE (ghost ability)", tips: "Drop in active area. Check after every interaction. Level 5 is rare but unmistakable.", range: "~5m detection radius" },
         { name: "Spirit Box", tier: "Starter", cost: "$50", usage: "Ask questions. Ghost may respond verbally. Evidence = any response.", mechanics: "Works in dark + alone (most ghosts) or anywhere (Deogen, Moroi). Must say trigger words.", tips: "Common questions: 'Where are you?', 'How old?', 'Give us a sign'. Be in dark, alone.", range: "Must be in same room as ghost" },
         { name: "UV Flashlight", tier: "Starter", cost: "$40", usage: "Reveals fingerprints on doors/windows. Evidence = ANY UV print.", mechanics: "Prints appear after ghost touches surface. Last 60s (30s Nightmare). Check doors/light switches.", tips: "Combine with glowsticks for constant coverage. Obake = 6 fingers.", range: "Shine directly on surface" },
         { name: "Photo Camera", tier: "Starter", cost: "$40", usage: "Take photos for money. Ghost photo, interactions, fingerprints, dead bodies.", mechanics: "10 photos max. Ghost photo = 3★ ($$$). Phantom vanishes in photo.", tips: "Save photos for ghost events/hunts. Bone photos = easy money.", range: "Must have subject in frame" },
         { name: "Sound Recorder", tier: "Media", cost: "$30", usage: "Records paranormal audio for the Media tab and extra rewards.", mechanics: "Hold USE while aiming at/near valid sounds. Higher tiers make it easier to confirm successful recordings.", tips: "Use it for paranormal voices, Spirit Box responses, EMF 5 sounds, airball events, ghost writing, crucifix burns, and cursed item audio.", range: "Sound-based capture range" },
         { name: "Video Camera", tier: "Starter", cost: "$50", usage: "Monitor remotely for Ghost Orbs. Required for Goryo D.O.T.S", mechanics: "Place on tripod. Enable Night Vision. Check monitor in truck. Orbs = small white dots.", tips: "Cover multiple angles. Goryo DOTS only shows on camera, not naked eye.", range: "Based on camera view angle" },
-        { name: "Thermometer", tier: "Starter", cost: "$30", usage: "Find cold rooms. Freezing Temps = below 0°C/32°F evidence.", mechanics: "Rooms cool over time. Breaker OFF = faster cooling. Yellow/Orange = room temp, Blue/Purple = ghost room", tips: "Sweep building early. Ghost room always coldest. Helps locate ghost quickly.", range: "Point and shoot - instant reading" },
+        { name: "Thermometer", tier: "Starter", cost: "$30", usage: "Find cold rooms. Freezing Temps = below 0°C/32°F evidence.", mechanics: "Rooms cool over time. Breaker OFF = faster cooling. Yellow/Orange = room temp, Blue/Purple = active area", tips: "Sweep building early. Ghost room always coldest. Helps locate ghost quickly.", range: "Point and shoot - instant reading" },
         { name: "D.O.T.S Projector", tier: "Upgraded", cost: "$65", usage: "Projects green laser grid. Ghost silhouette = evidence.", mechanics: "Must be placed on wall/floor. Ghost walks through occasionally. Goryo = camera-only visibility.", tips: "Place facing open areas. Combine with video camera. May take time to show.", range: "~5m projection cone" },
-        { name: "Ghost Writing Book", tier: "Starter", cost: "$40", usage: "Ghost writes/draws in book = evidence. Place in ghost room.", mechanics: "Ghost must be nearby. Can write full sentences, draw symbols, or scribble. Check periodically.", tips: "Place in center of suspected room. Ghost won't always write immediately. Be patient.", range: "Must be in ghost's presence" },
+        { name: "Ghost Writing Book", tier: "Starter", cost: "$40", usage: "Ghost writes/draws in book = evidence. Place in active area.", mechanics: "Ghost must be nearby. Can write full sentences, draw symbols, or scribble. Check periodically.", tips: "Place in center of suspected room. Ghost won't always write immediately. Be patient.", range: "Must be in ghost's presence" },
         { name: "Sound Sensor", tier: "Optional", cost: "$80", usage: "Detects sounds in area. Shows on truck monitor. Great for large maps.", mechanics: "Place in hallways/key rooms. Monitor shows activity level (bars). Tracks roaming.", tips: "Use multiple to triangulate ghost location. Essential on large maps.", range: "Wide cone detection (~10m)" },
         { name: "Motion Sensor", tier: "Optional", cost: "$100", usage: "Detects movement through laser beam. Lights up green on truck.", mechanics: "Place in doorways/hallways. Triggers when anything crosses beam. Tracks roaming patterns.", tips: "Place at exits of suspected rooms. See if ghost roams or stays put.", range: "Laser beam line-of-sight" },
         { name: "Parabolic Microphone", tier: "Upgraded", cost: "$50", usage: "Listen to distant sounds through walls. Special ghost sounds detectable.", mechanics: "Point at walls/doors. Picks up ghost vocals, footsteps, special sounds (Banshee scream, Moroi breathing)", tips: "Excellent for location finding on big maps. Can identify Banshee/Moroi instantly.", range: "30m+ through walls" },
         { name: "Head Mounted Camera", tier: "Optional", cost: "$60", usage: "Player-worn camera visible on truck monitor. Team coordination.", mechanics: "Worn by player. Team watches on monitor. Can spot Ghost Orbs from player POV.", tips: "Useful for solo players or teams wanting extra eyes. Can catch evidence remotely.", range: "Player's field of view" }
     ],
     protection: [
-        { name: "Crucifix", tier: "Essential", cost: "$30", usage: "Prevents hunts from starting within range. Two uses (2 arms).", mechanics: "3m range (5m Demon, Banshee). Must be on floor where ghost tries to hunt. Burns one arm per use.", tips: "Must be placed ON THE FLOOR in the ghost room to work — not in your pocket or on a surface. Place in center where ghost stands most often.", range: "3m radius (5m for Demon/Banshee)", uses: "2 per crucifix" },
-        { name: "Smudge Sticks", tier: "Essential", cost: "$15", usage: "Burn to repel/blind ghost. Prevents hunts or creates escape.", mechanics: "Outside hunt: Prevents hunts for 90s (180s Spirit, 60s Demon). During hunt: Blinds ghost ~5s (~7s Moroi)", tips: "Light with lighter. Use in ghost room to prevent hunts or while running from hunts.", range: "~6m effect radius", uses: "1 per stick" },
+        { name: "Crucifix", tier: "Essential", cost: "$30", usage: "Prevents hunts from starting within range. Two uses (2 arms).", mechanics: "3m range (5m Demon, Banshee). Must be on floor where ghost tries to hunt. Burns one arm per use.", tips: "Must be placed ON THE FLOOR in the active area to work — not in your pocket or on a surface. Place in center where ghost stands most often.", range: "3m radius (5m for Demon/Banshee)", uses: "2 per crucifix" },
+        { name: "Smudge Sticks", tier: "Essential", cost: "$15", usage: "Burn to repel/blind ghost. Prevents hunts or creates escape.", mechanics: "Outside hunt: Prevents hunts for 90s (180s Spirit, 60s Demon). During hunt: Blinds ghost ~5s (~7s Moroi)", tips: "Light with lighter. Use in active area to prevent hunts or while running from hunts.", range: "~6m effect radius", uses: "1 per stick" },
         { name: "Sanity Pills", tier: "Essential", cost: "$20", usage: "Restores sanity. Amount depends on difficulty.", mechanics: "Amateur/Intermediate/Pro/Nightmare: 25%. Insanity: 0%. Taken in 4 bottles.", tips: "Save for after evidence collection. Slows Moroi. Use strategically.", range: "N/A (consumable)", uses: "4 per contract" },
         { name: "Candle", tier: "Starter", cost: "$15", usage: "Prevents sanity drain when near lit candle. Onryo interaction.", mechanics: "Firelights slow passive sanity drain (amount depends on tier) while you are nearby. Ghost can blow them out. Onryo treats flames as crucifixes — blocks its hunt attempts within 4m.", tips: "Light in safe rooms. Keep lighter ready to relight. Multiple candles = large safe zone.", range: "~3m sanity protection", uses: "Unlimited (can be blown out)" },
         { name: "Lighter", tier: "Starter", cost: "$15", usage: "Lights candles and smudge sticks. No battery.", mechanics: "Infinite uses. Required for smudging. Lights candles for sanity protection.", tips: "Always have one. Essential for smudge sticks and candles.", range: "Touch-based", uses: "Infinite" }
@@ -1138,9 +1138,9 @@ const EQUIPMENT = {
         { name: "Flashlight", tier: "Starter", cost: "$30", usage: "Basic handheld light. Essential for dark areas.", mechanics: "Will flicker near ghost when hunting. Provides basic illumination.", tips: "Default light source. Infinite use.", range: "Medium cone" },
         { name: "Strong Flashlight", tier: "Upgraded", cost: "$50", usage: "Brighter, wider beam flashlight. Better coverage.", mechanics: "Brighter and wider than normal flashlight but still flickers when ghost hunts. Premium light source.", tips: "Worth the upgrade for large dark maps (Prison, Asylum). Much better visibility.", range: "Wide cone (brighter)" },
         { name: "Glowstick", tier: "Utility", cost: "$20", usage: "Drop for persistent UV light. Reveals fingerprints constantly.", mechanics: "Drop and leave. Doesn't require holding. Reveals UV evidence while you work elsewhere.", tips: "Place near doors/light switches. Frees hands. Great for salt piles too.", battery: "Infinite (no battery)", range: "~2m UV radius" },
-        { name: "Salt", tier: "Detection", cost: "$15", usage: "Place in doorways. Ghost footprints = UV evidence. Tracks movement.", mechanics: "Ghost steps in salt = UV footprints appear. Wraith = NO footprints (identification). Slows ghost temporarily.", tips: "Place in doorways and hallways. Tracks roaming. Wraith test = no prints.", range: "Pile covers ~0.5m", uses: "1 per pile" },
+        { name: "Salt", tier: "Detection", cost: "$15", usage: "Place in doorways. Tracks movement and enables Wraith checks.", mechanics: "Ghosts can disturb salt when they step in it. Wraith will not disturb salt. Tier III salt can slow some ghosts temporarily.", tips: "Place in doorways and hallways. Tracks roaming. Wraith test = salt not disturbed after repeated passes.", range: "Pile covers ~0.5m", uses: "1 per pile" },
         { name: "Incense", tier: "Alternative", cost: "$15", usage: "Same as smudge sticks. Ceremonial version.", mechanics: "Identical mechanics to smudge sticks. Same timers, same effect.", tips: "No functional difference from smudge sticks. Use interchangeably.", range: "~6m effect radius", uses: "1 per stick" },
-        { name: "Tripod", tier: "Optional", cost: "$20", usage: "Holds video cameras at fixed angles. Expands monitoring coverage.", mechanics: "Place anywhere. Mount video camera. Stable coverage of room/hallway.", tips: "Essential for multi-camera setups. Cover ghost room + nearby areas.", range: "N/A (mounting tool)" }
+        { name: "Tripod", tier: "Optional", cost: "$20", usage: "Holds video cameras at fixed angles. Expands monitoring coverage.", mechanics: "Place anywhere. Mount video camera. Stable coverage of room/hallway.", tips: "Essential for multi-camera setups. Cover active area + nearby areas.", range: "N/A (mounting tool)" }
     ]
 };
 
@@ -3738,7 +3738,7 @@ const GAME_UPDATES = [
                     "Alan Wake themed event/update released.",
                     "Ghost fixes included Yurei door closing, Raiju light flicker behaviour, and several room/pathing fixes.",
                     "Equipment fixes included Firelight, Head Gear, Video Camera, Flashlight, Tripod, Igniter, and Spirit Box related issues.",
-                    "Kormos and Aswang information is being tracked and should stay marked as subject to change while testing continues."
+                    "Kormos and Aswang notes are aligned with the current ghost-card data."
                 ]
             }
         ]
