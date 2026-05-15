@@ -1393,7 +1393,7 @@ function generateSessionId() {
 // Create new group session
 function createGroupSession() {
     if (!initFirebase()) {
-        alert("Online sharing is not available right now. Please try again later.");
+        alert("Firebase not configured. Please add your Firebase credentials to script.js");
         return;
     }
     
@@ -1441,7 +1441,7 @@ function joinGroupSession(sessionId) {
     }
     
     if (!initFirebase()) {
-        alert("Online sharing is not available right now. Please try again later.");
+        alert("Firebase not configured. Please add your Firebase credentials to script.js");
         return;
     }
     
@@ -1969,7 +1969,7 @@ function initGoogleAuth() {
 
 async function handleGoogleLogin() {
     if (!auth) {
-        alert("⚠️ Login is not ready yet.\n\nPlease wait a moment and try again.");
+        alert("⚠️ Firebase Auth not ready yet.\n\nPlease wait a moment and try again.");
         console.error("Auth not initialized");
         return;
     }
@@ -2597,7 +2597,10 @@ updateUserCount = function() {
 
 // ═══════════════════════════════════════════════════════════════
 // FRIENDS SYSTEM WITH FRIEND CODES
-// Uses each user's own writable paths plus lightweight notification inboxes for cross-user actions.
+// ═══════════════════════════════════════════════════════════════
+
+// FRIENDS SYSTEM WITH FRIEND CODES
+// Uses a small /friendCodes lookup index plus per-user notification inboxes.
 
 let currentFriends = [];
 let pendingRequests = { incoming: [], outgoing: [] };
@@ -2615,9 +2618,7 @@ function escapeHTML(value) {
 
 function normaliseFriendCode(code) {
     const cleaned = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (cleaned.length === 8) {
-        return `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
-    }
+    if (cleaned.length === 8) return `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
     return String(code || '').toUpperCase().trim();
 }
 
@@ -2631,22 +2632,6 @@ function generateFriendCode() {
     return code;
 }
 
-async function findUserByFriendCode(code) {
-    const normalised = normaliseFriendCode(code);
-    const snapshot = await firebase.database()
-        .ref('users')
-        .orderByChild('friendCode')
-        .equalTo(normalised)
-        .once('value');
-
-    if (!snapshot.exists()) return null;
-
-    const matches = snapshot.val() || {};
-    const [uid, data] = Object.entries(matches)[0] || [];
-    if (!uid) return null;
-    return { uid, ...(data || {}) };
-}
-
 async function getPublicUserProfile(uid) {
     const snapshot = await firebase.database().ref(`users/${uid}`).once('value');
     const data = snapshot.val() || {};
@@ -2658,8 +2643,28 @@ async function getPublicUserProfile(uid) {
     };
 }
 
+async function claimFriendCodeIndex(code, uid) {
+    const codeRef = firebase.database().ref(`friendCodes/${code}`);
+    const snapshot = await codeRef.once('value');
+    if (snapshot.exists() && snapshot.val() !== uid) return false;
+    await codeRef.set(uid);
+    return true;
+}
+
+async function lookupFriendCode(code) {
+    const normalised = normaliseFriendCode(code);
+    const snapshot = await firebase.database().ref(`friendCodes/${normalised}`).once('value');
+    const uid = snapshot.val();
+    if (!uid) return null;
+    const profile = await getPublicUserProfile(uid);
+    return { uid, ...profile };
+}
+
 async function initializeFriendCode() {
-    if (!currentUser) return;
+    if (!currentUser) return null;
+
+    const codeEl = document.getElementById('yourFriendCode');
+    if (codeEl) codeEl.textContent = 'Loading...';
 
     try {
         const userRef = firebase.database().ref(`users/${currentUser.uid}`);
@@ -2667,29 +2672,32 @@ async function initializeFriendCode() {
         const userData = snapshot.val() || {};
 
         if (userData.friendCode) {
-            const codeEl = document.getElementById('yourFriendCode');
-            if (codeEl) codeEl.textContent = userData.friendCode;
-            return userData.friendCode;
+            const existingCode = normaliseFriendCode(userData.friendCode);
+            const claimedExisting = await claimFriendCodeIndex(existingCode, currentUser.uid);
+            if (claimedExisting) {
+                if (existingCode !== userData.friendCode) {
+                    await userRef.child('friendCode').set(existingCode);
+                }
+                if (codeEl) codeEl.textContent = existingCode;
+                return existingCode;
+            }
         }
 
         let code = generateFriendCode();
-        let attempts = 0;
-
-        while (attempts < 12) {
-            const existing = await findUserByFriendCode(code);
-            if (!existing || existing.uid === currentUser.uid) break;
+        let claimed = false;
+        for (let attempts = 0; attempts < 20; attempts++) {
+            claimed = await claimFriendCodeIndex(code, currentUser.uid);
+            if (claimed) break;
             code = generateFriendCode();
-            attempts++;
         }
 
-        await userRef.update({ friendCode: code });
+        if (!claimed) throw new Error('Could not create a unique friend code.');
 
-        const codeEl = document.getElementById('yourFriendCode');
+        await userRef.child('friendCode').set(code);
         if (codeEl) codeEl.textContent = code;
         return code;
     } catch (error) {
         console.error('Error initialising friend code:', error);
-        const codeEl = document.getElementById('yourFriendCode');
         if (codeEl) codeEl.textContent = 'Unavailable';
         return null;
     }
@@ -2709,8 +2717,10 @@ function initFriendsSystem() {
     if (addFriendBtn) {
         addFriendBtn.addEventListener('click', () => {
             document.getElementById('friendsModal')?.close();
-            document.getElementById('addFriendError').textContent = '';
-            document.getElementById('friendCodeInput').value = '';
+            const err = document.getElementById('addFriendError');
+            if (err) err.textContent = '';
+            const input = document.getElementById('friendCodeInput');
+            if (input) input.value = '';
             document.getElementById('addFriendModal')?.showModal();
         });
     }
@@ -2731,9 +2741,9 @@ async function openFriendsModal() {
         return;
     }
 
+    document.getElementById('friendsModal')?.showModal();
     await initializeFriendCode();
     await loadFriends();
-    document.getElementById('friendsModal')?.showModal();
 }
 
 async function copyFriendCode() {
@@ -2741,10 +2751,9 @@ async function copyFriendCode() {
 
     try {
         let code = document.getElementById('yourFriendCode')?.textContent;
-        if (!code || code === 'Loading...' || code === 'Generating...') {
+        if (!code || ['Loading...', 'Generating...', 'Unavailable'].includes(code)) {
             code = await initializeFriendCode();
         }
-
         if (!code) throw new Error('No friend code available');
 
         await navigator.clipboard.writeText(code);
@@ -2767,33 +2776,32 @@ async function sendFriendRequest(e) {
     const codeInput = document.getElementById('friendCodeInput');
     const errorEl = document.getElementById('addFriendError');
     const submitBtn = e.submitter || document.querySelector('#addFriendForm button[type="submit"]');
-    const code = normaliseFriendCode(codeInput.value);
+    const code = normaliseFriendCode(codeInput?.value || '');
 
-    errorEl.textContent = '';
+    if (errorEl) errorEl.textContent = '';
 
     if (!/^[A-Z]{4}-[0-9]{4}$/.test(code)) {
-        errorEl.textContent = 'Friend code must look like ABCD-1234.';
+        if (errorEl) errorEl.textContent = 'Friend code must look like ABCD-1234.';
         return;
     }
 
     if (submitBtn) submitBtn.disabled = true;
 
     try {
-        const friend = await findUserByFriendCode(code);
-
+        const friend = await lookupFriendCode(code);
         if (!friend) {
-            errorEl.textContent = 'No hunter found with that friend code.';
+            if (errorEl) errorEl.textContent = 'No hunter found with that friend code.';
             return;
         }
 
         if (friend.uid === currentUser.uid) {
-            errorEl.textContent = 'That is your own friend code.';
+            if (errorEl) errorEl.textContent = 'That is your own friend code.';
             return;
         }
 
         const alreadyFriends = await firebase.database().ref(`users/${currentUser.uid}/friends/${friend.uid}`).once('value');
         if (alreadyFriends.exists()) {
-            errorEl.textContent = 'You are already friends with this hunter.';
+            if (errorEl) errorEl.textContent = 'You are already friends with this hunter.';
             return;
         }
 
@@ -2807,36 +2815,34 @@ async function sendFriendRequest(e) {
 
         const outgoing = await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friend.uid}`).once('value');
         if (outgoing.exists()) {
-            errorEl.textContent = 'You have already sent this hunter a request.';
+            if (errorEl) errorEl.textContent = 'You have already sent this hunter a request.';
             return;
         }
 
         const myProfile = await getPublicUserProfile(currentUser.uid);
         const now = Date.now();
-        const outgoingData = {
+        const updates = {};
+        updates[`users/${currentUser.uid}/friendRequests/outgoing/${friend.uid}`] = {
             toUid: friend.uid,
             toNickname: friend.nickname || 'Unknown Hunter',
             toPhotoURL: friend.photoURL || '',
             timestamp: now
         };
-        const incomingData = {
+        updates[`users/${friend.uid}/friendRequestReceived/${currentUser.uid}`] = {
             fromUid: currentUser.uid,
             fromNickname: myProfile.nickname || currentUserNickname || 'Unknown Hunter',
             fromPhotoURL: myProfile.photoURL || currentUser.photoURL || '',
             timestamp: now
         };
-
-        const updates = {};
-        updates[`users/${currentUser.uid}/friendRequests/outgoing/${friend.uid}`] = outgoingData;
-        updates[`users/${friend.uid}/friendRequestReceived/${currentUser.uid}`] = incomingData;
         await firebase.database().ref().update(updates);
 
         alert(`Friend request sent to ${friend.nickname || 'that hunter'}!`);
+        if (codeInput) codeInput.value = '';
         document.getElementById('addFriendModal')?.close();
         await loadFriends();
     } catch (error) {
         console.error('Error sending friend request:', error);
-        errorEl.textContent = 'Could not send the request. Please try again in a moment.';
+        if (errorEl) errorEl.textContent = 'Could not send the request. Please check the friend-system database rules.';
     } finally {
         if (submitBtn) submitBtn.disabled = false;
     }
@@ -2851,7 +2857,6 @@ async function acceptFriendRequest(friendUid) {
             getPublicUserProfile(currentUser.uid)
         ]);
         const since = Date.now();
-
         const updates = {};
         updates[`users/${currentUser.uid}/friends/${friendUid}`] = {
             nickname: friendProfile.nickname,
@@ -2866,13 +2871,12 @@ async function acceptFriendRequest(friendUid) {
             photoURL: myProfile.photoURL || currentUser.photoURL || '',
             since
         };
-
         await firebase.database().ref().update(updates);
         await loadFriends();
         alert(`You and ${friendProfile.nickname} are now friends!`);
     } catch (error) {
         console.error('Error accepting friend request:', error);
-        alert('Could not accept the friend request. Please try again in a moment.');
+        alert('Could not accept the friend request. Please check the friend-system database rules.');
     }
 }
 
@@ -2926,10 +2930,7 @@ async function loadFriends() {
     try {
         let codeSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friendCode`).once('value');
         let yourCode = codeSnapshot.val();
-
-        if (!yourCode) {
-            yourCode = await initializeFriendCode();
-        }
+        if (!yourCode) yourCode = await initializeFriendCode();
 
         const codeEl = document.getElementById('yourFriendCode');
         if (codeEl) codeEl.textContent = yourCode || 'Unavailable';
@@ -3046,6 +3047,8 @@ function listenToFriendRequests() {
 
     if (friendListenersBoundFor) {
         firebase.database().ref(`users/${friendListenersBoundFor}/friendRequests/incoming`).off();
+        firebase.database().ref(`users/${friendListenersBoundFor}/friendRequests/outgoing`).off();
+        firebase.database().ref(`users/${friendListenersBoundFor}/friends`).off();
         firebase.database().ref(`users/${friendListenersBoundFor}/friendRequestReceived`).off();
         firebase.database().ref(`users/${friendListenersBoundFor}/friendAccepted`).off();
         firebase.database().ref(`users/${friendListenersBoundFor}/friendRequestDeclined`).off();
@@ -3064,7 +3067,6 @@ function listenToFriendRequests() {
         const senderUid = snapshot.key;
         const requestData = snapshot.val();
         if (!senderUid || !requestData) return;
-
         try {
             const updates = {};
             updates[`users/${uid}/friendRequests/incoming/${senderUid}`] = requestData;
@@ -3079,7 +3081,6 @@ function listenToFriendRequests() {
         const friendUid = snapshot.key;
         const friendData = snapshot.val();
         if (!friendUid || !friendData) return;
-
         try {
             const updates = {};
             updates[`users/${uid}/friends/${friendUid}`] = {
@@ -3090,7 +3091,6 @@ function listenToFriendRequests() {
             updates[`users/${uid}/friendRequests/outgoing/${friendUid}`] = null;
             updates[`users/${uid}/friendAccepted/${friendUid}`] = null;
             await firebase.database().ref().update(updates);
-            await loadFriends();
         } catch (error) {
             console.error('Error processing accepted friend request:', error);
         }
@@ -3124,7 +3124,6 @@ function listenToFriendRequests() {
     });
 }
 
-
 // Format date
 function formatDate(timestamp) {
     const date = new Date(timestamp);
@@ -3135,6 +3134,8 @@ function formatDate(timestamp) {
 setTimeout(() => {
     initFriendsSystem();
 }, 300);
+
+
 
 // View friend stats
 async function viewFriendStats(friendUid, friendNickname) {
@@ -3217,10 +3218,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================================
     // 2. FRIENDS BUTTON
     // ============================================================
-    const newFriendsBtn = document.getElementById('btnFriends');
-    if (newFriendsBtn && typeof openFriendsModal === 'function') {
-        newFriendsBtn.addEventListener('click', openFriendsModal);
-    }
+    setTimeout(function() {
+        const newFriendsBtn = document.getElementById('btnFriends');
+        
+        if (newFriendsBtn && typeof openFriendsModal === 'function') {
+            // Remove existing listeners
+            const cleanBtn = newFriendsBtn.cloneNode(true);
+            newFriendsBtn.parentNode.replaceChild(cleanBtn, newFriendsBtn);
+            
+            // Add click handler
+            cleanBtn.addEventListener('click', function() {
+                console.log('Friends button clicked');
+                openFriendsModal();
+            });
+            
+            // Sync badge
+            setInterval(function() {
+                const oldBadge = document.querySelector('.header-tools #friendsBadge');
+                const newBadge = document.getElementById('friendsBadge');
+                if (oldBadge && newBadge) {
+                    newBadge.style.display = oldBadge.style.display;
+                    newBadge.textContent = oldBadge.textContent;
+                }
+            }, 1000);
+        }
+    }, 1000);
     
     // ============================================================
     // 3. AUTHENTICATION SYNC
@@ -3597,7 +3619,7 @@ const GAME_UPDATES = [
                     "Alan Wake themed event/update released.",
                     "Ghost fixes included Yurei door closing, Raiju light flicker behaviour, and several room/pathing fixes.",
                     "Equipment fixes included Firelight, Head Gear, Video Camera, Flashlight, Tripod, Igniter, and Spirit Box related issues.",
-                    "Kormos and Aswang information is included in the current ghost data and should be kept aligned with the ghost cards."
+                    "Kormos and Aswang information is being tracked and should stay marked as subject to change while testing continues."
                 ]
             }
         ]
@@ -3838,7 +3860,7 @@ function initOnlineHuntersCounter() {
     if (!countEl) return;
 
     if (typeof firebase === "undefined" || !firebase.database) {
-        console.warn("Online Hunters counter is not available.");
+        console.warn("Firebase not available. Online Hunters counter disabled.");
         return;
     }
 
@@ -3850,7 +3872,7 @@ function initOnlineHuntersCounter() {
             lastSeen: Date.now(),
             page: window.location.pathname || "/"
         }).catch((error) => {
-            console.warn("Online Hunters write failed.", error);
+            console.warn("Online Hunters write failed. Check Firebase rules.", error);
         });
 
         hunterRef.onDisconnect().remove();
@@ -3901,7 +3923,7 @@ function listenForOnlineHunters() {
         const countEl = document.getElementById("onlineHuntersCount");
         if (countEl) countEl.textContent = activeHunters.length;
     }, (error) => {
-        console.warn("Online Hunters listener failed.", error);
+        console.warn("Online Hunters listener failed. Check Firebase rules.", error);
     });
 }
 
