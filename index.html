@@ -45,7 +45,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
-    <!-- Firebase SDK -->
+    <!-- Online account and sync services -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -185,7 +185,7 @@
         <div class="wip-content">
             <span class="wip-icon">⚠️</span>
             <div class="wip-text">
-            <strong>Heads up:</strong> v2.5 updates the 0EV strategy flow and aligns newer ghost notes with the main ghost cards.
+            <strong>Heads up:</strong> Ghost data has been updated for the latest Phasmophobia changes. If anything looks off, cross-check before using it in a serious run.
                 </div>
                     <button class="wip-close" id="wipClose" type="button" aria-label="Close update banner">✕</button>
             </div>
@@ -450,7 +450,7 @@
             </div>
 
             <div class="mechanics-note warning-note">
-                <strong>Mechanics reference updated in v2.5.</strong> Newer ghost mechanics below are aligned with the current ghost-card data.
+                <strong>Data on this page has been refreshed.</strong> Use it as a practical reference for current ghost behaviour, with extra care on recent balance changes.
             </div>
             
             <div class="mechanics-grid refined-mechanics-grid">
@@ -592,14 +592,7 @@
                             <li>Aggressive: 65% threshold, 1.955 m/s, hunts that start aggressive are 20% shorter.</li>
                         </ul>
                         <h4>Kormos</h4>
-                        <ul>
-                            <li>50% hunt threshold.</li>
-                            <li>1.7 m/s normally, increasing to 2.21 m/s after detecting a player.</li>
-                            <li>Completely blind to normal line-of-sight tracking; it detects through voice, active electronics and movement instead.</li>
-                            <li>Movement detection depends on how you move: crouch-walking within 10m, normal walking within 15m, and sprinting within 30m.</li>
-                            <li>If you are completely still, silent and not holding/using active electronics, it should struggle to detect you directly unless it physically paths into you.</li>
-                            <li>Evidence overlap warning: Kormos is Orbs + Spirit Box + UV, so collecting its full evidence set does not automatically rule out The Mimic because Mimic Orbs can overlap with that combination.</li>
-                        </ul>
+                        <p>Known concept: nearly blind with strong hearing. Keep still during hunts.</p>
                     </div>
                 </div>
 
@@ -1097,7 +1090,7 @@
                     <div class="tip-card" style="border-color:rgba(239,68,68,0.35);"><h4 style="color:var(--acc-red);">Gallu</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Defensive tools and salt can change its state. Enraged Gallu is faster, has reduced incense blind time, and cannot disturb salt; after an enraged hunt it becomes weakened.</p></div>
                     <div class="tip-card" style="border-color:rgba(6,182,212,0.35);"><h4 style="color:var(--acc-cyan);">Obambo</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Watch for repeating waves: calm, low-pressure periods followed by aggressive, faster, earlier-hunt periods. One weird minute is not enough; look for the cycle.</p></div>
                     <div class="tip-card" style="border-color:rgba(234,179,8,0.35);"><h4 style="color:#fde68a;">Aswang</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Starts slightly slower than normal but reaches LoS speed much faster. Break sight lines quickly; long straight chases make it look scarier than its base speed suggests.</p></div>
-                    <div class="tip-card" style="border-color:rgba(34,197,94,0.35);"><h4 style="color:#86efac;">Kormos</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Completely blind to normal line-of-sight, but sensitive to movement, voice and active electronics. In hunts, stay still, silent and electronics-off; then compare crouch-walking, walking and sprinting reactions at roughly 10m / 15m / 30m.</p></div>
+                    <div class="tip-card" style="border-color:rgba(34,197,94,0.35);"><h4 style="color:#86efac;">Kormos</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Unusual hunt senses. Stay silent, still and electronics-off to test whether normal LoS tracking seems absent, then compare how it reacts to movement and noise.</p></div>
                 </div>
             </div>
 
