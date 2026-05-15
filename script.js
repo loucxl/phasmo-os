@@ -300,7 +300,7 @@ const GHOSTS = [
         desc: "A chase-focused ghost that starts slightly slower than normal, but reaches its maximum line-of-sight speed much faster than most ghosts once it has spotted a player.",
         ability: "The Aswang has a base hunt speed of 1.53 m/s and can still reach its normal maximum line-of-sight speed of about 2.53 m/s. The key difference is acceleration: it reaches max LoS speed in about 17.33 seconds instead of the standard 26 seconds. This makes long straight chases especially dangerous.",
         test: "Line-of-Sight Speed Test: During a hunt, listen for a slightly slower starting pace that ramps up quickly once the ghost sees someone. It does not have a higher max LoS speed than expected for its base speed — it simply reaches that max much faster, in about 17.33s rather than 26s. Break line-of-sight quickly to stop it building speed.",
-        zeroEv: "On 0 evidence, look for a ghost that starts around 1.53 m/s but reaches its max line-of-sight speed much quicker than normal. It prefers chasing visible players over searching, so breaking line-of-sight and hiding cleanly is important.",
+        zeroEv: "On 0 evidence, look for a ghost that starts around 1.53 m/s but reaches its max line-of-sight speed much quicker than normal. It prefers chasing visible players over searching, so breaking line-of-sight and hiding cleanly is important. <span class='hl-red'>New ghost data is still being reviewed and may change.</span>",
         tags: ['fast'],
         speedStates: [{"label": "Base speed", "speed": 1.53}, {"label": "Max LoS (~17.33s)", "speed": 2.53}]
     }
@@ -311,7 +311,7 @@ const GHOSTS = [
         desc: "A nearly blind ghost with extremely strong hearing. It does not use normal line-of-sight tracking, but can detect players through voice, active electronics, and movement at different ranges.",
         ability: "The Kormos is completely blind and detects players using sound and electronics instead of normal line-of-sight. It has normal electronic and voice detection ranges, but movement detection depends on how you move: crouch-walking can be detected from 10m, normal walking from 15m, and sprinting from 30m. If you are completely still, silent, and not holding/using active electronics, it should not detect you directly unless it physically paths into you. Its speed is 1.7 m/s by default and 2.21 m/s after detecting a player.",
         test: "Movement Detection Test: During a hunt, stay silent, turn off/avoid active electronics, and stop moving. A Kormos should struggle to locate you by sight alone. Then compare movement: crouch-walking can alert it from 10m, walking from 15m, and sprinting from 30m. If the ghost reacts strongly to movement but cannot visually track a still, silent player, suspect Kormos.",
-        zeroEv: "On 0 evidence, Kormos is identified by its unusual hunting senses: completely blind to normal line-of-sight, but very sensitive to movement, voice, and active electronics. Stand still, stay quiet, and turn off/avoid active electronics to test it. Then compare movement: crouch-walking can alert it from 10m, walking from 15m, and sprinting from 30m. The Kormos is also one of three ghosts — alongside Hantu and Onryo — where collecting its full evidence set still does not rule out The Mimic, because Mimic Orbs can overlap with that evidence combination.",
+        zeroEv: "On 0 evidence, Kormos is identified by its unusual hunting senses: completely blind to normal line-of-sight, but very sensitive to movement, voice, and active electronics. Stand still and stay quiet to test it. The Kormos is also one of three ghosts — alongside Hantu and Onryo — where collecting its full evidence set still does not rule out The Mimic, because Mimic Orbs can overlap with that evidence combination. <span class='hl-red'>New ghost data is still being reviewed and may change.</span>",
         tags: ['fast'],
         speedStates: [{"label": "Undetected", "speed": 1.7}, {"label": "After detection", "speed": 2.21}]
     }
@@ -1393,7 +1393,7 @@ function generateSessionId() {
 // Create new group session
 function createGroupSession() {
     if (!initFirebase()) {
-        alert("Firebase not configured. Please add your Firebase credentials to script.js");
+        alert("Online sharing is not available right now. Please try again later.");
         return;
     }
     
@@ -1441,7 +1441,7 @@ function joinGroupSession(sessionId) {
     }
     
     if (!initFirebase()) {
-        alert("Firebase not configured. Please add your Firebase credentials to script.js");
+        alert("Online sharing is not available right now. Please try again later.");
         return;
     }
     
@@ -1969,7 +1969,7 @@ function initGoogleAuth() {
 
 async function handleGoogleLogin() {
     if (!auth) {
-        alert("⚠️ Firebase Auth not ready yet.\n\nPlease wait a moment and try again.");
+        alert("⚠️ Login is not ready yet.\n\nPlease wait a moment and try again.");
         console.error("Auth not initialized");
         return;
     }
@@ -2597,635 +2597,533 @@ updateUserCount = function() {
 
 // ═══════════════════════════════════════════════════════════════
 // FRIENDS SYSTEM WITH FRIEND CODES
-// ═══════════════════════════════════════════════════════════════
+// Uses each user's own writable paths plus lightweight notification inboxes for cross-user actions.
 
 let currentFriends = [];
 let pendingRequests = { incoming: [], outgoing: [] };
+let friendsSystemBound = false;
+let friendListenersBoundFor = null;
 
-// Generate random friend code (8 characters: 4 letters + 4 numbers)
+function escapeHTML(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function normaliseFriendCode(code) {
+    const cleaned = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (cleaned.length === 8) {
+        return `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
+    }
+    return String(code || '').toUpperCase().trim();
+}
+
 function generateFriendCode() {
-    const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // Removed I, O to avoid confusion
-    const numbers = '23456789'; // Removed 0, 1 to avoid confusion
-    
+    const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const numbers = '23456789';
     let code = '';
-    // 4 letters
-    for (let i = 0; i < 4; i++) {
-        code += letters.charAt(Math.floor(Math.random() * letters.length));
-    }
-    // Dash
+    for (let i = 0; i < 4; i++) code += letters.charAt(Math.floor(Math.random() * letters.length));
     code += '-';
-    // 4 numbers
-    for (let i = 0; i < 4; i++) {
-        code += numbers.charAt(Math.floor(Math.random() * numbers.length));
-    }
-    
+    for (let i = 0; i < 4; i++) code += numbers.charAt(Math.floor(Math.random() * numbers.length));
     return code;
 }
 
-// Initialize friend code for user
+async function findUserByFriendCode(code) {
+    const normalised = normaliseFriendCode(code);
+    const snapshot = await firebase.database()
+        .ref('users')
+        .orderByChild('friendCode')
+        .equalTo(normalised)
+        .once('value');
+
+    if (!snapshot.exists()) return null;
+
+    const matches = snapshot.val() || {};
+    const [uid, data] = Object.entries(matches)[0] || [];
+    if (!uid) return null;
+    return { uid, ...(data || {}) };
+}
+
+async function getPublicUserProfile(uid) {
+    const snapshot = await firebase.database().ref(`users/${uid}`).once('value');
+    const data = snapshot.val() || {};
+    return {
+        uid,
+        nickname: data.nickname || 'Unknown Hunter',
+        photoURL: data.photoURL || '',
+        friendCode: data.friendCode || ''
+    };
+}
+
 async function initializeFriendCode() {
-    if (!currentUser) {
-        console.log('No currentUser, skipping friend code init');
-        return;
-    }
-    
-    console.log('Initializing friend code for user:', currentUser.uid);
-    
+    if (!currentUser) return;
+
     try {
         const userRef = firebase.database().ref(`users/${currentUser.uid}`);
         const snapshot = await userRef.once('value');
-        const userData = snapshot.val() || {}; // Handle null userData
-        
-        console.log('User data:', userData);
-        
-        if (!userData.friendCode) {
-            console.log('No friend code found, generating...');
-            
-            // Generate unique friend code
-            let code = generateFriendCode();
-            console.log('Generated code:', code);
-            
-            // Check if code exists (very unlikely but just in case)
-            let codeExists = true;
-            let attempts = 0;
-            while (codeExists && attempts < 5) {
-                const codeCheck = await firebase.database().ref('friendCodes').child(code).once('value');
-                if (!codeCheck.exists()) {
-                    codeExists = false;
-                } else {
-                    console.log('Code collision, regenerating...');
-                    code = generateFriendCode();
-                }
-                attempts++;
-            }
-            
-            if (attempts >= 5) {
-                console.error('Failed to generate unique code after 5 attempts');
-                return;
-            }
-            
-            console.log('Saving friend code:', code);
-            
-            // Save friend code
-            await userRef.update({ friendCode: code });
-            await firebase.database().ref('friendCodes').child(code).set(currentUser.uid);
-            
-            console.log('✅ Friend code saved:', code);
-            
-            // Immediately update the display
+        const userData = snapshot.val() || {};
+
+        if (userData.friendCode) {
             const codeEl = document.getElementById('yourFriendCode');
-            if (codeEl) {
-                codeEl.textContent = code;
-            }
-        } else {
-            console.log('Friend code already exists:', userData.friendCode);
+            if (codeEl) codeEl.textContent = userData.friendCode;
+            return userData.friendCode;
         }
+
+        let code = generateFriendCode();
+        let attempts = 0;
+
+        while (attempts < 12) {
+            const existing = await findUserByFriendCode(code);
+            if (!existing || existing.uid === currentUser.uid) break;
+            code = generateFriendCode();
+            attempts++;
+        }
+
+        await userRef.update({ friendCode: code });
+
+        const codeEl = document.getElementById('yourFriendCode');
+        if (codeEl) codeEl.textContent = code;
+        return code;
     } catch (error) {
-        console.error('❌ Error initializing friend code:', error);
+        console.error('Error initialising friend code:', error);
+        const codeEl = document.getElementById('yourFriendCode');
+        if (codeEl) codeEl.textContent = 'Unavailable';
+        return null;
     }
 }
 
-// Initialize friends system
 function initFriendsSystem() {
-    console.log('Initializing friends system...');
-    
-    // Friends button in header
-    const friendsBtn = document.createElement('button');
-    friendsBtn.className = 'btn-icon';
-    friendsBtn.id = 'btnFriends';
-    friendsBtn.title = 'Friends';
-    friendsBtn.innerHTML = '👥';
-    
-    const groupBtn = document.getElementById('btnGroupJournal');
-    groupBtn.after(friendsBtn);
-    
-    // Friends button handler
-    friendsBtn.addEventListener('click', openFriendsModal);
-    
-    // Modal handlers
-    document.getElementById('closeFriends').addEventListener('click', () => {
-        document.getElementById('friendsModal').close();
-    });
-    
-    document.getElementById('btnAddFriend').addEventListener('click', () => {
-        document.getElementById('friendsModal').close();
-        document.getElementById('addFriendModal').showModal();
-    });
-    
-    document.getElementById('closeAddFriend').addEventListener('click', () => {
-        document.getElementById('addFriendModal').close();
-    });
-    
-    document.getElementById('btnCopyFriendCode').addEventListener('click', copyFriendCode);
-    document.getElementById('addFriendForm').addEventListener('submit', sendFriendRequest);
-    
-    // Load friends if logged in (will be called from showUserView)
-    
-    console.log('Friends system initialized!');
+    if (friendsSystemBound) return;
+    friendsSystemBound = true;
+
+    const friendsBtn = document.getElementById('btnFriends');
+    if (friendsBtn) friendsBtn.addEventListener('click', openFriendsModal);
+
+    const closeFriends = document.getElementById('closeFriends');
+    if (closeFriends) closeFriends.addEventListener('click', () => document.getElementById('friendsModal')?.close());
+
+    const addFriendBtn = document.getElementById('btnAddFriend');
+    if (addFriendBtn) {
+        addFriendBtn.addEventListener('click', () => {
+            document.getElementById('friendsModal')?.close();
+            document.getElementById('addFriendError').textContent = '';
+            document.getElementById('friendCodeInput').value = '';
+            document.getElementById('addFriendModal')?.showModal();
+        });
+    }
+
+    const closeAddFriend = document.getElementById('closeAddFriend');
+    if (closeAddFriend) closeAddFriend.addEventListener('click', () => document.getElementById('addFriendModal')?.close());
+
+    const copyBtn = document.getElementById('btnCopyFriendCode');
+    if (copyBtn) copyBtn.addEventListener('click', copyFriendCode);
+
+    const addFriendForm = document.getElementById('addFriendForm');
+    if (addFriendForm) addFriendForm.addEventListener('submit', sendFriendRequest);
 }
 
-// Open friends modal
 async function openFriendsModal() {
     if (!currentUser) {
-        alert('Please log in to use friends system!');
+        alert('Please log in to use friends.');
         return;
     }
-    
+
+    await initializeFriendCode();
     await loadFriends();
-    document.getElementById('friendsModal').showModal();
+    document.getElementById('friendsModal')?.showModal();
 }
 
-// Copy friend code
 async function copyFriendCode() {
+    if (!currentUser) return;
+
     try {
-        const snapshot = await firebase.database().ref(`users/${currentUser.uid}/friendCode`).once('value');
-        const code = snapshot.val();
-        
-        if (code) {
-            await navigator.clipboard.writeText(code);
-            
-            const btn = document.getElementById('btnCopyFriendCode');
-            const originalText = btn.textContent;
+        let code = document.getElementById('yourFriendCode')?.textContent;
+        if (!code || code === 'Loading...' || code === 'Generating...') {
+            code = await initializeFriendCode();
+        }
+
+        if (!code) throw new Error('No friend code available');
+
+        await navigator.clipboard.writeText(code);
+        const btn = document.getElementById('btnCopyFriendCode');
+        if (btn) {
+            const original = btn.textContent;
             btn.textContent = 'Copied!';
-            btn.style.background = 'var(--acc-green)';
-            
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = '';
-            }, 2000);
+            setTimeout(() => { btn.textContent = original; }, 1500);
         }
     } catch (error) {
         console.error('Error copying friend code:', error);
-        alert('Failed to copy friend code');
+        alert('Could not copy the friend code. You can copy it manually instead.');
     }
 }
 
-// Send friend request
 async function sendFriendRequest(e) {
     e.preventDefault();
-    
+    if (!currentUser) return;
+
     const codeInput = document.getElementById('friendCodeInput');
-    const code = codeInput.value.trim().toUpperCase();
     const errorEl = document.getElementById('addFriendError');
-    
-    errorEl.classList.remove('show');
-    
-    if (!code || code.length !== 9) {
-        errorEl.textContent = 'Invalid friend code format';
-        errorEl.classList.add('show');
+    const submitBtn = e.submitter || document.querySelector('#addFriendForm button[type="submit"]');
+    const code = normaliseFriendCode(codeInput.value);
+
+    errorEl.textContent = '';
+
+    if (!/^[A-Z]{4}-[0-9]{4}$/.test(code)) {
+        errorEl.textContent = 'Friend code must look like ABCD-1234.';
         return;
     }
-    
+
+    if (submitBtn) submitBtn.disabled = true;
+
     try {
-        // Look up user by friend code
-        const codeSnapshot = await firebase.database().ref(`friendCodes/${code}`).once('value');
-        
-        if (!codeSnapshot.exists()) {
-            errorEl.textContent = 'Friend code not found';
-            errorEl.classList.add('show');
+        const friend = await findUserByFriendCode(code);
+
+        if (!friend) {
+            errorEl.textContent = 'No hunter found with that friend code.';
             return;
         }
-        
-        const friendUid = codeSnapshot.val();
-        
-        // Can't add yourself
-        if (friendUid === currentUser.uid) {
-            errorEl.textContent = "You can't add yourself!";
-            errorEl.classList.add('show');
+
+        if (friend.uid === currentUser.uid) {
+            errorEl.textContent = 'That is your own friend code.';
             return;
         }
-        
-        // Check if already friends
-        const friendsSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friends/${friendUid}`).once('value');
-        if (friendsSnapshot.exists()) {
-            errorEl.textContent = 'Already friends!';
-            errorEl.classList.add('show');
+
+        const alreadyFriends = await firebase.database().ref(`users/${currentUser.uid}/friends/${friend.uid}`).once('value');
+        if (alreadyFriends.exists()) {
+            errorEl.textContent = 'You are already friends with this hunter.';
             return;
         }
-        
-        // Check if request already sent
-        const outgoingSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`).once('value');
-        if (outgoingSnapshot.exists()) {
-            errorEl.textContent = 'Friend request already sent';
-            errorEl.classList.add('show');
+
+        const incoming = await firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming/${friend.uid}`).once('value');
+        if (incoming.exists()) {
+            await acceptFriendRequest(friend.uid);
+            document.getElementById('addFriendModal')?.close();
+            await loadFriends();
             return;
         }
-        
-        // Check if they already sent you a request (auto-accept)
-        const incomingSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`).once('value');
-        if (incomingSnapshot.exists()) {
-            // Auto-accept since both want to be friends
-            await acceptFriendRequest(friendUid);
-            alert('Friend request accepted! You are now friends! 🎉');
-            document.getElementById('addFriendModal').close();
-            loadFriends();
+
+        const outgoing = await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friend.uid}`).once('value');
+        if (outgoing.exists()) {
+            errorEl.textContent = 'You have already sent this hunter a request.';
             return;
         }
-        
-        // Get friend's public info (nickname, photoURL are public)
-        const nicknameSnapshot = await firebase.database().ref(`users/${friendUid}/nickname`).once('value');
-        const friendNickname = nicknameSnapshot.val();
-        
-        if (!friendNickname) {
-            errorEl.textContent = 'User not found';
-            errorEl.classList.add('show');
-            return;
-        }
-        
-        // Prepare request data
-        const requestData = {
-            from: currentUser.uid,
-            fromNickname: currentUserNickname,
-            fromPhotoURL: currentUser.photoURL,
-            timestamp: Date.now()
+
+        const myProfile = await getPublicUserProfile(currentUser.uid);
+        const now = Date.now();
+        const outgoingData = {
+            toUid: friend.uid,
+            toNickname: friend.nickname || 'Unknown Hunter',
+            toPhotoURL: friend.photoURL || '',
+            timestamp: now
         };
-        
-        // Add to YOUR outgoing requests
-        await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`).set(requestData);
-        
-        // Send notification to THEIR friendRequestReceived path (they can write this)
-        await firebase.database().ref(`users/${friendUid}/friendRequestReceived/${currentUser.uid}`).set(requestData);
-        
-        console.log('✅ Friend request sent to', friendNickname);
-        alert(`Friend request sent to ${friendNickname}! ✅`);
-        
-        codeInput.value = '';
-        document.getElementById('addFriendModal').close();
+        const incomingData = {
+            fromUid: currentUser.uid,
+            fromNickname: myProfile.nickname || currentUserNickname || 'Unknown Hunter',
+            fromPhotoURL: myProfile.photoURL || currentUser.photoURL || '',
+            timestamp: now
+        };
+
+        const updates = {};
+        updates[`users/${currentUser.uid}/friendRequests/outgoing/${friend.uid}`] = outgoingData;
+        updates[`users/${friend.uid}/friendRequestReceived/${currentUser.uid}`] = incomingData;
+        await firebase.database().ref().update(updates);
+
+        alert(`Friend request sent to ${friend.nickname || 'that hunter'}!`);
+        document.getElementById('addFriendModal')?.close();
         await loadFriends();
-        
     } catch (error) {
-        console.error('❌ Error sending friend request:', error);
-        errorEl.textContent = 'Failed to send friend request: ' + error.message;
-        errorEl.classList.add('show');
+        console.error('Error sending friend request:', error);
+        errorEl.textContent = 'Could not send the request. Please try again in a moment.';
+    } finally {
+        if (submitBtn) submitBtn.disabled = false;
     }
 }
 
-// Accept friend request
 async function acceptFriendRequest(friendUid) {
+    if (!currentUser || !friendUid) return;
+
     try {
-        // Get friend's public info
-        const nicknameSnapshot = await firebase.database().ref(`users/${friendUid}/nickname`).once('value');
-        const photoSnapshot = await firebase.database().ref(`users/${friendUid}/photoURL`).once('value');
-        
-        const friendNickname = nicknameSnapshot.val();
-        const friendPhotoURL = photoSnapshot.val();
-        
-        if (!friendNickname) {
-            alert('Friend not found');
-            return;
-        }
-        
-        // Get your info
-        const yourNicknameSnapshot = await firebase.database().ref(`users/${currentUser.uid}/nickname`).once('value');
-        const yourPhotoSnapshot = await firebase.database().ref(`users/${currentUser.uid}/photoURL`).once('value');
-        
-        const yourNickname = yourNicknameSnapshot.val();
-        const yourPhotoURL = yourPhotoSnapshot.val();
-        
-        // Add friend to YOUR friends list
-        await firebase.database().ref(`users/${currentUser.uid}/friends/${friendUid}`).set({
-            nickname: friendNickname,
-            photoURL: friendPhotoURL,
-            since: Date.now()
-        });
-        
-        // Remove from YOUR incoming requests
-        await firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`).remove();
-        
-        // Create a "friendAccepted" notification for the other user
-        // They'll use this to add you to their friends list
-        await firebase.database().ref(`users/${friendUid}/friendAccepted/${currentUser.uid}`).set({
-            nickname: yourNickname,
-            photoURL: yourPhotoURL,
-            since: Date.now()
-        });
-        
-        console.log('✅ Friend request accepted!');
-        alert(`You and ${friendNickname} are now friends! 🎉`);
-        
+        const [friendProfile, myProfile] = await Promise.all([
+            getPublicUserProfile(friendUid),
+            getPublicUserProfile(currentUser.uid)
+        ]);
+        const since = Date.now();
+
+        const updates = {};
+        updates[`users/${currentUser.uid}/friends/${friendUid}`] = {
+            nickname: friendProfile.nickname,
+            photoURL: friendProfile.photoURL || '',
+            since
+        };
+        updates[`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`] = null;
+        updates[`users/${currentUser.uid}/friendRequestReceived/${friendUid}`] = null;
+        updates[`users/${friendUid}/friendAccepted/${currentUser.uid}`] = {
+            uid: currentUser.uid,
+            nickname: myProfile.nickname || currentUserNickname || 'Unknown Hunter',
+            photoURL: myProfile.photoURL || currentUser.photoURL || '',
+            since
+        };
+
+        await firebase.database().ref().update(updates);
         await loadFriends();
-        
+        alert(`You and ${friendProfile.nickname} are now friends!`);
     } catch (error) {
-        console.error('❌ Error accepting friend request:', error);
-        alert('Failed to accept friend request: ' + error.message);
+        console.error('Error accepting friend request:', error);
+        alert('Could not accept the friend request. Please try again in a moment.');
     }
 }
 
-// Decline friend request
 async function declineFriendRequest(friendUid) {
+    if (!currentUser || !friendUid) return;
+
     try {
-        // Check if it's incoming or outgoing
-        const incomingRef = firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`);
-        const outgoingRef = firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`);
-        
-        const incomingSnapshot = await incomingRef.once('value');
-        const outgoingSnapshot = await outgoingRef.once('value');
-        
+        const incomingSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`).once('value');
+        const outgoingSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`).once('value');
+        const updates = {};
+
         if (incomingSnapshot.exists()) {
-            // It's an incoming request (someone sent to us) - decline it
-            await incomingRef.remove();
-            
-            // Notify them it was declined so they can remove from their outgoing
-            await firebase.database().ref(`users/${friendUid}/friendRequestDeclined/${currentUser.uid}`).set({
-                timestamp: Date.now()
-            });
-            
-            console.log('Declined incoming friend request');
-        } else if (outgoingSnapshot.exists()) {
-            // It's an outgoing request (we sent to them) - cancel it
-            await outgoingRef.remove();
-            
-            // Notify them to remove from their incoming
-            await firebase.database().ref(`users/${friendUid}/friendRequestCancelled/${currentUser.uid}`).set({
-                timestamp: Date.now()
-            });
-            
-            console.log('Cancelled outgoing friend request');
+            updates[`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`] = null;
+            updates[`users/${currentUser.uid}/friendRequestReceived/${friendUid}`] = null;
+            updates[`users/${friendUid}/friendRequestDeclined/${currentUser.uid}`] = { timestamp: Date.now() };
         }
-        
-        // Reload friends list
+
+        if (outgoingSnapshot.exists()) {
+            updates[`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`] = null;
+            updates[`users/${friendUid}/friendRequestCancelled/${currentUser.uid}`] = { timestamp: Date.now() };
+        }
+
+        await firebase.database().ref().update(updates);
         await loadFriends();
-        
     } catch (error) {
         console.error('Error declining/cancelling friend request:', error);
-        alert('Failed to decline/cancel friend request: ' + error.message);
+        alert('Could not update the friend request.');
     }
 }
 
-// Remove friend
 async function removeFriend(friendUid, friendNickname) {
-    const confirmed = confirm(`Remove ${friendNickname} from your friends list?`);
-    
+    if (!currentUser || !friendUid) return;
+    const confirmed = confirm(`Remove ${friendNickname || 'this hunter'} from your friends list?`);
     if (!confirmed) return;
-    
+
     try {
-        // Remove from both friends lists
-        await firebase.database().ref(`users/${currentUser.uid}/friends/${friendUid}`).remove();
-        await firebase.database().ref(`users/${friendUid}/friends/${currentUser.uid}`).remove();
-        
-        console.log('Friend removed');
-        loadFriends();
-        
+        const updates = {};
+        updates[`users/${currentUser.uid}/friends/${friendUid}`] = null;
+        updates[`users/${friendUid}/friendRemoved/${currentUser.uid}`] = { timestamp: Date.now() };
+        await firebase.database().ref().update(updates);
+        await loadFriends();
     } catch (error) {
         console.error('Error removing friend:', error);
-        alert('Failed to remove friend');
+        alert('Could not remove this friend.');
     }
 }
 
-// Load friends and requests
 async function loadFriends() {
     if (!currentUser) return;
-    
+
     try {
-        // Load your friend code
-        const codeSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friendCode`).once('value');
-        const yourCode = codeSnapshot.val();
-        
-        const codeEl = document.getElementById('yourFriendCode');
-        if (codeEl) {
-            codeEl.textContent = yourCode || 'Generating...';
-        }
-        
-        // If no code yet, wait for initializeFriendCode to finish
+        let codeSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friendCode`).once('value');
+        let yourCode = codeSnapshot.val();
+
         if (!yourCode) {
-            console.log('Waiting for friend code generation...');
-            // Wait a bit and try again
-            setTimeout(loadFriends, 1000);
-            return;
+            yourCode = await initializeFriendCode();
         }
-        
-        // Load friends
-        const friendsSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friends`).once('value');
-        const friends = friendsSnapshot.val() || {};
-        currentFriends = Object.entries(friends);
-        
-        // Load incoming requests
-        const incomingSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming`).once('value');
-        const incoming = incomingSnapshot.val() || {};
-        pendingRequests.incoming = Object.entries(incoming);
-        
-        // Load outgoing requests
-        const outgoingSnapshot = await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing`).once('value');
-        const outgoing = outgoingSnapshot.val() || {};
-        pendingRequests.outgoing = Object.entries(outgoing);
-        
-        // Update UI
+
+        const codeEl = document.getElementById('yourFriendCode');
+        if (codeEl) codeEl.textContent = yourCode || 'Unavailable';
+
+        const [friendsSnapshot, incomingSnapshot, outgoingSnapshot] = await Promise.all([
+            firebase.database().ref(`users/${currentUser.uid}/friends`).once('value'),
+            firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming`).once('value'),
+            firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing`).once('value')
+        ]);
+
+        currentFriends = Object.entries(friendsSnapshot.val() || {});
+        pendingRequests.incoming = Object.entries(incomingSnapshot.val() || {});
+        pendingRequests.outgoing = Object.entries(outgoingSnapshot.val() || {});
+
         renderFriendsList();
         renderFriendRequests();
-        
-        // Update badge
         updateFriendsBadge();
-        
+        updateFriendsCount();
     } catch (error) {
         console.error('Error loading friends:', error);
     }
 }
 
-// Render friends list
 function renderFriendsList() {
     const container = document.getElementById('friendsList');
-    
+    if (!container) return;
+
     if (currentFriends.length === 0) {
         container.innerHTML = '<div class="empty-state">No friends yet. Share your friend code!</div>';
         return;
     }
-    
+
     container.innerHTML = '';
-    
     currentFriends.forEach(([uid, friend]) => {
         const item = document.createElement('div');
         item.className = 'friend-item';
         item.innerHTML = `
-            <img src="${friend.photoURL || 'https://via.placeholder.com/40'}" class="friend-avatar" alt="">
+            <img src="${escapeHTML(friend.photoURL || 'https://via.placeholder.com/40')}" class="friend-avatar" alt="">
             <div class="friend-info">
-                <div class="friend-name">${friend.nickname}</div>
+                <div class="friend-name">${escapeHTML(friend.nickname || 'Unknown Hunter')}</div>
                 <div class="friend-since">Friends since ${formatDate(friend.since)}</div>
             </div>
-            <button class="btn-friend-view" onclick="viewFriendStats('${uid}', '${friend.nickname}')">View Stats</button>
-            <button class="btn-friend-remove" onclick="removeFriend('${uid}', '${friend.nickname}')">Remove</button>
+            <button class="btn-friend-view" type="button">View Stats</button>
+            <button class="btn-friend-remove" type="button">Remove</button>
         `;
+        item.querySelector('.btn-friend-view').addEventListener('click', () => viewFriendStats(uid, friend.nickname || 'Unknown Hunter'));
+        item.querySelector('.btn-friend-remove').addEventListener('click', () => removeFriend(uid, friend.nickname || 'Unknown Hunter'));
         container.appendChild(item);
     });
 }
 
-// Render friend requests
 function renderFriendRequests() {
     const container = document.getElementById('friendRequestsList');
-    
+    if (!container) return;
+
     if (pendingRequests.incoming.length === 0 && pendingRequests.outgoing.length === 0) {
         container.innerHTML = '<div class="empty-state">No pending requests</div>';
         return;
     }
-    
+
     container.innerHTML = '';
-    
-    // Incoming requests
+
     pendingRequests.incoming.forEach(([uid, request]) => {
         const item = document.createElement('div');
         item.className = 'request-item';
         item.innerHTML = `
-            <img src="${request.fromPhotoURL || 'https://via.placeholder.com/40'}" class="request-avatar" alt="">
+            <img src="${escapeHTML(request.fromPhotoURL || 'https://via.placeholder.com/40')}" class="request-avatar" alt="">
             <div class="request-info">
-                <div class="request-name">${request.fromNickname}</div>
+                <div class="request-name">${escapeHTML(request.fromNickname || 'Unknown Hunter')}</div>
                 <div class="request-time">${formatTimeAgo(request.timestamp)}</div>
             </div>
-            <button class="btn-request-accept" onclick="acceptFriendRequest('${uid}')">✓</button>
-            <button class="btn-request-decline" onclick="declineFriendRequest('${uid}')">✗</button>
+            <button class="btn-request-accept" type="button">✓</button>
+            <button class="btn-request-decline" type="button">✗</button>
         `;
+        item.querySelector('.btn-request-accept').addEventListener('click', () => acceptFriendRequest(uid));
+        item.querySelector('.btn-request-decline').addEventListener('click', () => declineFriendRequest(uid));
         container.appendChild(item);
     });
-    
-    // Outgoing requests
+
     pendingRequests.outgoing.forEach(([uid, request]) => {
         const item = document.createElement('div');
         item.className = 'request-item outgoing';
         item.innerHTML = `
             <div class="request-info">
-                <div class="request-name">Request sent</div>
-                <div class="request-time">Waiting for response...</div>
+                <div class="request-name">Request sent to ${escapeHTML(request.toNickname || 'hunter')}</div>
+                <div class="request-time">${formatTimeAgo(request.timestamp)}</div>
             </div>
-            <button class="btn-request-cancel" onclick="declineFriendRequest('${uid}')">Cancel</button>
+            <button class="btn-request-cancel" type="button">Cancel</button>
         `;
+        item.querySelector('.btn-request-cancel').addEventListener('click', () => declineFriendRequest(uid));
         container.appendChild(item);
     });
 }
 
-// Update friends badge
 function updateFriendsBadge() {
-    const btn = document.getElementById('btnFriends');
-    if (!btn) return;
-    
+    const badge = document.getElementById('friendsBadge');
+    if (!badge) return;
+
     const count = pendingRequests.incoming.length;
-    
-    if (count > 0) {
-        if (!document.getElementById('friendsBadge')) {
-            const badge = document.createElement('span');
-            badge.id = 'friendsBadge';
-            badge.className = 'notification-badge';
-            badge.textContent = count;
-            btn.appendChild(badge);
-        } else {
-            document.getElementById('friendsBadge').textContent = count;
-        }
-    } else {
-        const badge = document.getElementById('friendsBadge');
-        if (badge) badge.remove();
-    }
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'inline-block' : 'none';
+    badge.classList.add('notification-badge');
 }
 
-// Listen to friend requests in real-time
+function updateFriendsCount() {
+    const friendsCountEl = document.getElementById('friendsCount');
+    const requestsCountEl = document.getElementById('requestsCount');
+    if (friendsCountEl) friendsCountEl.textContent = currentFriends.length;
+    if (requestsCountEl) requestsCountEl.textContent = pendingRequests.incoming.length + pendingRequests.outgoing.length;
+}
+
 function listenToFriendRequests() {
-    if (!currentUser) return;
-    
-    // Listen for incoming friend requests (from your own data)
-    firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming`).on('value', () => {
-        loadFriends();
-    });
-    
-    // Listen for NEW friend request notifications (when someone sends you a request)
-    firebase.database().ref(`users/${currentUser.uid}/friendRequestReceived`).on('child_added', async (snapshot) => {
+    if (!currentUser || friendListenersBoundFor === currentUser.uid) return;
+
+    if (friendListenersBoundFor) {
+        firebase.database().ref(`users/${friendListenersBoundFor}/friendRequests/incoming`).off();
+        firebase.database().ref(`users/${friendListenersBoundFor}/friendRequestReceived`).off();
+        firebase.database().ref(`users/${friendListenersBoundFor}/friendAccepted`).off();
+        firebase.database().ref(`users/${friendListenersBoundFor}/friendRequestDeclined`).off();
+        firebase.database().ref(`users/${friendListenersBoundFor}/friendRequestCancelled`).off();
+        firebase.database().ref(`users/${friendListenersBoundFor}/friendRemoved`).off();
+    }
+
+    friendListenersBoundFor = currentUser.uid;
+    const uid = currentUser.uid;
+
+    firebase.database().ref(`users/${uid}/friendRequests/incoming`).on('value', loadFriends);
+    firebase.database().ref(`users/${uid}/friendRequests/outgoing`).on('value', loadFriends);
+    firebase.database().ref(`users/${uid}/friends`).on('value', loadFriends);
+
+    firebase.database().ref(`users/${uid}/friendRequestReceived`).on('child_added', async (snapshot) => {
         const senderUid = snapshot.key;
         const requestData = snapshot.val();
-        
-        console.log('New friend request from:', requestData.fromNickname);
-        
+        if (!senderUid || !requestData) return;
+
         try {
-            // Add to YOUR incoming requests
-            await firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming/${senderUid}`).set(requestData);
-            
-            // Remove the notification
-            await firebase.database().ref(`users/${currentUser.uid}/friendRequestReceived/${senderUid}`).remove();
-            
-            console.log('✅ Added request to incoming');
-            
-            // Reload friends list to show new request
-            await loadFriends();
-            
+            const updates = {};
+            updates[`users/${uid}/friendRequests/incoming/${senderUid}`] = requestData;
+            updates[`users/${uid}/friendRequestReceived/${senderUid}`] = null;
+            await firebase.database().ref().update(updates);
         } catch (error) {
-            console.error('Error processing friend request notification:', error);
+            console.error('Error processing received friend request:', error);
         }
     });
-    
-    // Listen for friend accepts (when someone accepts YOUR request)
-    firebase.database().ref(`users/${currentUser.uid}/friendAccepted`).on('child_added', async (snapshot) => {
+
+    firebase.database().ref(`users/${uid}/friendAccepted`).on('child_added', async (snapshot) => {
         const friendUid = snapshot.key;
         const friendData = snapshot.val();
-        
-        console.log('Friend accepted your request:', friendData.nickname);
-        
+        if (!friendUid || !friendData) return;
+
         try {
-            // Add them to YOUR friends list
-            await firebase.database().ref(`users/${currentUser.uid}/friends/${friendUid}`).set({
-                nickname: friendData.nickname,
-                photoURL: friendData.photoURL,
-                since: friendData.since
-            });
-            
-            // Remove from YOUR outgoing requests
-            await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`).remove();
-            
-            // Remove the accept notification
-            await firebase.database().ref(`users/${currentUser.uid}/friendAccepted/${friendUid}`).remove();
-            
-            console.log('✅ Added friend to your list');
-            
-            // Show notification
-            alert(`${friendData.nickname} accepted your friend request! 🎉`);
-            
-            // Reload friends list
+            const updates = {};
+            updates[`users/${uid}/friends/${friendUid}`] = {
+                nickname: friendData.nickname || 'Unknown Hunter',
+                photoURL: friendData.photoURL || '',
+                since: friendData.since || Date.now()
+            };
+            updates[`users/${uid}/friendRequests/outgoing/${friendUid}`] = null;
+            updates[`users/${uid}/friendAccepted/${friendUid}`] = null;
+            await firebase.database().ref().update(updates);
             await loadFriends();
-            
         } catch (error) {
-            console.error('Error processing friend accept:', error);
+            console.error('Error processing accepted friend request:', error);
         }
     });
-    
-    // Listen for friend request declines (when someone declines YOUR request)
-    firebase.database().ref(`users/${currentUser.uid}/friendRequestDeclined`).on('child_added', async (snapshot) => {
+
+    firebase.database().ref(`users/${uid}/friendRequestDeclined`).on('child_added', async (snapshot) => {
         const friendUid = snapshot.key;
-        
-        console.log('Friend request was declined');
-        
-        try {
-            // Remove from YOUR outgoing requests
-            await firebase.database().ref(`users/${currentUser.uid}/friendRequests/outgoing/${friendUid}`).remove();
-            
-            // Remove the decline notification
-            await firebase.database().ref(`users/${currentUser.uid}/friendRequestDeclined/${friendUid}`).remove();
-            
-            console.log('✅ Removed declined request from outgoing');
-            
-            // Reload friends list
-            await loadFriends();
-            
-        } catch (error) {
-            console.error('Error processing friend decline:', error);
-        }
+        if (!friendUid) return;
+        const updates = {};
+        updates[`users/${uid}/friendRequests/outgoing/${friendUid}`] = null;
+        updates[`users/${uid}/friendRequestDeclined/${friendUid}`] = null;
+        await firebase.database().ref().update(updates);
     });
-    
-    // Listen for friend request cancellations (when someone cancels their request to you)
-    firebase.database().ref(`users/${currentUser.uid}/friendRequestCancelled`).on('child_added', async (snapshot) => {
+
+    firebase.database().ref(`users/${uid}/friendRequestCancelled`).on('child_added', async (snapshot) => {
         const friendUid = snapshot.key;
-        
-        console.log('Friend request was cancelled by sender');
-        
-        try {
-            // Remove from YOUR incoming requests
-            await firebase.database().ref(`users/${currentUser.uid}/friendRequests/incoming/${friendUid}`).remove();
-            
-            // Remove the cancel notification
-            await firebase.database().ref(`users/${currentUser.uid}/friendRequestCancelled/${friendUid}`).remove();
-            
-            console.log('✅ Removed cancelled request from incoming');
-            
-            // Reload friends list
-            await loadFriends();
-            
-        } catch (error) {
-            console.error('Error processing friend cancel:', error);
-        }
+        if (!friendUid) return;
+        const updates = {};
+        updates[`users/${uid}/friendRequests/incoming/${friendUid}`] = null;
+        updates[`users/${uid}/friendRequestCancelled/${friendUid}`] = null;
+        await firebase.database().ref().update(updates);
+    });
+
+    firebase.database().ref(`users/${uid}/friendRemoved`).on('child_added', async (snapshot) => {
+        const friendUid = snapshot.key;
+        if (!friendUid) return;
+        const updates = {};
+        updates[`users/${uid}/friends/${friendUid}`] = null;
+        updates[`users/${uid}/friendRemoved/${friendUid}`] = null;
+        await firebase.database().ref().update(updates);
     });
 }
+
 
 // Format date
 function formatDate(timestamp) {
@@ -3237,24 +3135,6 @@ function formatDate(timestamp) {
 setTimeout(() => {
     initFriendsSystem();
 }, 300);
-
-
-// Update friends count displays
-function updateFriendsCount() {
-    const friendsCountEl = document.getElementById('friendsCount');
-    const requestsCountEl = document.getElementById('requestsCount');
-    
-    if (friendsCountEl) friendsCountEl.textContent = currentFriends.length;
-    if (requestsCountEl) requestsCountEl.textContent = pendingRequests.incoming.length + pendingRequests.outgoing.length;
-}
-
-// Call this in loadFriends
-const originalLoadFriends = loadFriends;
-loadFriends = async function() {
-    await originalLoadFriends();
-    updateFriendsCount();
-};
-
 
 // View friend stats
 async function viewFriendStats(friendUid, friendNickname) {
@@ -3337,31 +3217,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================================
     // 2. FRIENDS BUTTON
     // ============================================================
-    setTimeout(function() {
-        const newFriendsBtn = document.getElementById('btnFriends');
-        
-        if (newFriendsBtn && typeof openFriendsModal === 'function') {
-            // Remove existing listeners
-            const cleanBtn = newFriendsBtn.cloneNode(true);
-            newFriendsBtn.parentNode.replaceChild(cleanBtn, newFriendsBtn);
-            
-            // Add click handler
-            cleanBtn.addEventListener('click', function() {
-                console.log('Friends button clicked');
-                openFriendsModal();
-            });
-            
-            // Sync badge
-            setInterval(function() {
-                const oldBadge = document.querySelector('.header-tools #friendsBadge');
-                const newBadge = document.getElementById('friendsBadge');
-                if (oldBadge && newBadge) {
-                    newBadge.style.display = oldBadge.style.display;
-                    newBadge.textContent = oldBadge.textContent;
-                }
-            }, 1000);
-        }
-    }, 1000);
+    const newFriendsBtn = document.getElementById('btnFriends');
+    if (newFriendsBtn && typeof openFriendsModal === 'function') {
+        newFriendsBtn.addEventListener('click', openFriendsModal);
+    }
     
     // ============================================================
     // 3. AUTHENTICATION SYNC
@@ -3738,7 +3597,7 @@ const GAME_UPDATES = [
                     "Alan Wake themed event/update released.",
                     "Ghost fixes included Yurei door closing, Raiju light flicker behaviour, and several room/pathing fixes.",
                     "Equipment fixes included Firelight, Head Gear, Video Camera, Flashlight, Tripod, Igniter, and Spirit Box related issues.",
-                    "Kormos and Aswang notes are aligned with the current ghost-card data."
+                    "Kormos and Aswang information is included in the current ghost data and should be kept aligned with the ghost cards."
                 ]
             }
         ]
@@ -3979,7 +3838,7 @@ function initOnlineHuntersCounter() {
     if (!countEl) return;
 
     if (typeof firebase === "undefined" || !firebase.database) {
-        console.warn("Firebase not available. Online Hunters counter disabled.");
+        console.warn("Online Hunters counter is not available.");
         return;
     }
 
@@ -3991,7 +3850,7 @@ function initOnlineHuntersCounter() {
             lastSeen: Date.now(),
             page: window.location.pathname || "/"
         }).catch((error) => {
-            console.warn("Online Hunters write failed. Check Firebase rules.", error);
+            console.warn("Online Hunters write failed.", error);
         });
 
         hunterRef.onDisconnect().remove();
@@ -4042,7 +3901,7 @@ function listenForOnlineHunters() {
         const countEl = document.getElementById("onlineHuntersCount");
         if (countEl) countEl.textContent = activeHunters.length;
     }, (error) => {
-        console.warn("Online Hunters listener failed. Check Firebase rules.", error);
+        console.warn("Online Hunters listener failed.", error);
     });
 }
 
