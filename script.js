@@ -3504,7 +3504,6 @@ document.addEventListener('DOMContentLoaded', function() {
 // ═══════════════════════════════════════════════════════════════
 const GAME_UPDATES = [
     {
-        {
         version: "Hotfix v0.17.1.2",
         title: "Phasmophobia - Hotfix v0.17.1.2",
         logAdded: "15 May 2026",
