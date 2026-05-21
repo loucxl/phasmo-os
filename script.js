@@ -8,12 +8,6 @@ const EVIDENCE = [
     { id: 'freezing', label: 'Freeze', icon: '❄️', desc: "Below 0°C on thermometer. Note: visible breath appears below 5°C for all ghosts — breath alone does NOT confirm freezing evidence." },
     { id: 'dots', label: 'D.O.T.S', icon: '🟢', desc: "Green silhouette." }
 ];
-const EVENT_POPUP = {
-    enabled: true,
-    title: "Double XP",
-    message: "Double XP will be live between 22nd May - 25th May.",
-    showOncePerSession: true
-};
 
 const FILTERS = [
     { id: 'fast', label: '⚡ Speed Change' },
@@ -4039,3 +4033,55 @@ if (document.readyState === "loading") {
 } else {
     initOnlineHuntersCounter();
 }
+
+
+/* Event Popup Config */
+const EVENT_POPUP = {
+    enabled: true,
+    title: "Cursed Hollow Event Live",
+    message: "The new Phasmophobia event is now live. Jump in-game and check the latest challenges, rewards and ghost activity.",
+    showOncePerSession: true
+};
+
+function initEventPopup() {
+    if (!EVENT_POPUP.enabled) return;
+
+    const overlay = document.getElementById("event-popup-overlay");
+    const title = document.getElementById("event-popup-title");
+    const message = document.getElementById("event-popup-message");
+    const closeBtn = document.getElementById("close-event-popup");
+
+    if (!overlay || !title || !message || !closeBtn) return;
+
+    if (
+        EVENT_POPUP.showOncePerSession &&
+        sessionStorage.getItem("eventPopupDismissed") === "true"
+    ) {
+        return;
+    }
+
+    title.textContent = EVENT_POPUP.title;
+    message.textContent = EVENT_POPUP.message;
+
+    setTimeout(() => {
+        overlay.classList.remove("hidden");
+    }, 500);
+
+    function closePopup() {
+        overlay.classList.add("hidden");
+
+        if (EVENT_POPUP.showOncePerSession) {
+            sessionStorage.setItem("eventPopupDismissed", "true");
+        }
+    }
+
+    closeBtn.addEventListener("click", closePopup);
+
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) {
+            closePopup();
+        }
+    });
+}
+
+window.addEventListener("DOMContentLoaded", initEventPopup);
