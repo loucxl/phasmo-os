@@ -4084,4 +4084,32 @@ function initEventPopup() {
     });
 }
 
-window.addEventListener("DOMContentLoaded", initEventPopup);
+
+window.addEventListener("load", () => {
+    const loadingScreen =
+        document.querySelector(".loading-screen") ||
+        document.querySelector("#loading-screen") ||
+        document.querySelector(".loader") ||
+        document.querySelector("#loader");
+
+    if (!loadingScreen) {
+        setTimeout(initEventPopup, 1200);
+        return;
+    }
+
+    const waitForLoader = setInterval(() => {
+        const hidden =
+            loadingScreen.classList.contains("hidden") ||
+            loadingScreen.style.display === "none" ||
+            loadingScreen.style.opacity === "0";
+
+        if (hidden) {
+            clearInterval(waitForLoader);
+
+            setTimeout(() => {
+                initEventPopup();
+            }, 700);
+        }
+    }, 300);
+});
+
