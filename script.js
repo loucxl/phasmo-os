@@ -4040,7 +4040,7 @@ const EVENT_POPUP = {
     enabled: true,
     title: "Cursed Hollow Event Live",
     message: "The new Phasmophobia event is now live. Jump in-game and check the latest challenges, rewards and ghost activity.",
-    showOncePerSession: true
+    showOncePerSession: false
 };
 
 function initEventPopup() {
