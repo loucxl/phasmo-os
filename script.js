@@ -8,6 +8,12 @@ const EVIDENCE = [
     { id: 'freezing', label: 'Freeze', icon: '❄️', desc: "Below 0°C on thermometer. Note: visible breath appears below 5°C for all ghosts — breath alone does NOT confirm freezing evidence." },
     { id: 'dots', label: 'D.O.T.S', icon: '🟢', desc: "Green silhouette." }
 ];
+const EVENT_POPUP = {
+    enabled: true,
+    title: "Double XP",
+    message: "Double XP will be live between 22nd May - 25th May.",
+    showOncePerSession: true
+};
 
 const FILTERS = [
     { id: 'fast', label: '⚡ Speed Change' },
