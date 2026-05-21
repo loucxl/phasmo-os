@@ -4038,8 +4038,8 @@ if (document.readyState === "loading") {
 /* Event Popup Config */
 const EVENT_POPUP = {
     enabled: true,
-    title: "Cursed Hollow Event Live",
-    message: "The new Phasmophobia event is now live. Jump in-game and check the latest challenges, rewards and ghost activity.",
+    title: "Double XP",
+    message: "The Double XP event will be live between 22nd - 25th May 2026.",
     showOncePerSession: false
 };
 
