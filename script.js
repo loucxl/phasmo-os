@@ -4225,9 +4225,19 @@ function openGuessModal() {
 // SAFE INVESTIGATION RESULT HANDLER
 // ======================================================
 
+
 function saveInvestigationResult(correct, actualGhost, xp){
 
     try{
+
+        // EXISTING USER PROFILE
+
+        let userProfile = JSON.parse(
+            localStorage.getItem("phasmoUserProfile") ||
+            '{"xp":0,"level":1,"wins":0,"losses":0,"recentInvestigations":[]}'
+        );
+
+        // FALLBACK LEGACY STATS
 
         let stats = JSON.parse(
             localStorage.getItem("phasmoStats") ||
@@ -4236,25 +4246,70 @@ function saveInvestigationResult(correct, actualGhost, xp){
 
         if(correct){
 
+            userProfile.wins =
+                (userProfile.wins || 0) + 1;
+
+            userProfile.xp =
+                (userProfile.xp || 0) + xp;
+
+            // SIMPLE LEVEL SYSTEM
+
+            userProfile.level =
+                Math.max(
+                    1,
+                    Math.floor(userProfile.xp / 500) + 1
+                );
+
             stats.wins += 1;
             stats.xp += xp;
 
         }else{
 
+            userProfile.losses =
+                (userProfile.losses || 0) + 1;
+
             stats.losses += 1;
 
         }
 
-        stats.recent.unshift({
+        // RECENT INVESTIGATION ENTRY
+
+        const investigationEntry = {
             ghost: actualGhost,
             correct: correct,
             xp: correct ? xp : 0,
+            mode: currentInvestigation?.mode || "all",
             date: new Date().toLocaleString()
-        });
+        };
+
+        // USER PROFILE HISTORY
+
+        if(!Array.isArray(userProfile.recentInvestigations)){
+            userProfile.recentInvestigations = [];
+        }
+
+        userProfile.recentInvestigations.unshift(
+            investigationEntry
+        );
+
+        if(userProfile.recentInvestigations.length > 10){
+            userProfile.recentInvestigations.length = 10;
+        }
+
+        // LEGACY HISTORY
+
+        stats.recent.unshift(investigationEntry);
 
         if(stats.recent.length > 10){
             stats.recent.length = 10;
         }
+
+        // SAVE BOTH
+
+        localStorage.setItem(
+            "phasmoUserProfile",
+            JSON.stringify(userProfile)
+        );
 
         localStorage.setItem(
             "phasmoStats",
@@ -4267,6 +4322,18 @@ function saveInvestigationResult(correct, actualGhost, xp){
             : `Incorrect! The ghost was ${actualGhost}`
         );
 
+        currentInvestigation = null;
+
+        // REFRESH UI
+
+        if(typeof loadUserProfile === "function"){
+            loadUserProfile();
+        }
+
+        if(typeof updateStatsUI === "function"){
+            updateStatsUI();
+        }
+
     }catch(err){
 
         console.error(err);
@@ -4276,4 +4343,5 @@ function saveInvestigationResult(correct, actualGhost, xp){
     }
 
 }
+
 
