@@ -4,6 +4,16 @@ A comprehensive web-based toolkit for Phasmophobia investigators — built for g
 
 ## Current Version
 
+**Overlay Download / Source Code**
+
+The Phasmo-Timer overlay is included in this repository.
+
+You can find:
+- the precompiled EXE inside the `downloads` folder
+- the full open-source overlay source code inside the `overlay-source` folder
+
+Users who prefer not to use the provided executable can inspect, modify, and compile the overlay themselves using the included source files.
+
 Visible site/tracker version: **v2.5**
 **Friendlist update now available!**
 
