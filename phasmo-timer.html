@@ -136,11 +136,11 @@ This overlay uses AutoHotkey (AHK) and includes:
 <div class="timer-buttons">
 
 
-<a href="https://github.com/loucxl/phasmo-os/tree/main/downloads"
+<a href="#"
    class="timer-btn"
-   target="_blank">
+   onclick="openDownloadPopup(event)">
 
-   View Downloads
+   View Download Page
 
 </a>
 
@@ -234,15 +234,10 @@ function closeDownloadPopup(){
 
 function downloadOverlayFile(){
 
-    const link = document.createElement("a");
-
-    link.href = "https://github.com/loucxl/phasmo-os/tree/main/downloads";
-
-    document.body.appendChild(link);
-
-    link.click();
-
-    document.body.removeChild(link);
+    window.open(
+        "https://github.com/loucxl/phasmo-os/tree/main/downloads",
+        "_blank"
+    );
 
     closeDownloadPopup();
 
