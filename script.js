@@ -4113,3 +4113,95 @@ window.addEventListener("load", () => {
     }, 300);
 });
 
+
+
+let investigationStats = JSON.parse(
+localStorage.getItem("phasmoInvestigationStats") || '{"wins":0,"losses":0,"xp":0}'
+);
+
+function openInvestigationMode(){
+document.getElementById("investigationModal").style.display = "flex";
+}
+
+function closeInvestigationMode(){
+document.getElementById("investigationModal").style.display = "none";
+}
+
+function startInvestigation(mode){
+
+const session = document.getElementById("investigationSession");
+
+session.innerHTML = `
+
+<h3>${mode.toUpperCase()} Investigation</h3>
+
+<p>
+Choose the ghost you think it is, then select the actual ghost after the match.
+</p>
+
+<label>Your Guess</label>
+
+<select id="userGuess">
+<option>Spirit</option><option>Wraith</option><option>Phantom</option><option>Poltergeist</option><option>Banshee</option><option>Jinn</option><option>Mare</option><option>Revenant</option><option>Shade</option><option>Demon</option><option>Yurei</option><option>Oni</option><option>Yokai</option><option>Hantu</option><option>Goryo</option><option>Myling</option><option>Onryo</option><option>The Twins</option><option>Raiju</option><option>Obake</option><option>The Mimic</option><option>Moroi</option><option>Deogen</option><option>Thaye</option>
+</select>
+
+<label>Actual Ghost</label>
+
+<select id="actualGhost">
+<option>Spirit</option><option>Wraith</option><option>Phantom</option><option>Poltergeist</option><option>Banshee</option><option>Jinn</option><option>Mare</option><option>Revenant</option><option>Shade</option><option>Demon</option><option>Yurei</option><option>Oni</option><option>Yokai</option><option>Hantu</option><option>Goryo</option><option>Myling</option><option>Onryo</option><option>The Twins</option><option>Raiju</option><option>Obake</option><option>The Mimic</option><option>Moroi</option><option>Deogen</option><option>Thaye</option>
+</select>
+
+<button onclick="finishInvestigation('${mode}')">
+Complete Investigation
+</button>
+
+<div style="margin-top:20px;line-height:1.8;">
+Wins: ${investigationStats.wins}<br>
+Losses: ${investigationStats.losses}<br>
+XP: ${investigationStats.xp}
+</div>
+
+`;
+
+}
+
+function finishInvestigation(mode){
+
+const guess =
+document.getElementById("userGuess").value;
+
+const actual =
+document.getElementById("actualGhost").value;
+
+let xp = 0;
+
+if(mode === "all") xp = 50;
+if(mode === "2evi") xp = 100;
+if(mode === "1evi") xp = 150;
+if(mode === "0evi") xp = 250;
+
+if(guess === actual){
+
+investigationStats.wins += 1;
+investigationStats.xp += xp;
+
+alert(`Correct! +${xp} XP`);
+
+}
+else{
+
+investigationStats.losses += 1;
+
+alert(`Incorrect. Actual ghost: ${actual}`);
+
+}
+
+localStorage.setItem(
+"phasmoInvestigationStats",
+JSON.stringify(investigationStats)
+);
+
+startInvestigation(mode);
+
+}
+
