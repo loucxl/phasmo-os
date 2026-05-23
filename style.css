@@ -4042,3 +4042,99 @@ nav .nav-btn[onclick*="zeroev"]:focus {
     }
 
 }
+
+
+.investigation-mode-btn{
+position:fixed;
+bottom:24px;
+right:24px;
+z-index:9999;
+padding:14px 20px;
+border:none;
+border-radius:14px;
+background:#00d9ff;
+color:#08111f;
+font-weight:800;
+cursor:pointer;
+box-shadow:0 0 25px rgba(0,217,255,0.35);
+}
+
+.investigation-modal-overlay{
+position:fixed;
+inset:0;
+display:none;
+align-items:center;
+justify-content:center;
+background:rgba(0,0,0,0.7);
+backdrop-filter:blur(5px);
+z-index:100000;
+}
+
+.investigation-modal{
+width:min(92%,900px);
+max-height:90vh;
+overflow:auto;
+padding:32px;
+border-radius:20px;
+background:#101b2d;
+border:1px solid rgba(0,217,255,0.2);
+color:white;
+}
+
+.investigation-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.close-investigation-btn{
+background:none;
+border:none;
+color:white;
+font-size:24px;
+cursor:pointer;
+}
+
+.investigation-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:18px;
+margin-top:24px;
+}
+
+.investigation-card{
+padding:22px;
+border-radius:16px;
+background:#17263d;
+border:1px solid rgba(0,217,255,0.12);
+}
+
+.investigation-card button,
+.investigation-session button{
+margin-top:12px;
+width:100%;
+padding:12px;
+border:none;
+border-radius:12px;
+background:#00d9ff;
+color:#08111f;
+font-weight:800;
+cursor:pointer;
+}
+
+.investigation-session{
+margin-top:28px;
+padding-top:24px;
+border-top:1px solid rgba(255,255,255,0.08);
+}
+
+.investigation-session select{
+width:100%;
+margin-top:12px;
+padding:12px;
+border-radius:12px;
+background:#17263d;
+color:white;
+border:1px solid rgba(255,255,255,0.1);
+}
+
