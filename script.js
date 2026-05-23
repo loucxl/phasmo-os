@@ -4226,95 +4226,104 @@ function openGuessModal() {
 // ======================================================
 
 
-function saveInvestigationResult(correct, actualGhost, xp){
+
+async function saveInvestigationResult(correct, actualGhost, xp){
 
     try{
 
-        // EXISTING USER PROFILE
+        if(!currentUser){
 
-        let userProfile = JSON.parse(
-            localStorage.getItem("phasmoUserProfile") ||
-            '{"xp":0,"level":1,"wins":0,"losses":0,"recentInvestigations":[]}'
-        );
+            alert("You must be logged in.");
 
-        // FALLBACK LEGACY STATS
+            return;
 
-        let stats = JSON.parse(
-            localStorage.getItem("phasmoStats") ||
-            '{"wins":0,"losses":0,"xp":0,"recent":[]}'
-        );
+        }
+
+        // LOAD EXISTING FIREBASE STATS
+
+        const statsRef =
+            firebase.database().ref(
+                `users/${currentUser.uid}/stats`
+            );
+
+        const snapshot =
+            await statsRef.once('value');
+
+        const stats =
+            snapshot.val() || {
+                total: 0,
+                wins: 0,
+                losses: 0,
+                xp: 0,
+                level: 1,
+                recentInvestigations: []
+            };
+
+        // UPDATE STATS
+
+        stats.total =
+            Number(stats.total || 0) + 1;
 
         if(correct){
 
-            userProfile.wins =
-                (userProfile.wins || 0) + 1;
+            stats.wins =
+                Number(stats.wins || 0) + 1;
 
-            userProfile.xp =
-                (userProfile.xp || 0) + xp;
-
-            // SIMPLE LEVEL SYSTEM
-
-            userProfile.level =
-                Math.max(
-                    1,
-                    Math.floor(userProfile.xp / 500) + 1
-                );
-
-            stats.wins += 1;
-            stats.xp += xp;
+            stats.xp =
+                Number(stats.xp || 0) + xp;
 
         }else{
 
-            userProfile.losses =
-                (userProfile.losses || 0) + 1;
-
-            stats.losses += 1;
+            stats.losses =
+                Number(stats.losses || 0) + 1;
 
         }
 
-        // RECENT INVESTIGATION ENTRY
+        // RECALCULATE LEVEL USING EXISTING SYSTEM
 
-        const investigationEntry = {
+        const levelInfo =
+            getLevelFromXP(
+                Number(stats.xp || 0)
+            );
+
+        stats.level =
+            levelInfo.level;
+
+        // RECENT INVESTIGATION
+
+        if(!Array.isArray(stats.recentInvestigations)){
+
+            stats.recentInvestigations = [];
+
+        }
+
+        stats.recentInvestigations.unshift({
+
             ghost: actualGhost,
+
             correct: correct,
+
             xp: correct ? xp : 0,
+
             mode: currentInvestigation?.mode || "all",
-            date: new Date().toLocaleString()
-        };
 
-        // USER PROFILE HISTORY
+            timestamp: Date.now()
 
-        if(!Array.isArray(userProfile.recentInvestigations)){
-            userProfile.recentInvestigations = [];
+        });
+
+        if(stats.recentInvestigations.length > 10){
+
+            stats.recentInvestigations.length = 10;
+
         }
 
-        userProfile.recentInvestigations.unshift(
-            investigationEntry
-        );
+        // SAVE BACK TO FIREBASE
 
-        if(userProfile.recentInvestigations.length > 10){
-            userProfile.recentInvestigations.length = 10;
-        }
+        await statsRef.set(stats);
 
-        // LEGACY HISTORY
+        // UPDATE UI
 
-        stats.recent.unshift(investigationEntry);
-
-        if(stats.recent.length > 10){
-            stats.recent.length = 10;
-        }
-
-        // SAVE BOTH
-
-        localStorage.setItem(
-            "phasmoUserProfile",
-            JSON.stringify(userProfile)
-        );
-
-        localStorage.setItem(
-            "phasmoStats",
-            JSON.stringify(stats)
-        );
+        loadUserStatsDisplay();
 
         alert(
             correct
@@ -4322,23 +4331,18 @@ function saveInvestigationResult(correct, actualGhost, xp){
             : `Incorrect! The ghost was ${actualGhost}`
         );
 
-        currentInvestigation = null;
+        endInvestigation();
 
-        // REFRESH UI
+    }catch(error){
 
-        if(typeof loadUserProfile === "function"){
-            loadUserProfile();
-        }
+        console.error(
+            "Failed to save investigation:",
+            error
+        );
 
-        if(typeof updateStatsUI === "function"){
-            updateStatsUI();
-        }
-
-    }catch(err){
-
-        console.error(err);
-
-        alert("Failed to save investigation result.");
+        alert(
+            "Failed to save investigation."
+        );
 
     }
 
