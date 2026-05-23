@@ -4299,17 +4299,21 @@ async function saveInvestigationResult(correct, actualGhost, xp){
 
         stats.recentInvestigations.unshift({
 
-            ghost: actualGhost,
+    actualGhost: actualGhost,
 
-            correct: correct,
+    correct: correct,
 
-            xp: correct ? xp : 0,
+    xpGained: correct ? xp : 0,
 
-            mode: currentInvestigation?.mode || "all",
+    possibleGhosts:
+        currentInvestigation?.possibleGhosts || [],
 
-            timestamp: Date.now()
+    mode:
+        currentInvestigation?.mode || "all",
 
-        });
+    timestamp: Date.now()
+
+});
 
         if(stats.recentInvestigations.length > 10){
 
