@@ -51,6 +51,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 </head>
 <body>
+
+
+
     <!-- LOADING SCREEN -->
     <div id="loadingScreen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%); display: flex; align-items: center; justify-content: center; z-index: 10000; color: white; font-family: Arial;">
         <div style="text-align: center;">
@@ -83,7 +86,17 @@
                 <button class="nav-btn" onclick="showSection('strategy')" style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 6px 10px; font-family: var(--font-hud); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Strategy</button>
                 <button class="nav-btn" onclick="showSection('zeroev')" style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.5); color: #a78bfa; padding: 6px 10px; font-family: var(--font-hud); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">0 EV</button>
                 <button class="nav-btn" onclick="showSection('updates')" style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.5); color: #a78bfa; padding: 6px 10px; font-family: var(--font-hud); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Updates</button>
-            </nav>
+            
+<a href="phasmo-timer.html" class="phasmo-timer-nav-btn">
+
+    PHASMO TIMER
+
+    <span class="timer-new-badge">
+        NEW
+    </span>
+
+</a>
+</nav>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
             <div id="onlineHuntersBadge" class="online-hunters-badge" title="Hunters currently online">
