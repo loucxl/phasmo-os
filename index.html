@@ -1488,7 +1488,32 @@
                 <div class="empty-state">No investigations yet. Start hunting ghosts!</div>
             </div>
             
-            <button class="btn-primary" id="btnNewInvestigation">Start New Investigation</button>
+            
+<div style="display:flex;gap:12px;margin-top:16px;align-items:center;">
+
+<select id="investigationDifficulty"
+style="
+flex:1;
+padding:12px;
+border-radius:12px;
+background:#17263d;
+color:white;
+border:1px solid rgba(255,255,255,0.08);
+">
+
+<option value="all">All Evidence</option>
+<option value="2">2 Evidence</option>
+<option value="1">1 Evidence</option>
+<option value="0">0 Evidence</option>
+
+</select>
+
+<button class="btn-primary" id="btnNewInvestigation">
+    Start Investigation
+</button>
+
+</div>
+
         </div>
     </dialog>
 
@@ -1651,56 +1676,6 @@
             A new event is now live. Check the updates tab for more details.
         </p>
     </div>
-</div>
-
-
-<button class="investigation-mode-btn" onclick="openInvestigationMode()">
-    Investigation Mode
-</button>
-
-<div id="investigationModal" class="investigation-modal-overlay">
-<div class="investigation-modal">
-
-<div class="investigation-header">
-<h2>Investigation Mode</h2>
-<button class="close-investigation-btn" onclick="closeInvestigationMode()">✕</button>
-</div>
-
-<p class="investigation-desc">
-Choose your evidence mode and track wins, losses and XP.
-</p>
-
-<div class="investigation-grid">
-
-<div class="investigation-card">
-<h3>All Evidence</h3>
-<p>Choose 3 evidence types and identify the ghost.</p>
-<button onclick="startInvestigation('all')">Start</button>
-</div>
-
-<div class="investigation-card">
-<h3>2 Evidence</h3>
-<p>Limited evidence challenge.</p>
-<button onclick="startInvestigation('2evi')">Start</button>
-</div>
-
-<div class="investigation-card">
-<h3>1 Evidence</h3>
-<p>Hard investigation challenge.</p>
-<button onclick="startInvestigation('1evi')">Start</button>
-</div>
-
-<div class="investigation-card">
-<h3>0 Evidence</h3>
-<p>Behaviour-only investigation mode.</p>
-<button onclick="startInvestigation('0evi')">Start</button>
-</div>
-
-</div>
-
-<div id="investigationSession" class="investigation-session"></div>
-
-</div>
 </div>
 
 </body>
