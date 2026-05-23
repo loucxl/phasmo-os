@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phasmo Timer</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+body{
+    background:#08111f;
+    color:white;
+    font-family:Arial,sans-serif;
+    margin:0;
+    padding:40px 20px;
+}
+
+.timer-page{
+    max-width:900px;
+    margin:auto;
+}
+
+.timer-card{
+    background:#101b2d;
+    border:1px solid rgba(0,217,255,0.2);
+    border-radius:18px;
+    padding:40px;
+    box-shadow:0 0 30px rgba(0,217,255,0.08);
+}
+
+.timer-title{
+    font-size:3rem;
+    color:#00d9ff;
+    margin-bottom:10px;
+}
+
+.timer-sub{
+    color:#9fb3c8;
+    margin-bottom:30px;
+    line-height:1.7;
+}
+
+.timer-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-top:30px;
+}
+
+.timer-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:16px 24px;
+    border-radius:14px;
+    background:#00d9ff;
+    color:#08111f;
+    text-decoration:none;
+    font-weight:700;
+    transition:0.2s ease;
+    box-shadow:0 0 20px rgba(0,217,255,0.3);
+}
+
+.timer-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 0 30px rgba(0,217,255,0.5);
+}
+
+.timer-source{
+    background:#17263d;
+    color:#d4e2f1;
+}
+
+.features{
+    margin-top:35px;
+    line-height:1.9;
+    color:#d4e2f1;
+}
+
+
+.back-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:24px;
+    padding:12px 18px;
+    border-radius:12px;
+    background:#17263d;
+    color:#d4e2f1;
+    text-decoration:none;
+    font-weight:700;
+    border:1px solid rgba(0,217,255,0.2);
+    transition:0.2s ease;
+}
+
+.back-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 0 20px rgba(0,217,255,0.2);
+}
+
+</style>
+</head>
+<body>
+
+<div class="timer-page">
+
+<a href="index.html" class="back-btn">
+← Back to PHASMO.OS
+</a>
+
+
+<div class="timer-card">
+
+<div class="timer-title">PHASMO TIMER</div>
+
+<div class="timer-sub">
+
+Phasmo-Timer is a lightweight transparent overlay utility built for Phasmophobia investigators.
+
+<br><br>
+
+This overlay uses AutoHotkey (AHK) and includes:
+
+<br><br>
+
+• Always-on-top overlay<br>
+• Smart ghost hunt timer<br>
+• Multiple overlay visibility modes<br>
+• Global hotkeys<br>
+• Lightweight standalone EXE<br>
+• Fully open-source source code
+
+</div>
+
+<div class="timer-buttons">
+
+
+<a href="#"
+   class="timer-btn"
+   onclick="openDownloadPopup(event)">
+
+   Download EXE
+
+</a>
+
+
+<a href="overlay-source/"
+class="timer-btn timer-source">
+
+Prefer to read the source code and compile it yourself? Click here.
+
+</a>
+
+</div>
+
+<div class="features">
+
+Phasmo-Timer does not read game memory, inject into the game, modify files, or bypass anti-cheat systems. Please check the source code before downloading the exe file for peace of mind. All files are hosted on GitHub. 
+
+<br><br>
+
+It is simply a transparent overlay utility with global hotkeys and timer functionality.
+
+</div>
+
+</div>
+
+</div>
+
+
+<div id="download-popup-overlay" class="download-popup-overlay">
+
+    <div class="download-popup">
+
+        <h2>Before Downloading</h2>
+
+        <p>
+            EXE files downloaded from the internet should always be treated carefully.
+        </p>
+
+        <ul>
+            <li>Verify where files come from</li>
+            <li>Inspect source code whenever possible</li>
+            <li>Only run software you trust</li>
+            <li>Scan downloads with antivirus software</li>
+        </ul>
+
+        <p>
+            Phasmo-Timer is fully open source and built using AutoHotkey (AHK).
+            If you would prefer to inspect the code and compile the overlay yourself,
+            the full source code is included in this repository.
+        </p>
+
+        <div class="popup-buttons">
+
+            <button class="popup-btn cancel-btn"
+                    onclick="closeDownloadPopup()">
+
+                Cancel
+
+            </button>
+
+            <button class="popup-btn confirm-btn"
+                    onclick="downloadOverlayFile()">
+
+                Download File
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function openDownloadPopup(event){
+
+    event.preventDefault();
+
+    document.getElementById("download-popup-overlay")
+        .style.display = "flex";
+
+}
+
+function closeDownloadPopup(){
+
+    document.getElementById("download-popup-overlay")
+        .style.display = "none";
+
+}
+
+function downloadOverlayFile(){
+
+    const link = document.createElement("a");
+
+    link.href = "downloads/Phasmo-Timer.exe";
+
+    link.download = "Phasmo-Timer.exe";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    closeDownloadPopup();
+
+}
+
+</script>
+
+<style>
+
+.download-popup-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(0,0,0,0.75);
+
+    z-index:99999;
+
+    backdrop-filter:blur(6px);
+
+}
+
+.download-popup{
+
+    width:min(92%, 560px);
+
+    padding:32px;
+
+    border-radius:18px;
+
+    background:#101b2d;
+
+    border:1px solid rgba(0,217,255,0.2);
+
+    box-shadow:
+        0 0 40px rgba(0,217,255,0.15);
+
+    color:#d4e2f1;
+
+    line-height:1.8;
+
+}
+
+.download-popup h2{
+
+    color:#00d9ff;
+
+    margin-top:0;
+    margin-bottom:16px;
+
+}
+
+.download-popup ul{
+
+    padding-left:24px;
+
+}
+
+.popup-buttons{
+
+    display:flex;
+
+    gap:14px;
+
+    margin-top:28px;
+
+}
+
+.popup-btn{
+
+    border:none;
+
+    cursor:pointer;
+
+    padding:14px 18px;
+
+    border-radius:12px;
+
+    font-weight:700;
+
+    transition:0.2s ease;
+
+}
+
+.confirm-btn{
+
+    background:#00d9ff;
+
+    color:#08111f;
+
+}
+
+.confirm-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 0 25px rgba(0,217,255,0.35);
+
+}
+
+.cancel-btn{
+
+    background:#17263d;
+
+    color:#d4e2f1;
+
+}
+
+.cancel-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+</style>
+
+</body>
+
+</html>
