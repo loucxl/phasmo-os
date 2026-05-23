@@ -3970,3 +3970,75 @@ nav .nav-btn[onclick*="zeroev"]:focus {
 .event-popup-close:hover {
     opacity: 1;
 }
+
+
+
+
+
+
+
+
+.phasmo-timer-nav-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    height:32px;
+    padding:0 16px;
+    margin-left:12px;
+    border-radius:12px;
+    background:#00d9ff;
+    color:#08111f !important;
+    font-weight:800;
+    font-size:14px;
+    text-decoration:none;
+    box-shadow:0 0 18px rgba(0,217,255,0.35);
+    transition:0.2s ease;
+    white-space:nowrap;
+}
+
+.phasmo-timer-nav-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 0 28px rgba(0,217,255,0.55);
+}
+.timer-new-badge{
+
+    margin-left:8px;
+
+    padding:2px 6px;
+
+    border-radius:999px;
+
+    background:#ff4d4d;
+
+    color:white;
+
+    font-size:10px;
+    font-weight:800;
+
+    letter-spacing:0.5px;
+
+    box-shadow:
+        0 0 10px rgba(255,77,77,0.5);
+
+    animation: timerBadgePulse 2s infinite;
+
+}
+
+@keyframes timerBadgePulse{
+
+    0%{
+        transform:scale(1);
+        opacity:1;
+    }
+
+    50%{
+        transform:scale(1.08);
+        opacity:0.85;
+    }
+
+    100%{
+        transform:scale(1);
+        opacity:1;
+    }
+
+}
