@@ -4325,6 +4325,26 @@ async function saveInvestigationResult(correct, actualGhost, xp){
 
         await statsRef.set(stats);
 
+        // SAVE TO HISTORY PANEL
+
+        await firebase.database()
+            .ref(`users/${currentUser.uid}/history`)
+            .push({
+
+                actualGhost: actualGhost,
+
+                possibleGhosts:
+                    currentInvestigation?.possibleGhosts || [],
+
+                correct: correct,
+
+                xpGained:
+                    correct ? xp : 0,
+
+                timestamp: Date.now()
+
+            });
+
         // UPDATE UI
 
         loadUserStatsDisplay();
