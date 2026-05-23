@@ -4170,9 +4170,7 @@ function openGuessModal() {
     completeBtn.style.width = '100%';
     completeBtn.textContent = 'Complete Investigation';
 
-    
-completeBtn.onclick = () => {
-
+    completeBtn.addEventListener('click', () => {
 
         const guess = userSelect.value;
         const actual = actualSelect.value;
@@ -4224,50 +4222,58 @@ completeBtn.onclick = () => {
 
 
 // ======================================================
-// SAVE INVESTIGATION RESULT
+// SAFE INVESTIGATION RESULT HANDLER
 // ======================================================
 
 function saveInvestigationResult(correct, actualGhost, xp){
 
-    let stats =
-        JSON.parse(localStorage.getItem("phasmoStats") || '{"wins":0,"losses":0,"xp":0,"recent":[] }');
+    try{
 
-    if(correct){
+        let stats = JSON.parse(
+            localStorage.getItem("phasmoStats") ||
+            '{"wins":0,"losses":0,"xp":0,"recent":[]}'
+        );
 
-        stats.wins += 1;
-        stats.xp += xp;
+        if(correct){
 
-    }else{
+            stats.wins += 1;
+            stats.xp += xp;
 
-        stats.losses += 1;
+        }else{
+
+            stats.losses += 1;
+
+        }
+
+        stats.recent.unshift({
+            ghost: actualGhost,
+            correct: correct,
+            xp: correct ? xp : 0,
+            date: new Date().toLocaleString()
+        });
+
+        if(stats.recent.length > 10){
+            stats.recent.length = 10;
+        }
+
+        localStorage.setItem(
+            "phasmoStats",
+            JSON.stringify(stats)
+        );
+
+        alert(
+            correct
+            ? `Correct! +${xp} XP`
+            : `Incorrect! The ghost was ${actualGhost}`
+        );
+
+    }catch(err){
+
+        console.error(err);
+
+        alert("Failed to save investigation result.");
 
     }
-
-    stats.recent.unshift({
-        ghost: actualGhost,
-        correct: correct,
-        xp: correct ? xp : 0,
-        date: new Date().toLocaleString()
-    });
-
-    if(stats.recent.length > 10){
-        stats.recent.length = 10;
-    }
-
-    localStorage.setItem(
-        "phasmoStats",
-        JSON.stringify(stats)
-    );
-
-    alert(
-        correct
-        ? `Correct! +${xp} XP`
-        : `Incorrect! The ghost was ${actualGhost}`
-    );
-
-    currentInvestigation = null;
-
-    location.reload();
 
 }
 
