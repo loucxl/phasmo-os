@@ -1953,8 +1953,14 @@ function initGoogleAuth() {
     
     // Start investigation
     document.getElementById('btnNewInvestigation').addEventListener('click', () => {
-        startNewInvestigation();
+
+        const mode =
+            document.getElementById('investigationDifficulty').value;
+
+        startNewInvestigation(mode);
+
         document.getElementById('statsModal').close();
+
     });
     
     // Listen for auth state changes
@@ -2342,7 +2348,7 @@ function formatTimeAgo(timestamp) {
 // INVESTIGATION MANAGEMENT
 // ═══════════════════════════════════════════════════════════════
 
-function startNewInvestigation() {
+function startNewInvestigation(mode = 'all') {
     if (!currentUser) {
         alert('Please log in to track your investigations!');
         return;
@@ -2353,7 +2359,8 @@ function startNewInvestigation() {
     
     currentInvestigation = {
         actualGhost: randomGhost.name,
-        startTime: Date.now()
+        startTime: Date.now(),
+        mode: mode
     };
     
     console.log('Investigation started - Ghost:', currentInvestigation.actualGhost);
@@ -2379,7 +2386,7 @@ function showInvestigationBanner() {
     banner.className = 'investigation-banner';
     banner.innerHTML = `
         <div class="investigation-info">
-            🔍 Investigation in progress
+            🔍 Investigation in progress (${currentInvestigation.mode.toUpperCase()} EVI)
             <span class="timer" id="investigationTimer">0:00</span>
         </div>
         <button class="btn-submit-guess" id="btnOpenGuess">Submit Result</button>
@@ -4115,93 +4122,100 @@ window.addEventListener("load", () => {
 
 
 
-let investigationStats = JSON.parse(
-localStorage.getItem("phasmoInvestigationStats") || '{"wins":0,"losses":0,"xp":0}'
-);
+// ======================================================
+// INVESTIGATION MODE OVERRIDE
+// ======================================================
 
-function openInvestigationMode(){
-document.getElementById("investigationModal").style.display = "flex";
-}
+function openGuessModal() {
 
-function closeInvestigationMode(){
-document.getElementById("investigationModal").style.display = "none";
-}
+    if (!currentInvestigation) return;
 
-function startInvestigation(mode){
+    const modal = document.getElementById('guessModal');
+    const container = document.getElementById('ghostOptions');
 
-const session = document.getElementById("investigationSession");
+    container.innerHTML = '';
 
-session.innerHTML = `
+    const userSelect = document.createElement('select');
 
-<h3>${mode.toUpperCase()} Investigation</h3>
+    userSelect.id = 'playerGhostGuess';
 
-<p>
-Choose the ghost you think it is, then select the actual ghost after the match.
-</p>
+    userSelect.style.width = '100%';
+    userSelect.style.marginBottom = '16px';
 
-<label>Your Guess</label>
+    const actualSelect = document.createElement('select');
 
-<select id="userGuess">
-<option>Spirit</option><option>Wraith</option><option>Phantom</option><option>Poltergeist</option><option>Banshee</option><option>Jinn</option><option>Mare</option><option>Revenant</option><option>Shade</option><option>Demon</option><option>Yurei</option><option>Oni</option><option>Yokai</option><option>Hantu</option><option>Goryo</option><option>Myling</option><option>Onryo</option><option>The Twins</option><option>Raiju</option><option>Obake</option><option>The Mimic</option><option>Moroi</option><option>Deogen</option><option>Thaye</option>
-</select>
+    actualSelect.id = 'actualGhostSelect';
 
-<label>Actual Ghost</label>
+    actualSelect.style.width = '100%';
+    actualSelect.style.marginBottom = '16px';
 
-<select id="actualGhost">
-<option>Spirit</option><option>Wraith</option><option>Phantom</option><option>Poltergeist</option><option>Banshee</option><option>Jinn</option><option>Mare</option><option>Revenant</option><option>Shade</option><option>Demon</option><option>Yurei</option><option>Oni</option><option>Yokai</option><option>Hantu</option><option>Goryo</option><option>Myling</option><option>Onryo</option><option>The Twins</option><option>Raiju</option><option>Obake</option><option>The Mimic</option><option>Moroi</option><option>Deogen</option><option>Thaye</option>
-</select>
+    GHOSTS.forEach(ghost => {
 
-<button onclick="finishInvestigation('${mode}')">
-Complete Investigation
-</button>
+        const option1 = document.createElement('option');
+        option1.value = ghost.name;
+        option1.textContent = ghost.name;
 
-<div style="margin-top:20px;line-height:1.8;">
-Wins: ${investigationStats.wins}<br>
-Losses: ${investigationStats.losses}<br>
-XP: ${investigationStats.xp}
-</div>
+        const option2 = document.createElement('option');
+        option2.value = ghost.name;
+        option2.textContent = ghost.name;
 
-`;
+        userSelect.appendChild(option1);
+        actualSelect.appendChild(option2);
 
-}
+    });
 
-function finishInvestigation(mode){
+    const completeBtn = document.createElement('button');
 
-const guess =
-document.getElementById("userGuess").value;
+    completeBtn.className = 'btn-primary';
+    completeBtn.style.width = '100%';
+    completeBtn.textContent = 'Complete Investigation';
 
-const actual =
-document.getElementById("actualGhost").value;
+    completeBtn.addEventListener('click', () => {
 
-let xp = 0;
+        const guess = userSelect.value;
+        const actual = actualSelect.value;
 
-if(mode === "all") xp = 50;
-if(mode === "2evi") xp = 100;
-if(mode === "1evi") xp = 150;
-if(mode === "0evi") xp = 250;
+        let xp = 50;
 
-if(guess === actual){
+        switch(currentInvestigation.mode){
 
-investigationStats.wins += 1;
-investigationStats.xp += xp;
+            case '2':
+                xp = 100;
+                break;
 
-alert(`Correct! +${xp} XP`);
+            case '1':
+                xp = 150;
+                break;
 
-}
-else{
+            case '0':
+                xp = 250;
+                break;
 
-investigationStats.losses += 1;
+        }
 
-alert(`Incorrect. Actual ghost: ${actual}`);
+        const correct = guess === actual;
 
-}
+        saveInvestigationResult(
+            correct,
+            actual,
+            xp
+        );
 
-localStorage.setItem(
-"phasmoInvestigationStats",
-JSON.stringify(investigationStats)
-);
+        modal.close();
 
-startInvestigation(mode);
+    });
+
+    container.innerHTML = `
+        <p style="margin-bottom:12px;">
+            Select the ghost you thought it was, then the actual ghost afterwards.
+        </p>
+    `;
+
+    container.appendChild(userSelect);
+    container.appendChild(actualSelect);
+    container.appendChild(completeBtn);
+
+    modal.showModal();
 
 }
 
