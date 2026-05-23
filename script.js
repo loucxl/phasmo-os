@@ -4170,7 +4170,9 @@ function openGuessModal() {
     completeBtn.style.width = '100%';
     completeBtn.textContent = 'Complete Investigation';
 
-    completeBtn.addEventListener('click', () => {
+    
+completeBtn.onclick = () => {
+
 
         const guess = userSelect.value;
         const actual = actualSelect.value;
@@ -4216,6 +4218,56 @@ function openGuessModal() {
     container.appendChild(completeBtn);
 
     modal.showModal();
+
+}
+
+
+
+// ======================================================
+// SAVE INVESTIGATION RESULT
+// ======================================================
+
+function saveInvestigationResult(correct, actualGhost, xp){
+
+    let stats =
+        JSON.parse(localStorage.getItem("phasmoStats") || '{"wins":0,"losses":0,"xp":0,"recent":[] }');
+
+    if(correct){
+
+        stats.wins += 1;
+        stats.xp += xp;
+
+    }else{
+
+        stats.losses += 1;
+
+    }
+
+    stats.recent.unshift({
+        ghost: actualGhost,
+        correct: correct,
+        xp: correct ? xp : 0,
+        date: new Date().toLocaleString()
+    });
+
+    if(stats.recent.length > 10){
+        stats.recent.length = 10;
+    }
+
+    localStorage.setItem(
+        "phasmoStats",
+        JSON.stringify(stats)
+    );
+
+    alert(
+        correct
+        ? `Correct! +${xp} XP`
+        : `Incorrect! The ghost was ${actualGhost}`
+    );
+
+    currentInvestigation = null;
+
+    location.reload();
 
 }
 
