@@ -1653,5 +1653,55 @@
     </div>
 </div>
 
+
+<button class="investigation-mode-btn" onclick="openInvestigationMode()">
+    Investigation Mode
+</button>
+
+<div id="investigationModal" class="investigation-modal-overlay">
+<div class="investigation-modal">
+
+<div class="investigation-header">
+<h2>Investigation Mode</h2>
+<button class="close-investigation-btn" onclick="closeInvestigationMode()">✕</button>
+</div>
+
+<p class="investigation-desc">
+Choose your evidence mode and track wins, losses and XP.
+</p>
+
+<div class="investigation-grid">
+
+<div class="investigation-card">
+<h3>All Evidence</h3>
+<p>Choose 3 evidence types and identify the ghost.</p>
+<button onclick="startInvestigation('all')">Start</button>
+</div>
+
+<div class="investigation-card">
+<h3>2 Evidence</h3>
+<p>Limited evidence challenge.</p>
+<button onclick="startInvestigation('2evi')">Start</button>
+</div>
+
+<div class="investigation-card">
+<h3>1 Evidence</h3>
+<p>Hard investigation challenge.</p>
+<button onclick="startInvestigation('1evi')">Start</button>
+</div>
+
+<div class="investigation-card">
+<h3>0 Evidence</h3>
+<p>Behaviour-only investigation mode.</p>
+<button onclick="startInvestigation('0evi')">Start</button>
+</div>
+
+</div>
+
+<div id="investigationSession" class="investigation-session"></div>
+
+</div>
+</div>
+
 </body>
 </html>
