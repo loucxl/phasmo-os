@@ -7,34 +7,41 @@
 global isRunning := false
 global seconds := 0
 global overlayMode := 1
+global overlayScale := 1.0
 
 ; =========================================================
 ; GUI
 ; =========================================================
 
-myGui := Gui("+AlwaysOnTop -Caption +ToolWindow")
+global myGui := Gui("+AlwaysOnTop -Caption +ToolWindow")
 
 myGui.BackColor := "000000"
+
+; TIMER
 
 myGui.SetFont("s28 Bold", "Segoe UI")
 
 global timerText := myGui.AddText(
-    "Center c00E5FF w320",
+    "x10 y15 Center c00E5FF w320 h50",
     "00:00"
 )
+
+; STATUS
 
 myGui.SetFont("s14 Bold", "Segoe UI")
 
 global statusText := myGui.AddText(
-    "Center c00E5FF w320",
+    "x10 y75 Center c00E5FF w320 h25",
     "SAFE PERIOD"
 )
 
+; HOTKEY HELP
+
 myGui.SetFont("s10", "Segoe UI")
 
-myGui.AddText(
-    "Center c888888 w320",
-    "F6 Start/Pause | F7 Reset | F8 Opacity | F10 Close"
+global helpText := myGui.AddText(
+    "x10 y115 Center c888888 w320 h40",
+    "F6 Start/Pause | F7 Reset | F8 Opacity`nF9 Smaller | F11 Bigger | F10 Close"
 )
 
 ; =========================================================
@@ -43,7 +50,7 @@ myGui.AddText(
 
 WinSetTransparent(255, myGui)
 
-myGui.Show("x100 y100 NoActivate")
+myGui.Show("x100 y100 AutoSize NoActivate")
 
 ; DRAG WINDOW
 
@@ -155,6 +162,7 @@ ChangeOverlayMode(*) {
 
     global overlayMode
     global myGui
+    global helpText
 
     overlayMode += 1
 
@@ -167,9 +175,11 @@ ChangeOverlayMode(*) {
 
     if (overlayMode = 1) {
 
+        WinSetTransColor("Off", myGui)
+
         WinSetTransparent(255, myGui)
 
-        WinSetTransColor("Off", myGui)
+        helpText.Visible := true
 
     }
 
@@ -179,9 +189,11 @@ ChangeOverlayMode(*) {
 
     else if (overlayMode = 2) {
 
+        WinSetTransColor("Off", myGui)
+
         WinSetTransparent(120, myGui)
 
-        WinSetTransColor("Off", myGui)
+        helpText.Visible := true
 
     }
 
@@ -195,7 +207,98 @@ ChangeOverlayMode(*) {
 
         WinSetTransColor("000000", myGui)
 
+        helpText.Visible := false
+
     }
+
+}
+
+; =========================================================
+; RESIZE OVERLAY
+; =========================================================
+
+ResizeOverlay(direction) {
+
+    global overlayScale
+    global timerText
+    global statusText
+    global helpText
+    global myGui
+
+    ; ----------------------------------------
+    ; SCALE
+    ; ----------------------------------------
+
+    if (direction = "up") {
+
+        overlayScale += 0.1
+
+    }
+    else {
+
+        overlayScale -= 0.1
+
+        if (overlayScale < 0.5)
+            overlayScale := 0.5
+
+    }
+
+    ; ----------------------------------------
+    ; FONT SIZES
+    ; ----------------------------------------
+
+    timerSize := Round(28 * overlayScale)
+
+    statusSize := Round(14 * overlayScale)
+
+    helpSize := Round(10 * overlayScale)
+
+    ; ----------------------------------------
+    ; APPLY FONTS
+    ; ----------------------------------------
+
+    timerText.SetFont("s" timerSize " Bold")
+
+    statusText.SetFont("s" statusSize " Bold")
+
+    helpText.SetFont("s" helpSize)
+
+    ; ----------------------------------------
+    ; CONTROL POSITIONS
+    ; ----------------------------------------
+
+    timerText.Move(
+        ,
+        Round(20 * overlayScale),
+        Round(320 * overlayScale),
+        Round(60 * overlayScale)
+    )
+
+    statusText.Move(
+        ,
+        Round(75 * overlayScale),
+        Round(320 * overlayScale),
+        Round(30 * overlayScale)
+    )
+
+    helpText.Move(
+        10,
+        Round(115 * overlayScale),
+        Round(320 * overlayScale),
+        Round(40 * overlayScale)
+    )
+
+    ; ----------------------------------------
+    ; WINDOW SIZE
+    ; ----------------------------------------
+
+    guiWidth := Round(340 * overlayScale)
+
+    guiHeight := Round(170 * overlayScale)
+
+    myGui.Show(
+        "w" guiWidth " h" guiHeight
+    )
 
 }
 
@@ -214,5 +317,9 @@ F6::ToggleTimer()
 F7::ResetTimer()
 
 F8::ChangeOverlayMode()
+
+F9::ResizeOverlay("down")
+
+F11::ResizeOverlay("up")
 
 F10::ExitApp()
