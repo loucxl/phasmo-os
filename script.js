@@ -4048,8 +4048,6 @@ const EVENT_POPUP = {
     title: "Double XP",
     message: "The Double XP event will be live between 22nd - 25th May 2026.",
     showOncePerSession: false
-
-delay 5000
 };
 
 function initEventPopup() {
@@ -4074,7 +4072,7 @@ function initEventPopup() {
 
     setTimeout(() => {
         overlay.classList.remove("hidden");
-    }, 500);
+    }, 5000);
 
     function closePopup() {
         overlay.classList.add("hidden");
