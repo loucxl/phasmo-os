@@ -1,43 +1,90 @@
 #Requires AutoHotkey v2.0
 
-global running := false
+; =========================================================
+; PHASMO TIMER OVERLAY
+; =========================================================
+
+global isRunning := false
 global seconds := 0
 global overlayMode := 1
 
-; ==========================================
+; =========================================================
 ; GUI
-; ==========================================
+; =========================================================
 
 myGui := Gui("+AlwaysOnTop -Caption +ToolWindow")
 
-myGui.BackColor := "0B1220"
+myGui.BackColor := "000000"
 
-myGui.SetFont("s12 Bold c00E5FF", "Segoe UI")
+myGui.SetFont("s28 Bold", "Segoe UI")
 
-titleText := myGui.AddText("Center w320", "PHASMO-TIMER")
-
-myGui.SetFont("s38 Bold cFFFFFF", "Segoe UI")
-
-timerText := myGui.AddText("Center w320", "00:00")
-
-myGui.SetFont("s12 Bold cFFAA00", "Segoe UI")
-
-statusText := myGui.AddText("Center w320", "READY")
-
-myGui.SetFont("s10 cAAAAAA", "Segoe UI")
-
-helpText := myGui.AddText(
-    "Center w320",
-    "F6 Start/Pause | F7 Reset | F8 Mode | F10 Exit"
+global timerText := myGui.AddText(
+    "Center c00E5FF w320",
+    "00:00"
 )
 
-myGui.Show("w340 h190")
+myGui.SetFont("s14 Bold", "Segoe UI")
+
+global statusText := myGui.AddText(
+    "Center c00E5FF w320",
+    "SAFE PERIOD"
+)
+
+myGui.SetFont("s10", "Segoe UI")
+
+myGui.AddText(
+    "Center c888888 w320",
+    "F6 Start/Pause | F7 Reset | F8 Opacity | F10 Close"
+)
+
+; =========================================================
+; WINDOW SETTINGS
+; =========================================================
 
 WinSetTransparent(255, myGui)
 
-; ==========================================
-; UPDATE TIMER
-; ==========================================
+myGui.Show("x100 y100 NoActivate")
+
+; DRAG WINDOW
+
+OnMessage(0x201, WM_LBUTTONDOWN)
+
+WM_LBUTTONDOWN(*) {
+
+    PostMessage(0xA1, 2)
+
+}
+
+; =========================================================
+; TIMER FUNCTIONS
+; =========================================================
+
+ToggleTimer(*) {
+
+    global isRunning
+
+    isRunning := !isRunning
+
+}
+
+ResetTimer(*) {
+
+    global isRunning
+    global seconds
+    global timerText
+    global statusText
+
+    isRunning := false
+
+    seconds := 0
+
+    timerText.Text := "00:00"
+
+    statusText.Text := "SAFE PERIOD"
+
+    statusText.Opt("c00E5FF")
+
+}
 
 UpdateTimer() {
 
@@ -50,34 +97,34 @@ UpdateTimer() {
 
     timerText.Text := Format("{:02}:{:02}", mins, secs)
 
-    ; --------------------------------------
-    ; STATES
-    ; --------------------------------------
+    ; =====================================================
+    ; HUNT STATES
+    ; =====================================================
 
     if (seconds < 60) {
+
+        statusText.Text := "SAFE PERIOD"
+
+        statusText.Opt("c00E5FF")
+
+    }
+    else if (seconds < 90) {
 
         statusText.Text := "DEMON CAN HUNT"
 
         statusText.Opt("cFF4444")
 
     }
-    else if (seconds < 90) {
+    else if (seconds < 180) {
 
-        statusText.Text := "NORMAL HUNT ACTIVE"
+        statusText.Text := "NORMAL GHOSTS CAN HUNT"
 
         statusText.Opt("cFFAA00")
 
     }
-    else if (seconds < 180) {
-
-        statusText.Text := "SPIRIT SAFE PERIOD"
-
-        statusText.Opt("c00E5FF")
-
-    }
     else {
 
-        statusText.Text := "SPIRIT SAFE OVER"
+        statusText.Text := "SPIRIT CAN HUNT"
 
         statusText.Opt("cAA66FF")
 
@@ -85,16 +132,12 @@ UpdateTimer() {
 
 }
 
-; ==========================================
-; TIMER LOOP
-; ==========================================
+Tick() {
 
-Tick(*) {
-
-    global running
+    global isRunning
     global seconds
 
-    if (running) {
+    if (isRunning) {
 
         seconds += 1
 
@@ -104,125 +147,72 @@ Tick(*) {
 
 }
 
-SetTimer(Tick, 1000)
-
-UpdateTimer()
-
-; ==========================================
-; HOTKEYS
-; ==========================================
-
-; START / PAUSE
-
-F6:: {
-
-    global running
-
-    running := !running
-
-}
-
-; RESET
-
-F7:: {
-
-    global running
-    global seconds
-
-    running := false
-    seconds := 0
-
-    UpdateTimer()
-
-}
-
-; ==========================================
+; =========================================================
 ; OVERLAY MODES
-; ==========================================
+; =========================================================
 
-F8:: {
+ChangeOverlayMode(*) {
 
     global overlayMode
     global myGui
-    global titleText
-    global helpText
-    global timerText
-    global statusText
 
     overlayMode += 1
 
     if (overlayMode > 3)
         overlayMode := 1
 
-    ; --------------------------------------
-    ; MODE 1 = FULL
-    ; --------------------------------------
+    ; ----------------------------------------
+    ; MODE 1 - FULL
+    ; ----------------------------------------
 
     if (overlayMode = 1) {
 
         WinSetTransparent(255, myGui)
 
-        myGui.BackColor := "0B1220"
-
-        titleText.Visible := true
-        helpText.Visible := true
+        WinSetTransColor("Off", myGui)
 
     }
 
-    ; --------------------------------------
-    ; MODE 2 = DIMMED
-    ; --------------------------------------
+    ; ----------------------------------------
+    ; MODE 2 - DIM
+    ; ----------------------------------------
 
     else if (overlayMode = 2) {
 
         WinSetTransparent(120, myGui)
 
-        myGui.BackColor := "0B1220"
-
-        titleText.Visible := true
-        helpText.Visible := true
+        WinSetTransColor("Off", myGui)
 
     }
 
-    ; --------------------------------------
-    ; MODE 3 = TEXT ONLY
-    ; --------------------------------------
+    ; ----------------------------------------
+    ; MODE 3 - TEXT ONLY
+    ; ----------------------------------------
 
     else {
 
-        ; COMPLETELY TRANSPARENT WINDOW
+        WinSetTransparent(255, myGui)
 
-        WinSetTransColor("0B1220 255", myGui)
-
-        myGui.BackColor := "0B1220"
-
-        ; Hide extra UI
-
-        titleText.Visible := false
-        helpText.Visible := false
+        WinSetTransColor("000000", myGui)
 
     }
 
 }
 
-; ==========================================
-; EXIT APP
-; ==========================================
+; =========================================================
+; TIMER LOOP
+; =========================================================
 
-F10:: {
+SetTimer(Tick, 1000)
 
-    ExitApp()
+; =========================================================
+; HOTKEYS
+; =========================================================
 
-}
+F6::ToggleTimer()
 
-; ==========================================
-; DRAG WINDOW
-; ==========================================
+F7::ResetTimer()
 
-OnMessage(0x201, WM_LBUTTONDOWN)
+F8::ChangeOverlayMode()
 
-WM_LBUTTONDOWN(wParam, lParam, msg, hwnd) {
-
-    PostMessage(0xA1, 2)
-
-}
+F10::ExitApp()
