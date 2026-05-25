@@ -4072,7 +4072,7 @@ function initEventPopup() {
 
     setTimeout(() => {
         overlay.classList.remove("hidden");
-    }, 5000);
+    }, 3000);
 
     function closePopup() {
         overlay.classList.add("hidden");
