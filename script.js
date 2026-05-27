@@ -4044,7 +4044,7 @@ if (document.readyState === "loading") {
 
 /* Event Popup Config */
 const EVENT_POPUP = {
-    enabled: true,
+    enabled: false,
     title: "Double XP",
     message: "The Double XP event will be live between 22nd - 25th May 2026.",
     showOncePerSession: false
