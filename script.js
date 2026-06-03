@@ -3511,11 +3511,74 @@ document.addEventListener('DOMContentLoaded', function() {
 // ═══════════════════════════════════════════════════════════════
 const GAME_UPDATES = [
     {
+    version: "Hotfix v0.17.1.5",
+    title: "Voice Recognition Hotfix",
+    logAdded: "03 June 2026",
+    gameRelease: "03 June 2026",
+    open: true,
+    sections: [
+        {
+            heading: "Fixes",
+            items: [
+                "Fixed an issue that caused players to become softlocked when using the Spirit Box while using a controller.",
+                "Fixed an issue for Steam players that caused Voice Recognition to not work."
+            ]
+        },
+        {
+            heading: "Important Information",
+            items: [
+                "If you are encountering issues with Voice Recognition on the 'Voice' setting on PC, please ensure that the default microphone assigned on your PC is the microphone specified in your Windows settings."
+            ]
+        }
+      ]
+    },
+    {
+    version: "v0.17.1.4 - Patch",
+    title: "VR Belt Update",
+    logAdded: "02 June 2026",
+    gameRelease: "02 June 2026",
+    open: false,
+    sections: [
+        {
+            heading: "New",
+            items: [
+                "The VR belt has been reimplemented following player feedback.",
+                "Players can now switch between having their Journal and Walkie Talkie on the belt or their shoulder.",
+                "The VR belt will only be visible locally. Other players will see equipment attached to the VR player's body."
+            ]
+        },
+        {
+            heading: "Changes",
+            items: [
+                "The line of sight ghost speed accelerations implemented in the Player Character Update have been reverted to their original state."
+            ]
+        },
+        {
+            heading: "Fixes",
+            items: [
+                "Fixed an issue that caused players to become softlocked when using the Spirit Box before interacting with the Truck's CCTV.",
+                "Fixed an issue that allowed the Kormos to kill players through floors.",
+                "Fixed an issue that allowed the Kormos to kill players outside.",
+                "Fixed an issue that caused the Tier 3 Firelight to not work correctly if placed while lit.",
+                "Fixed an issue where player jackets would appear incorrectly when loading into a Multiplayer lobby.",
+                "Fixed an issue where pressing 'Join' in Multiplayer without having a code entered would cause issues creating lobbies and remove audio from the game.",
+                "Fixed an issue where VR players were unable to use Text Input for the Spirit Box, Monkey Paw and Ouija Board."
+            ]
+        },
+        {
+            heading: "Known Issues",
+            items: [
+                "Players across all platforms are experiencing issues with voice recognition and voice chat. A fix is being investigated."
+            ]
+        }
+      ]
+    }, 
+    {
         version: "Hotfix v0.17.1.3",
         title: "Phasmophobia - Hotfix v0.17.1.3",
         logAdded: "19 May 2026",
         gameRelease: "19 May 2026",
-        open: true,
+        open: false,
         sections: [
             {
                 heading: "Fixes",
