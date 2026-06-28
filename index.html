@@ -86,6 +86,7 @@
                 <button class="nav-btn" onclick="showSection('strategy')" style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 6px 10px; font-family: var(--font-hud); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Strategy</button>
                 <button class="nav-btn" onclick="showSection('zeroev')" style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.5); color: #a78bfa; padding: 6px 10px; font-family: var(--font-hud); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">0 EV</button>
                 <button class="nav-btn" onclick="showSection('updates')" style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.5); color: #a78bfa; padding: 6px 10px; font-family: var(--font-hud); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Updates</button>
+                <button class="nav-btn" onclick="showSection('about')" style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 6px 10px; font-family: var(--font-hud); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">About</button>
             
 <a href="phasmo-timer.html" class="phasmo-timer-nav-btn">
 
@@ -1180,6 +1181,61 @@
             </div>
 
             <div class="updates-list" id="updatesList"></div>
+        </div>
+    </div>
+
+    <!-- ABOUT SECTION -->
+    <div class="main-section" id="section-about" style="display: none;">
+        <div class="section-container updates-page">
+            <div class="updates-hero">
+                <div>
+                    <p class="updates-kicker">ABOUT THIS TOOL</p>
+                    <h2 class="page-title">👻 About PhasmoOS</h2>
+                    <p class="updates-intro">PhasmoOS is a free, fan-made companion app for Phasmophobia — a single place for ghost identification, maps, equipment, mechanics, strategy and 0 EV hunting, all built to sit alongside the game.</p>
+                </div>
+                <div class="updates-version-card">
+                    <span class="updates-version-label">Version</span>
+                    <strong>v2.5</strong>
+                </div>
+            </div>
+
+            <div style="display: grid; gap: 16px; margin-top: 20px;">
+
+                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px;">
+                    <h3 style="font-family: var(--font-hud); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--acc-cyan); margin: 0 0 12px;">What is PhasmoOS?</h3>
+                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0 0 10px;">PhasmoOS is a reference and investigation tool for <strong style="color: var(--text-main);">Phasmophobia</strong>, the co-op ghost-hunting game by Kinetic Games. It pulls together everything you'd normally have scattered across wikis and notes into one fast, dark-themed dashboard.</p>
+                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0;">Use the evidence filters in the sidebar to narrow down which ghost you're dealing with during a hunt, then dig into per-ghost behaviour, hunt thresholds, map layouts, equipment tiers, game mechanics and strategy guides — including a dedicated 0 EV section for evidence-less identification.</p>
+                </div>
+
+                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px;">
+                    <h3 style="font-family: var(--font-hud); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--acc-cyan); margin: 0 0 12px;">What's it used for?</h3>
+                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0 0 10px;">It's meant to be open on a second screen (or alongside the game) while you play. During an investigation you can:</p>
+                    <ul style="color: var(--text-muted); line-height: 1.7; margin: 0; padding-left: 20px;">
+                        <li>Track collected evidence and instantly see which ghosts still match</li>
+                        <li>Look up hunt sanity thresholds, speeds and unique behaviours</li>
+                        <li>Check map layouts, hiding spots and equipment loadouts</li>
+                        <li>Run the hunt cooldown / smudge timer from the footer</li>
+                        <li>Follow strategy and 0 EV guides for harder difficulties</li>
+                    </ul>
+                </div>
+
+                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px;">
+                    <h3 style="font-family: var(--font-hud); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--acc-cyan); margin: 0 0 12px;">How "Hunters Online" works</h3>
+                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0 0 10px;">The <strong style="color: var(--text-main);">Hunters Online</strong> badge in the header shows roughly how many people are using PhasmoOS at the same time as you — a live presence count, just for fun.</p>
+                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0;">It works with a lightweight <strong style="color: var(--text-main);">heartbeat</strong>: your browser quietly pings the server every so often to say "still here," and drops off the count when you close the tab. That's all it does — it doesn't log, track, or store anything about you or what you're doing.</p>
+                </div>
+
+                <div style="background: rgba(6,182,212,0.06); border: 1px solid var(--acc-cyan); border-radius: 10px; padding: 20px 22px;">
+                    <h3 style="font-family: var(--font-hud); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--acc-cyan); margin: 0 0 12px;">🔒 Signing in &amp; your privacy</h3>
+                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0 0 10px;">Signing in is completely optional — the whole tool works without an account. If you do log in with Google, it's only used to identify your account so things like saved progress and friends work.</p>
+                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0;">Your email is <strong style="color: var(--text-main);">never used for marketing and never sold or shared with anyone</strong>. There's no advertising and no third-party tracking here — it's a hobby project, not a data business.</p>
+                </div>
+
+                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px;">
+                    <p style="color: var(--text-muted); line-height: 1.6; margin: 0; font-size: 0.85rem;">PhasmoOS is an <strong style="color: var(--text-main);">unofficial fan project</strong> and is not affiliated with, endorsed by, or associated with Kinetic Games. Phasmophobia and all related names are property of their respective owners.</p>
+                </div>
+
+            </div>
         </div>
     </div>
 
