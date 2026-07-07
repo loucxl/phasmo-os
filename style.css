@@ -3294,6 +3294,22 @@ nav .nav-btn[onclick*="zeroev"]:focus {
     line-height: 1.65;
 }
 
+.update-source-link {
+    margin: 14px 0 0;
+    font-size: 0.8rem;
+}
+
+.update-source-link a {
+    color: var(--acc-cyan);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--acc-cyan);
+}
+
+.update-source-link a:hover {
+    color: var(--text-main);
+    border-bottom-color: var(--text-main);
+}
+
 .update-body p {
     margin: 0 0 12px;
     color: var(--text-main);
