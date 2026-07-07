@@ -28,7 +28,7 @@ It is simply a transparent timer overlay with global hotkeys.
 # Included Files
 
 ## Phasmo-Timer.exe
-Precompiled executable for normal users.
+Precompiled executable for normal users. THIS IS CURRENTLY UNAVAILABLE FOR THE FORSEEABLE.
 
 ## overlay.ahk
 Full open-source AutoHotkey source code.
