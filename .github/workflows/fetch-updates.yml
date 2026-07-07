@@ -1,0 +1,41 @@
+name: Fetch Phasmophobia updates
+
+on:
+  schedule:
+    # Every 6 hours (offset from the top of the hour to dodge GitHub's rush)
+    - cron: "23 */6 * * *"
+  workflow_dispatch: {} # lets you run it manually from the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fetch-updates
+  cancel-in-progress: true
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch latest patch notes from Steam
+        run: node scripts/fetch-updates.js
+
+      - name: Commit & push if changed
+        run: |
+          if git diff --quiet updates.json; then
+            echo "No new updates."
+            exit 0
+          fi
+          git config user.name "phasmo-os-bot"
+          git config user.email "actions@github.com"
+          git add updates.json
+          git commit -m "chore: auto-update game patch notes [skip ci]"
+          git push
