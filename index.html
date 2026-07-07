@@ -76,7 +76,7 @@
             <div style="font-family: var(--font-hud); font-size: 1.2rem; font-weight: 700; letter-spacing: 1px; color: #fff; display: flex; align-items: center; gap: 6px;">
                 <div class="live-dot"></div>
                 PHASMO<span style="color: var(--acc-cyan);">.OS</span>
-                <div style="font-size: 0.6rem; background: var(--acc-cyan); color: #000; padding: 2px 5px; border-radius: 3px; font-weight: 700;">v2.5</div>
+                <div style="font-size: 0.6rem; background: var(--acc-cyan); color: #000; padding: 2px 5px; border-radius: 3px; font-weight: 700;">v2.6</div>
             </div>
             <nav style="display: flex; gap: 4px;">
                 <button class="nav-btn" onclick="showSection('ghosts')" style="background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 6px 10px; font-family: var(--font-hud); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; border-radius: 4px;">Ghosts</button>
@@ -167,7 +167,7 @@
         <div class="brand">
             <div class="live-dot"></div>
             PHASMO<span>.OS</span>
-            <div class="version">v2.5</div>
+            <div class="version">v2.6</div>
         </div>
         <nav class="header-nav">
             <button class="nav-btn" onclick="showSection('ghosts')">👻 Ghosts</button>
@@ -199,7 +199,7 @@
         <div class="wip-content">
             <span class="wip-icon">⚠️</span>
             <div class="wip-text">
-            <strong>Heads up:</strong> All ghost data is being reviewed. Information for the 2 new ghosts is subject to change as more testing is confirmed.
+            <strong>Data check complete:</strong> All ghost data — including the Aswang and Kormos — has been verified against the current game version (v0.17.1.x, June 2026 patches) and community wiki datamines.
                 </div>
                     <button class="wip-close" id="wipClose" type="button" aria-label="Close update banner">✕</button>
             </div>
@@ -464,7 +464,7 @@
             </div>
 
             <div class="mechanics-note warning-note">
-                <strong>Data on this page is currently being re-worked.</strong> Data surrounding new ghosts is still being tested so certain information is subject to change.
+                <strong>Data verified July 2026</strong> against game version v0.17.1.x and current community wiki datamines — including the Aswang and Kormos added in the Alan Wake event.
             </div>
             
             <div class="mechanics-grid refined-mechanics-grid">
@@ -605,8 +605,20 @@
                             <li>Calm: 10% threshold, 1.445 m/s.</li>
                             <li>Aggressive: 65% threshold, 1.955 m/s, hunts that start aggressive are 20% shorter.</li>
                         </ul>
+                        <h4>Aswang</h4>
+                        <ul>
+                            <li>Base 1.53 m/s; LoS acceleration is 1.5x normal, reaching its 2.53 m/s max in ~8.7s instead of ~13s.</li>
+                            <li>Cannot kill players in official hiding spots — reaching one instantly ends the hunt.</li>
+                            <li>After a hunt ends that way, its next hunt starts by walking to that player's old hiding spot.</li>
+                        </ul>
                         <h4>Kormos</h4>
-                        <p>Known concept: nearly blind with strong hearing. Keep still during hunts.</p>
+                        <ul>
+                            <li>Blind: only gains line-of-sight within 5m unobstructed. Hunts by sound instead.</li>
+                            <li>Footstep detection: 10m crouch-walking, 15m walking, 30m sprinting (same floor).</li>
+                            <li>Moves at 1.7 m/s, or 2.21 m/s when travelling to a detected sound; re-targets sounds every 5–10s.</li>
+                            <li>Kills within 1.5m on the same floor even through walls and furniture — don't stand in its path.</li>
+                            <li>Threshold 50%, raised to 70% if a player sprints in the same room. Cannot do mist-orb or chasing events.</li>
+                        </ul>
                     </div>
                 </div>
 
@@ -910,7 +922,7 @@
                 <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.4); border-radius:6px; padding:8px 14px; font-size:0.8rem; color:#fca5a5;"><strong>Rule:</strong> survive first, test second</div>
             </div>
 			
-			<div class="strategy-note warning-note" style="margin-top:16px;">This guide if for <em>0 Evidence with starting Sanity</em>. If you are playing with a starting sanity of 0, please don't follow strategies that involve sanity (Unless you have sanity pills).</div>
+			<div class="strategy-note warning-note" style="margin-top:16px;">This guide is for <em>0 Evidence with starting Sanity</em>. If you are playing with a starting sanity of 0, please don't follow strategies that involve sanity (Unless you have sanity pills).</div>
 
             <!-- 0EV CORE LOOP -->
             <div class="strategy-phase" style="margin-top:16px; border-color: rgba(139,92,246,0.35); background: rgba(139,92,246,0.04);">
@@ -1102,9 +1114,9 @@
                 <div class="tip-grid" style="grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px;">
                     <div class="tip-card" style="border-color:rgba(139,92,246,0.35);"><h4 style="color:#c4b5fd;">Dayan</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Movement-sensitive. Stand still during a hunt when it is close: if it slows sharply, then speeds the moment someone moves, suspect Dayan. Also check female-only clue.</p></div>
                     <div class="tip-card" style="border-color:rgba(239,68,68,0.35);"><h4 style="color:var(--acc-red);">Gallu</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Defensive tools and salt can change its state. Enraged Gallu is faster, has reduced incense blind time, and cannot disturb salt; after an enraged hunt it becomes weakened.</p></div>
-                    <div class="tip-card" style="border-color:rgba(6,182,212,0.35);"><h4 style="color:var(--acc-cyan);">Obambo</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Watch for repeating waves: calm, low-pressure periods followed by aggressive, faster, earlier-hunt periods. One weird minute is not enough; look for the cycle.</p></div>
-                    <div class="tip-card" style="border-color:rgba(234,179,8,0.35);"><h4 style="color:#fde68a;">Aswang</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Starts slightly slower than normal but reaches LoS speed much faster. Break sight lines quickly; long straight chases make it look scarier than its base speed suggests.</p></div>
-                    <div class="tip-card" style="border-color:rgba(34,197,94,0.35);"><h4 style="color:#86efac;">Kormos</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Unusual hunt senses. Stay silent, still and electronics-off to test whether normal LoS tracking seems absent, then compare how it reacts to movement and noise.</p></div>
+                    <div class="tip-card" style="border-color:rgba(6,182,212,0.35);"><h4 style="color:var(--acc-cyan);">Obambo</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Watch for repeating ~2-minute waves. Calm phases are interaction-heavy but almost never hunt; aggressive phases go quiet on activity yet hunt early (65%) and fast. Quiet does NOT mean safe. A mid-hunt speed snap or a fast-start hunt ending ~20% early is near-conclusive.</p></div>
+                    <div class="tip-card" style="border-color:rgba(234,179,8,0.35);"><h4 style="color:#fde68a;">Aswang</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Best 0EV tell in the game: lead it to an official hiding spot (closet/locker) while it can see you — if the hunt ends the instant it reaches you, it is an Aswang. Also ramps to max chase speed ~1.5x faster than normal, so break sight lines early. Expect its next hunt to check your old hiding spot.</p></div>
+                    <div class="tip-card" style="border-color:rgba(34,197,94,0.35);"><h4 style="color:#86efac;">Kormos</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Blind, sound-based hunter. Go still, silent and electronics-off in an open area: it will walk straight past you (rule out Banshee by having everyone freeze). It kills within 1.5m through walls, so keep clear of its path — and never sprint in its room (raises its threshold to 70%).</p></div>
                 </div>
             </div>
 
@@ -1138,6 +1150,7 @@
                             <li><strong>Raiju:</strong> electronics turn it into a sprinter.</li>
                             <li><strong>Yokai:</strong> voice can cause very early hunts.</li>
                             <li><strong>Obambo:</strong> safe-feeling phases can flip suddenly.</li>
+                            <li><strong>Kormos:</strong> kills within 1.5m through walls; any noise draws it in fast.</li>
                         </ul>
                     </div>
                     <div class="tip-card" style="border-color:rgba(234,179,8,0.4); background:rgba(234,179,8,0.03);">
@@ -1148,6 +1161,7 @@
                             <li><strong>Hantu:</strong> cold-map speed swings.</li>
                             <li><strong>Myling:</strong> quiet approach.</li>
                             <li><strong>Dayan:</strong> punishes movement.</li>
+                            <li><strong>Aswang:</strong> vicious chaser, but cannot kill players in official hiding spots.</li>
                         </ul>
                     </div>
                     <div class="tip-card" style="border-color:rgba(34,197,94,0.4); background:rgba(34,197,94,0.03);">
@@ -1176,7 +1190,7 @@
                 </div>
                 <div class="updates-version-card">
                     <span class="updates-version-label">Tracker Version</span>
-                    <strong>v2.5</strong>
+                    <strong>v2.6</strong>
                 </div>
             </div>
 
@@ -1195,7 +1209,8 @@
                 </div>
                 <div class="updates-version-card">
                     <span class="updates-version-label">Version</span>
-                    <strong>v2.5</strong>
+                    <strong>v2.6</strong>
+                    <span style="display:block; font-size:0.65rem; color: var(--text-muted); margin-top:4px;">Data verified: July 2026 (game v0.17.1.x)</span>
                 </div>
             </div>
 
