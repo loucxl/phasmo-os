@@ -47,6 +47,7 @@ function stripInlineBBCode(s) {
         .replace(/\[previewyoutube=[^\]]*\][\s\S]*?\[\/previewyoutube\]/gi, "")
         .replace(/\[url=([^\]]*)\]([\s\S]*?)\[\/url\]/gi, "$2")
         .replace(/\[\/?(?:b|i|u|s|strike|code|spoiler|quote|table|tr|th|td|hr|p|center)[^\]]*\]/gi, "")
+        .replace(/\[\/?\*\]/g, "")
         .replace(/\{STEAM_CLAN_IMAGE\}[^\s\]]*/g, "")
         .replace(/\s+/g, " ")
         .trim();
@@ -64,7 +65,7 @@ function parseBBCodeToSections(raw) {
     // Tokenise on headings and list blocks so structure survives.
     const tokens = String(raw || "")
         .replace(/\r/g, "")
-        .split(/(\[h[1-3]\][\s\S]*?\[\/h[1-3]\]|\[list\][\s\S]*?\[\/list\])/gi)
+        .split(/(\[h[1-3]\][\s\S]*?\[\/h[1-3]\]|\[o?list\][\s\S]*?\[\/o?list\])/gi)
         .filter(t => t && t.trim());
 
     for (const token of tokens) {
@@ -75,7 +76,7 @@ function parseBBCodeToSections(raw) {
             continue;
         }
 
-        const list = token.match(/^\[list\]([\s\S]*?)\[\/list\]$/i);
+        const list = token.match(/^\[o?list\]([\s\S]*?)\[\/o?list\]$/i);
         if (list) {
             if (!current) ensureSection("Patch Notes");
             const items = list[1]
