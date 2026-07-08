@@ -144,6 +144,13 @@ function loadExisting() {
     }
 }
 
+// Extract a comparable version number ("Hotfix v0.17.1.5" -> "0.17.1.5").
+// Used to stop Steam auto entries duplicating patches you already wrote by hand.
+function versionKey(entry) {
+    const m = String(entry.version || "").match(/\d+(?:\.\d+)+/);
+    return m ? m[0] : null;
+}
+
 // Manual entries store human dates; give them a sortable timestamp once.
 function sortStamp(entry) {
     if (typeof entry.date === "number") return entry.date;
@@ -172,7 +179,20 @@ async function main() {
     const autoById = new Map(autoOld.map(u => [u.id, u]));
     for (const entry of incoming) autoById.set(entry.id, entry);
 
-    const merged = [...manual, ...autoById.values()]
+    // Drop any auto entry covering a version that already has a manual entry.
+    // This also self-heals: duplicates that slipped into updates.json previously
+    // are removed on the next run, not just prevented going forward.
+    const manualVersions = new Set(manual.map(versionKey).filter(Boolean));
+    const autos = [...autoById.values()].filter(u => {
+        const key = versionKey(u);
+        if (key && manualVersions.has(key)) {
+            console.log(`Skipping auto entry ${u.id} (${u.version}) — manual entry covers ${key}`);
+            return false;
+        }
+        return true;
+    });
+
+    const merged = [...manual, ...autos]
         .sort((a, b) => sortStamp(b) - sortStamp(a))
         .slice(0, MAX_ENTRIES);
 
