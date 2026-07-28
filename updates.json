@@ -1,7 +1,40 @@
 {
-  "generated": "2026-07-28T03:39:36.486Z",
+  "generated": "2026-07-28T14:40:56.775Z",
   "source": "Steam ISteamNews (auto) + manual entries",
   "updates": [
+    {
+      "id": "steam-1839041357037983",
+      "manual": false,
+      "version": "v0.18.0.1",
+      "title": "Phasmophobia Patch Notes",
+      "logAdded": "28 July 2026",
+      "gameRelease": "28 July 2026",
+      "date": 1785236715,
+      "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1839041357037983",
+      "sections": [
+        {
+          "heading": "Patch Notes",
+          "text": [
+            "Welcome back, Ghost Hunters.",
+            "Today we have deployed an update for Phasmophobia that addresses several issues that were raised following last week’s update. Thank you to everyone who provided feedback and helped us identify these issues.Full patch notes below.",
+            "Fixes",
+            "Fixed an issue that caused the Incense to not appear as Used if the animation was cancelled by opening the Journal.VR - Fixed an issue that caused unstable FPS whilst in the Truck.VR - Fixed an issue that caused players to become stuck while loading in to a Multiplayer game on Bleasdale Farmhouse.[/list]Known Issues"
+          ],
+          "items": [
+            "Fixed an issue that caused Photo Cameras to interfere with other player animations.",
+            "Fixed an issue that caused the Photo Camera’s Use animation to not play in Multiplayer.",
+            "Fixed an issue that caused the Photo Camera to take an extra photo when dropped while taking a photo.",
+            "Fixed an issue that caused the Photo Camera to take a photo if picked up by another player after being dropped while being used by the original player.",
+            "Fixed an issue that caused Twitch Drop reward ID Card & Badge cosmetics to be missing.",
+            "Fixed an issue that would cause items to get stuck or fall through the floor when dropped in Multiplayer.",
+            "Fixed an issue that caused videos of a Hunting Ghost to not count towards the Apocalypse challenge.",
+            "Fixed an issue that allowed Ghosts to be able to enter several hiding spots in 13 Willow Street.[list]",
+            "This also fixes similar issues in 6 Tanglewood Drive, 42 Edgefield Road and 10 Ridgeview Court.",
+            "If a Flashlight is not picked up, hotkeys are assigned in this order: 2, 3, 1. If a Flashlight is picked up, it will default to 1. A following patch will address this issue, with Equipment being assigned in the order they are picked up. Igniters will however always default to 4."
+          ]
+        }
+      ]
+    },
     {
       "id": "steam-1838407329268874",
       "manual": false,
