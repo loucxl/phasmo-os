@@ -4058,3 +4058,109 @@ nav .nav-btn[onclick*="zeroev"]:focus {
     }
 
 }
+
+
+/* Buy Me a Coffee support links */
+.support-coffee-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid rgba(255, 221, 0, 0.65);
+    border-radius: 4px;
+    background: rgba(255, 221, 0, 0.1);
+    color: #ffdd00;
+    font-family: var(--font-hud);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.support-coffee-btn:hover,
+.support-coffee-btn:focus-visible {
+    background: rgba(255, 221, 0, 0.18);
+    box-shadow: 0 0 14px rgba(255, 221, 0, 0.2);
+    transform: translateY(-1px);
+    outline: none;
+}
+
+.support-coffee-icon {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.about-support-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 22px;
+    border: 1px solid rgba(255, 221, 0, 0.5);
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255, 221, 0, 0.08), rgba(6, 182, 212, 0.04));
+}
+
+.about-support-card h3 {
+    margin: 0 0 7px;
+    color: #ffdd00;
+    font-family: var(--font-hud);
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.about-support-card p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.55;
+}
+
+.about-support-card > a {
+    flex-shrink: 0;
+    padding: 9px 14px;
+    border-radius: 6px;
+    background: #ffdd00;
+    color: #111827;
+    font-family: var(--font-hud);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.about-support-card > a:hover,
+.about-support-card > a:focus-visible {
+    box-shadow: 0 0 18px rgba(255, 221, 0, 0.3);
+    transform: translateY(-1px);
+    outline: none;
+}
+
+@media (max-width: 1100px) {
+    .support-coffee-label {
+        display: none;
+    }
+
+    .support-coffee-btn {
+        width: 32px;
+        padding: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .about-support-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .about-support-card > a {
+        text-align: center;
+    }
+}
