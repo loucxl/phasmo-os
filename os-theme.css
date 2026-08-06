@@ -1,0 +1,252 @@
+/* ═══════════════════════════════════════════════════════════════
+   PHASMO/OS FIELD TERMINAL THEME  (os-theme.css)
+   Loads AFTER style.css and re-skins the whole site by
+   redefining the design tokens, then layering OS chrome on top.
+   Remove this one <link> tag to fall back to the old look.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. TOKENS ─ classic PhasmoOS cyan/slate, OS chrome kept ───── */
+:root {
+    --bg-void: #030712;
+    --bg-panel: #0b1120;
+    --bg-card: #171f30;
+    --bg-elevated: #1f2a40;
+
+    --border: #334155;
+    --border-light: #475569;
+
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+
+    /* Primary system accent — the original PhasmoOS cyan */
+    --acc-cyan: #06b6d4;
+
+    /* LED semantics — original values */
+    --acc-green: #22c55e;
+    --acc-red: #ef4444;
+    --acc-orange: #f97316;
+    --acc-yellow: #eab308;
+    --acc-purple: #a855f7;
+
+    --font-hud: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+    --font-body: 'IBM Plex Sans', 'Inter', sans-serif;
+    --font-mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+    --font-bitmap: 'Silkscreen', 'IBM Plex Mono', monospace;
+
+    --shadow-sm: 0 1px 0 rgba(0,0,0,0.55);
+    --shadow-md: 0 2px 0 rgba(0,0,0,0.55);
+    --shadow-lg: 0 6px 0 rgba(0,0,0,0.45);
+
+    --card-pad: 20px;
+    --bevel: inset 0 1px 0 rgba(248,250,252,0.06), inset 0 -1px 0 rgba(0,0,0,0.45);
+}
+
+/* ── 2. ATMOSPHERE ─────────────────────────────────────────────── */
+body {
+    background: var(--bg-void);
+}
+
+/* Phosphor scanfield — static, cheap, sits over everything but
+   never intercepts input. */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.16) 0px,
+            rgba(0, 0, 0, 0.16) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+}
+
+::selection {
+    background: var(--acc-cyan);
+    color: #041018;
+}
+
+input, textarea {
+    caret-color: var(--acc-cyan);
+    font-family: var(--font-mono) !important;
+}
+
+*:focus-visible {
+    outline: 2px solid var(--acc-cyan) !important;
+    outline-offset: 1px;
+}
+
+/* Themed scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-void); }
+::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+    border: 2px solid var(--bg-void);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--acc-cyan); }
+
+/* ── 3. SYSTEM CHROME ─ menubar + system panel ─────────────────── */
+header {
+    box-shadow: 0 1px 0 rgba(0,0,0,0.6), inset 0 -1px 0 rgba(234,242,223,0.05) !important;
+}
+
+header .nav-btn,
+header button,
+header a {
+    border-radius: 0 !important;
+}
+
+header .nav-btn:hover {
+    color: var(--text-main) !important;
+    background: var(--bg-elevated) !important;
+}
+
+header .nav-btn.active {
+    color: #041018 !important;
+    background: var(--acc-cyan) !important;
+    border-color: var(--acc-cyan) !important;
+}
+
+/* Sidebar section labels go bitmap — tiny system print */
+#sidebar h3 {
+    font-family: var(--font-bitmap) !important;
+    font-size: 0.6rem !important;
+    font-weight: 400 !important;
+    letter-spacing: 2px !important;
+}
+
+/* Square up the whole control surface */
+.ev-btn, .filter-btn, .t-opt, .btn-primary, .btn-reset, .btn-login,
+.stat-pill, .trait-badge, .tab-btn, button, dialog, .site-search-panel,
+input[type="text"] {
+    border-radius: 0 !important;
+}
+
+.ev-btn, .filter-btn, .btn-primary {
+    box-shadow: var(--bevel);
+}
+
+/* ── 4. WINDOWS ─ the signature ────────────────────────────────── */
+/* Every ghost card is a process window: hard frame, title strip
+   that reads out the danger tier like a system tag. */
+.card {
+    border-radius: 0;
+    border-left-width: 1px;              /* danger moves to the strip */
+    padding: var(--card-pad);
+    box-shadow: var(--shadow-md), var(--bevel);
+}
+
+.card::before {
+    content: attr(data-danger) ' THREAT // ACTIVE PROCESS';
+    display: block;
+    margin: calc(var(--card-pad) * -1) calc(var(--card-pad) * -1) 14px;
+    padding: 6px 12px 5px 34px;
+    font-family: var(--font-bitmap);
+    font-size: 0.55rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: right;
+    color: var(--text-dim);
+    background:
+        /* three window dots, drawn not markup */
+        radial-gradient(circle 3px at 10px 50%, currentColor 3px, transparent 3.5px),
+        radial-gradient(circle 3px at 20px 50%, currentColor 3px, transparent 3.5px),
+        radial-gradient(circle 3px at 30px 50%, currentColor 3px, transparent 3.5px),
+        rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--border);
+}
+
+.card[data-danger="Low"]::before     { color: var(--acc-cyan);   border-bottom-color: var(--acc-cyan); }
+.card[data-danger="Med"]::before     { color: var(--acc-orange); border-bottom-color: var(--acc-orange); }
+.card[data-danger="High"]::before    { color: var(--acc-red);    border-bottom-color: var(--acc-red); }
+.card[data-danger="Extreme"]::before { color: var(--acc-purple); border-bottom-color: var(--acc-purple); }
+
+.card:hover {
+    transform: translateY(-3px);
+    border-color: var(--acc-cyan);
+    box-shadow: var(--shadow-lg), var(--bevel), 0 0 24px rgba(6, 182, 212, 0.16);
+}
+
+.card-name {
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+/* Dialogs are windows too — their header already IS a title bar */
+dialog {
+    background: var(--bg-panel) !important;
+    border: 1px solid var(--border-light) !important;
+    box-shadow: 0 12px 0 rgba(0,0,0,0.5), 0 0 60px rgba(0,0,0,0.8) !important;
+}
+
+.dialog-header {
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid var(--acc-cyan);
+}
+
+.dialog-close:hover {
+    background: var(--acc-red) !important;
+    color: #041018 !important;
+}
+
+.stat-box {
+    background: var(--bg-card);
+    border-radius: 0;
+    box-shadow: var(--bevel);
+}
+
+.tempo-section {
+    border-radius: 0;
+}
+
+.tempo-btn {
+    border-radius: 0 !important;
+}
+
+.site-search-panel {
+    background: rgba(11, 17, 32, 0.92) !important;
+    box-shadow: var(--bevel);
+}
+
+/* ── 5. SMALL PRINT + CLEANUP ──────────────────────────────────── */
+/* PHASMO TIMER nav link — bring the last hardcoded cyan into the system */
+.phasmo-timer-nav-btn {
+    border-radius: 0 !important;
+    background: var(--acc-cyan) !important;
+    color: #041018 !important;
+    font-family: var(--font-hud);
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: var(--bevel) !important;
+}
+.phasmo-timer-nav-btn:hover {
+    box-shadow: var(--bevel), 0 0 18px rgba(6, 182, 212, 0.35) !important;
+}
+.timer-new-badge {
+    border-radius: 0 !important;
+    font-family: var(--font-bitmap);
+    font-size: 0.5rem !important;
+}
+
+/* Footer is gone — reclaim the old mobile clearance */
+@media (max-width: 768px) {
+    .section-container { padding-bottom: 24px !important; }
+    .dashboard-container { padding-bottom: 24px !important; }
+}
+
+/* ── 6. ACCESSIBILITY ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+    .card:hover { transform: none; }
+}
