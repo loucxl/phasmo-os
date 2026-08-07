@@ -1,8 +1,8 @@
 // ============================================================
-// PhasmoOS — 13-live-banner.js
+// PhasmoOS - 13-live-banner.js
 // Live site-update banner driven by Firebase Realtime Database.
 // Edit /siteBanner in the Firebase console and every open tab
-// updates instantly — no refresh needed.
+// updates instantly - no refresh needed.
 //
 // Data shape at /siteBanner:
 //   { active: true, title: "SITE UPDATE", message: "..." }
@@ -14,7 +14,7 @@
 //     people who dismissed the previous one
 //   - If Firebase is unavailable, the hardcoded banner in
 //     index.html remains as a static fallback
-// Split from script.js structure — load order matters (loads
+// Split from script.js structure - load order matters (loads
 // after 05-group-journal.js, which initializes Firebase)
 // ============================================================
 
@@ -26,7 +26,7 @@
     const closeBtn = document.getElementById('wipClose');
     const DISMISS_KEY = 'phasmo_banner_dismissed';
 
-    // Tiny stable hash — any change to the text produces a new id
+    // Tiny stable hash - any change to the text produces a new id
     function bannerIdOf(title, message) {
         const str = (title || '') + '|' + (message || '');
         let h = 0;

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * PhasmoOS — automatic game update fetcher
+ * PhasmoOS - automatic game update fetcher
  * ----------------------------------------
  * Pulls official Phasmophobia patch notes from the Steam News API and merges
  * them into updates.json (the file the Updates page reads at runtime).
  *
  * - Zero dependencies. Requires Node 18+ (built-in fetch).
- * - Never touches entries marked  "manual": true  — your hand-written logs
+ * - Never touches entries marked  "manual": true  - your hand-written logs
  *   are preserved forever and can be edited freely in updates.json.
  * - Auto entries are deduped by their Steam news GID, so re-runs are safe.
  * - Designed to run from GitHub Actions (see .github/workflows/fetch-updates.yml)
@@ -176,7 +176,7 @@ async function main() {
     const manual = existingUpdates.filter(u => u.manual === true);
     const autoOld = existingUpdates.filter(u => u.manual !== true);
 
-    // Merge autos by id — incoming wins (Steam sometimes edits notes post-release)
+    // Merge autos by id - incoming wins (Steam sometimes edits notes post-release)
     const autoById = new Map(autoOld.map(u => [u.id, u]));
     for (const entry of incoming) autoById.set(entry.id, entry);
 
@@ -187,7 +187,7 @@ async function main() {
     const autos = [...autoById.values()].filter(u => {
         const key = versionKey(u);
         if (key && manualVersions.has(key)) {
-            console.log(`Skipping auto entry ${u.id} (${u.version}) — manual entry covers ${key}`);
+            console.log(`Skipping auto entry ${u.id} (${u.version}) - manual entry covers ${key}`);
             return false;
         }
         return true;
@@ -209,7 +209,7 @@ async function main() {
     // Ignore the timestamp when deciding whether anything actually changed
     const normalise = s => s.replace(/"generated": "[^"]*"/, "");
     if (normalise(next) === normalise(prev)) {
-        console.log("No changes — updates.json left untouched.");
+        console.log("No changes - updates.json left untouched.");
         return;
     }
 

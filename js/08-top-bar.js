@@ -1,7 +1,7 @@
 // ============================================================
-// PhasmoOS — 08-top-bar.js
+// PhasmoOS - 08-top-bar.js
 // Top bar integration (DOMContentLoaded wiring for share/journal, stats, manual, updates buttons)
-// Split from script.js — load order matters (see index.html)
+// Split from script.js - load order matters (see index.html)
 // ============================================================
 
 // ═══════════════════════════════════════════════════════════════

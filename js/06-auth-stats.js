@@ -1,7 +1,7 @@
 // ============================================================
-// PhasmoOS — 06-auth-stats.js
+// PhasmoOS - 06-auth-stats.js
 // Google auth, nicknames, stats tracking, share-stats card, investigation mode
-// Split from script.js — load order matters (see index.html)
+// Split from script.js - load order matters (see index.html)
 // ============================================================
 
 // ═══════════════════════════════════════════════════════════════

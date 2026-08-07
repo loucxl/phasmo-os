@@ -1,7 +1,7 @@
 // ============================================================
-// PhasmoOS — 05-group-journal.js
+// PhasmoOS - 05-group-journal.js
 // Firebase config + Group Journal multiplayer sync (sessions, heartbeat, share links)
-// Split from script.js — load order matters (see index.html)
+// Split from script.js - load order matters (see index.html)
 // ============================================================
 
 // ═══════════════════════════════════════════════════════════════
@@ -186,9 +186,9 @@ function checkUrlForSession() {
 // stale state, and simultaneous clicks overwrote each other).
 // New design:
 //   - listeners attach to the individual data nodes (evidence,
-//     filters, users, timer) — heartbeats can no longer touch the board
+//     filters, users, timer) - heartbeats can no longer touch the board
 //   - writes are granular multi-path updates of only what changed,
-//     sent immediately (no debounce) — two people clicking different
+//     sent immediately (no debounce) - two people clicking different
 //     evidence at once both survive
 //   - loops are prevented by diffing (an echo of your own write is
 //     a no-op), not by time windows that could skip real updates
@@ -205,7 +205,7 @@ function listenToSession() {
     const base = firebase.database().ref(`sessions/${groupJournal.sessionId}`);
     groupJournal.listenerRefs = [];
 
-    // Evidence — the board itself
+    // Evidence - the board itself
     const evRef = base.child('evidence');
     evRef.on('value', (snap) => {
         const ev = snap.val();
@@ -231,7 +231,7 @@ function listenToSession() {
     }, (error) => console.error("Error listening to filters:", error));
     groupJournal.listenerRefs.push(fRef);
 
-    // Users — presence only, never touches the board
+    // Users - presence only, never touches the board
     const uRef = base.child('users');
     uRef.on('value', () => updateUserCount());
     groupJournal.listenerRefs.push(uRef);
@@ -245,7 +245,7 @@ function listenToSession() {
     groupJournal.listenerRefs.push(tRef);
 }
 
-// Sync local state to Firebase — granular, immediate, diff-based
+// Sync local state to Firebase - granular, immediate, diff-based
 function syncToFirebase() {
     if (!groupJournal.syncEnabled || !groupJournal.sessionId) return;
     if (groupJournal.applyingRemote) return; // this render came FROM the network

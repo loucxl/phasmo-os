@@ -1,7 +1,7 @@
 // ============================================================
-// PhasmoOS — 10-sidebar-ui.js
+// PhasmoOS - 10-sidebar-ui.js
 // Sidebar sync, evidence cycling/rule-out, filter toggle, updateBoard hook, injected sidebar CSS, user menu
-// Split from script.js — load order matters (see index.html)
+// Split from script.js - load order matters (see index.html)
 // ============================================================
 
 

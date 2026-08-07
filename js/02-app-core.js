@@ -1,7 +1,7 @@
 // ============================================================
-// PhasmoOS — 02-app-core.js
+// PhasmoOS - 02-app-core.js
 // App state, TempoEngine (footstep tempo tool), init, evidence/filter rendering, board logic, ghost modal
-// Split from script.js — load order matters (see index.html)
+// Split from script.js - load order matters (see index.html)
 // ============================================================
 
 // --- 2. STATE ---
@@ -98,7 +98,7 @@ const TempoEngine = (() => {
     function start(speed, btn) {
         stop();
         const ms = getIntervalMs(speed);
-        if (!ms) return; // Variable speed ghost — nothing to play
+        if (!ms) return; // Variable speed ghost - nothing to play
 
         running = true;
         activeButton = btn;
@@ -422,10 +422,10 @@ function openGhostModal(g) {
             data-speed="${s.speed}" data-idx="${i}"
             onclick="${isVariable ? '' : `handleTempoBtn(this, ${s.speed})`}"
             ${isVariable ? 'disabled style="cursor:default;opacity:0.6;"' : ''}
-            title="${isVariable ? 'Speed varies — copies the ghost being mimicked' : `Tap to hear ${s.label} footstep tempo`}">
+            title="${isVariable ? 'Speed varies - copies the ghost being mimicked' : `Tap to hear ${s.label} footstep tempo`}">
             <span class="tempo-btn-label">${s.label}</span>
             <span class="tempo-btn-speed">${s.speed} m/s</span>
-            <span class="tempo-btn-bpm">${isVariable ? '— BPM' : bpm + ' BPM'}</span>
+            <span class="tempo-btn-bpm">${isVariable ? '- BPM' : bpm + ' BPM'}</span>
             <span class="tempo-btn-icon">${isVariable ? '~' : '\u25B6'}</span>
         </button>`;
     }).join('');

@@ -1,7 +1,7 @@
 // ============================================================
-// PhasmoOS — 11-online-hunters.js
+// PhasmoOS - 11-online-hunters.js
 // Online Hunters counter (active session heartbeats)
-// Split from script.js — load order matters (see index.html)
+// Split from script.js - load order matters (see index.html)
 // ============================================================
 
 // ═══════════════════════════════════════════════════════════════

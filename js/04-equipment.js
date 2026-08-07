@@ -1,7 +1,7 @@
 // ============================================================
-// PhasmoOS — 04-equipment.js
+// PhasmoOS - 04-equipment.js
 // EQUIPMENT database, unlock levels, equipment/manual tabs, timer reset, XP + level helpers
-// Split from script.js — load order matters (see index.html)
+// Split from script.js - load order matters (see index.html)
 // ============================================================
 
 // --- EQUIPMENT DATABASE ---
@@ -22,10 +22,10 @@ const EQUIPMENT = {
         { name: "Head Mounted Camera", tier: "Optional", cost: "$60", usage: "Player-worn camera visible on truck monitor. Team coordination.", mechanics: "Worn by player. Team watches on monitor. Can spot Ghost Orbs from player POV.", tips: "Useful for solo players or teams wanting extra eyes. Can catch evidence remotely.", range: "Player's field of view" }
     ],
     protection: [
-        { name: "Crucifix", tier: "Essential", cost: "$30", usage: "Prevents hunts from starting within range. T1 blocks 1 hunt; T2/T3 block 2.", mechanics: "Range by tier: T1 3m / T2 4m / T3 5m (+50% vs Demon: 4.5/6/7.5m). Works held, thrown, or placed. After a block the ghost waits 25s (20s Demon) before trying again. T3 with both charges left can block a cursed hunt (uses both charges).", tips: "Placing it on the floor in the centre of the active area frees your hands — but it does work while held. Both the ghost's feet AND head (1.5m up) must be in range, so T1 range is effectively tight. Range ignores walls.", range: "T1 3m / T2 4m / T3 5m (+50% vs Demon)", uses: "T1: 1 · T2/T3: 2" },
+        { name: "Crucifix", tier: "Essential", cost: "$30", usage: "Prevents hunts from starting within range. T1 blocks 1 hunt; T2/T3 block 2.", mechanics: "Range by tier: T1 3m / T2 4m / T3 5m (+50% vs Demon: 4.5/6/7.5m). Works held, thrown, or placed. After a block the ghost waits 25s (20s Demon) before trying again. T3 with both charges left can block a cursed hunt (uses both charges).", tips: "Placing it on the floor in the centre of the active area frees your hands - but it does work while held. Both the ghost's feet AND head (1.5m up) must be in range, so T1 range is effectively tight. Range ignores walls.", range: "T1 3m / T2 4m / T3 5m (+50% vs Demon)", uses: "T1: 1 · T2/T3: 2" },
         { name: "Smudge Sticks", tier: "Essential", cost: "$15", usage: "Burn to repel/blind ghost. Prevents hunts or creates escape.", mechanics: "Outside hunt: Prevents hunts for 90s (180s Spirit, 60s Demon). During hunt: Blinds ghost ~5s (~7s Moroi)", tips: "Light with lighter. Use in active area to prevent hunts or while running from hunts.", range: "~6m effect radius", uses: "1 per stick" },
         { name: "Sanity Pills", tier: "Essential", cost: "$20", usage: "Restores sanity. Amount depends on difficulty, not tier.", mechanics: "Restores: Amateur 40% / Intermediate 35% / Professional 30% / Nightmare 25% / Insanity 20%. Tier changes speed: T1 over 20s, T2/T3 over 10s. T3 also grants a 10s infinite-sprint boost. Can't be taken above 95% sanity.", tips: "Max 4 in the team loadout. Save for after early evidence, before dangerous hunt ranges. Cures the Moroi curse. T3's sprint boost can even be used mid-hunt to escape.", range: "N/A (consumable)", uses: "Max 4 per contract" },
-        { name: "Candle", tier: "Starter", cost: "$15", usage: "Prevents sanity drain when near lit candle. Onryo interaction.", mechanics: "Firelights slow passive sanity drain (amount depends on tier) while you are nearby. Ghost can blow them out. Onryo treats flames as crucifixes — blocks its hunt attempts within 4m.", tips: "Light in safe rooms. Keep lighter ready to relight. Multiple candles = large safe zone.", range: "~3m sanity protection", uses: "Unlimited (can be blown out)" },
+        { name: "Candle", tier: "Starter", cost: "$15", usage: "Prevents sanity drain when near lit candle. Onryo interaction.", mechanics: "Firelights slow passive sanity drain (amount depends on tier) while you are nearby. Ghost can blow them out. Onryo treats flames as crucifixes - blocks its hunt attempts within 4m.", tips: "Light in safe rooms. Keep lighter ready to relight. Multiple candles = large safe zone.", range: "~3m sanity protection", uses: "Unlimited (can be blown out)" },
         { name: "Lighter", tier: "Starter", cost: "$15", usage: "Lights candles and smudge sticks. No battery.", mechanics: "Infinite uses. Required for smudging. Lights candles for sanity protection.", tips: "Always have one. Essential for smudge sticks and candles.", range: "Touch-based", uses: "Infinite" }
     ],
     utility: [
@@ -167,7 +167,7 @@ window.showManualTab = (key, btn) => {
     document.getElementById('manualContent').innerHTML = MANUAL_DB[key];
 };
 
-// Footer hunt-cooldown timer removed (Aug 2026) — resetTimer deleted with it
+// Footer hunt-cooldown timer removed (Aug 2026) - resetTimer deleted with it
 
 // Sort ghosts alphabetically
 GHOSTS.sort((a, b) => a.name.localeCompare(b.name));
@@ -175,7 +175,7 @@ GHOSTS.sort((a, b) => a.name.localeCompare(b.name));
 // kick off
 init();
 // initGroupJournal() call moved to the end of 05-group-journal.js
-// (cross-file hoisting fix, Aug 2026 — it must run AFTER its definitions load)
+// (cross-file hoisting fix, Aug 2026 - it must run AFTER its definitions load)
 
 // Initialize equipment when page loads
 window.addEventListener('DOMContentLoaded', function() {
@@ -188,18 +188,18 @@ window.addEventListener('DOMContentLoaded', function() {
 
 
 // ═══════════════════════════════════════════════════════════════
-// STAGGERED XP LEVELING SYSTEM
+// EXPONENTIAL XP LEVELING SYSTEM (rebuilt Aug 2026)
 // ═══════════════════════════════════════════════════════════════
-// Level 1-10:  100 XP per level (10 correct = 1 level)
-// Level 11-25: 200 XP per level (20 correct = 1 level)
-// Level 26-50: 400 XP per level (40 correct = 1 level)
-// Level 51+:   800 XP per level (80 correct = 1 level)
+// 5 XP per win. Cost to reach each level grows ~1.35x, so early
+// levels come fast and later ones are a real grind:
+//   L1 ~2 wins · L5 ~20 wins · L10 ~109 wins · L20 ~2300 wins
+// getXPForLevel(n) = XP needed to go from level n-1 to level n.
+// Returns whole, rounded numbers so the UI never shows decimals.
 
 function getXPForLevel(level) {
-    if (level <= 10) return 100;
-    if (level <= 25) return 200;
-    if (level <= 50) return 400;
-    return 800;
+    const BASE = 10;      // cost of level 1
+    const GROWTH = 1.35;  // each level costs 35% more than the last
+    return Math.round(BASE * Math.pow(GROWTH, level - 1));
 }
 
 function getLevelFromXP(xp) {

@@ -1,7 +1,7 @@
 // ============================================================
-// PhasmoOS — 12-investigation-override.js
+// PhasmoOS - 12-investigation-override.js
 // Investigation mode override + safe investigation result handler
-// Split from script.js — load order matters (see index.html)
+// Split from script.js - load order matters (see index.html)
 // ============================================================
 
 // ======================================================

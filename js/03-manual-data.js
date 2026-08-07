@@ -1,7 +1,7 @@
 // ============================================================
-// PhasmoOS — 03-manual-data.js
-// MANUAL_DB — in-app manual content
-// Split from script.js — load order matters (see index.html)
+// PhasmoOS - 03-manual-data.js
+// MANUAL_DB - in-app manual content
+// Split from script.js - load order matters (see index.html)
 // ============================================================
 
 // --- 6. MANUAL CONTENT ---
@@ -18,8 +18,8 @@ const MANUAL_DB = {
             <h4>Spirit Box</h4>
             <p class="detail-text">
                 Lights OFF in the ghost's room. Must be <strong>in the same room</strong> as the ghost (most ghosts). Some ghosts respond to 'everyone' regardless of room; some only respond when you are alone.
-                Look for the <span class="hl-green">ghost icon</span> on the box UI — that's evidence. <span class="hl-red">Deogen</span> is unique: responds in any lighting, no dark needed.
-                <br><span class="hl-blue">Tip:</span> Ask location or aggression questions. Check the box UI carefully — a red LED with no ghost icon means it heard you but no response.
+                Look for the <span class="hl-green">ghost icon</span> on the box UI - that's evidence. <span class="hl-red">Deogen</span> is unique: responds in any lighting, no dark needed.
+                <br><span class="hl-blue">Tip:</span> Ask location or aggression questions. Check the box UI carefully - a red LED with no ghost icon means it heard you but no response.
             </p>
         </div>
         <div class="manual-entry">
@@ -41,14 +41,14 @@ const MANUAL_DB = {
         <div class="manual-entry">
             <h4>Ghost Writing</h4>
             <p class="detail-text">
-                Ghost writes in the book. A book being thrown or moved is <span class="hl-red">not</span> evidence — only actual writing counts.
+                Ghost writes in the book. A book being thrown or moved is <span class="hl-red">not</span> evidence - only actual writing counts.
                 <br><span class="hl-blue">Tip:</span> Use two books in the active area to speed this up, especially for shy ghosts.
             </p>
         </div>
         <div class="manual-entry">
             <h4>Freezing Temperatures</h4>
             <p class="detail-text">
-                Must read <span class="hl-red">below 0°C/32°F</span> on a thermometer. <span class="hl-red">Visible breath is NOT evidence</span> — since v0.9.0, player breath appears below 5°C regardless of ghost type. Do not rely on breath alone.
+                Must read <span class="hl-red">below 0°C/32°F</span> on a thermometer. <span class="hl-red">Visible breath is NOT evidence</span> - since v0.9.0, player breath appears below 5°C regardless of ghost type. Do not rely on breath alone.
                 <br><span class="hl-blue">Tip:</span> Check multiple rooms. The active area is usually the coldest. Breaker ON warms rooms over time, making freezing temps harder to find if left on too long.
             </p>
         </div>
@@ -76,7 +76,7 @@ const MANUAL_DB = {
             <p class="detail-text">
                 Hunt checks use the <span class="hl-blue">average team sanity</span>, not just yours.
                 <br>&bull; One low-sanity player can drag the whole team’s average down.
-                <br>&bull; Exception: <span class="hl-red">Banshee</span> hunts based on its chosen <em>target's</em> individual sanity — not the team average. Keep the target's sanity high to suppress hunts.
+                <br>&bull; Exception: <span class="hl-red">Banshee</span> hunts based on its chosen <em>target's</em> individual sanity - not the team average. Keep the target's sanity high to suppress hunts.
             </p>
         </div>
         <div class="manual-entry">
@@ -123,7 +123,7 @@ const MANUAL_DB = {
                 <br>&bull; Each question drains sanity, more for certain questions.
                 <br>&bull; Saying "Goodbye" correctly ends the session safely.
                 <br><span class="hl-red">Hide and Seek</span> will trigger an instant hunt. <span class="hl-red">Walking away from the board while active also breaks it and starts a cursed hunt.</span> Always say "Goodbye" to close it safely.
-                <br><span class="hl-blue">Tip:</span> Use deliberately when near a hiding spot — great for forcing ghost events and gathering evidence quickly.
+                <br><span class="hl-blue">Tip:</span> Use deliberately when near a hiding spot - great for forcing ghost events and gathering evidence quickly.
             </p>
         </div>
         <div class="manual-entry">
@@ -142,7 +142,7 @@ const MANUAL_DB = {
             <p class="detail-text">
                 Plays a lullaby, revealing the ghost’s location.
                 <br>&bull; Brings the ghost within 5m causing it to manifest and walk toward the box. If it reaches the box or player, or the event lasts >5 seconds, a cursed hunt starts.
-                <br>&bull; <span class="hl-red">Do NOT throw it</span> — throwing (slamming shut) immediately starts a cursed hunt. Always place it gently.
+                <br>&bull; <span class="hl-red">Do NOT throw it</span> - throwing (slamming shut) immediately starts a cursed hunt. Always place it gently.
                 <br>&bull; Being at 0% sanity while the box plays also triggers a cursed hunt.
                 <br><span class="hl-blue">Tip:</span> Use to pinpoint the active area, but make sure your hiding route is planned first.
             </p>
@@ -169,7 +169,7 @@ const MANUAL_DB = {
             <h4>Summoning Circle</h4>
             <p class="detail-text">
                 Lights candles to summon a full ghost apparition.
-                <br>&bull; Light all 5 candles to summon the ghost — it teleports to the circle and manifests. After the event there is a ~5 second grace period before the cursed hunt begins.
+                <br>&bull; Light all 5 candles to summon the ghost - it teleports to the circle and manifests. After the event there is a ~5 second grace period before the cursed hunt begins.
                 <br>&bull; <span class="hl-red">Low sanity edge case:</span> If you light the final candle with less than 16% sanity, the event is skipped entirely and a hunt starts immediately (not cursed, but nearly impossible to stop without a tier 3 crucifix).
                 <br><span class="hl-blue">Tip:</span> Great for ghost photos, but only use if your hiding spot is close and safe.
             </p>
@@ -216,9 +216,9 @@ const MANUAL_DB = {
         <div class="manual-entry">
             <h4>Candles & Lighters</h4>
             <p class="detail-text">
-                Firelights slow passive sanity drain while nearby (exact amount depends on Firelight tier — they reduce it, but may not stop it entirely at all tiers).
+                Firelights slow passive sanity drain while nearby (exact amount depends on Firelight tier - they reduce it, but may not stop it entirely at all tiers).
                 <br>&bull; The ghost can blow them out.
-                <br>&bull; <span class="hl-red">Onryo:</span> Flames act as crucifixes — blocks hunt attempts within 4m. After the 3rd flame blow-out, Onryo can hunt at any sanity.
+                <br>&bull; <span class="hl-red">Onryo:</span> Flames act as crucifixes - blocks hunt attempts within 4m. After the 3rd flame blow-out, Onryo can hunt at any sanity.
                 <br><span class="hl-blue">Tip:</span> Use Firelights in investigation areas to slow sanity drain. Keep a lighter ready to relight immediately.
             </p>
         </div>

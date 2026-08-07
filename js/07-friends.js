@@ -1,7 +1,7 @@
 // ============================================================
-// PhasmoOS — 07-friends.js
+// PhasmoOS - 07-friends.js
 // Friends system: friend codes, requests, friends list, friend stats
-// Split from script.js — load order matters (see index.html)
+// Split from script.js - load order matters (see index.html)
 // ============================================================
 
 // ═══════════════════════════════════════════════════════════════

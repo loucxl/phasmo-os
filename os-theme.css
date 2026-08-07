@@ -19,10 +19,10 @@
     --text-muted: #94a3b8;
     --text-dim: #64748b;
 
-    /* Primary system accent — the original PhasmoOS cyan */
+    /* Primary system accent - the original PhasmoOS cyan */
     --acc-cyan: #06b6d4;
 
-    /* LED semantics — original values */
+    /* LED semantics - original values */
     --acc-green: #22c55e;
     --acc-red: #ef4444;
     --acc-orange: #f97316;
@@ -47,7 +47,7 @@ body {
     background: var(--bg-void);
 }
 
-/* Phosphor scanfield — static, cheap, sits over everything but
+/* Phosphor scanfield - static, cheap, sits over everything but
    never intercepts input. */
 body::after {
     content: '';
@@ -113,7 +113,7 @@ header .nav-btn.active {
     border-color: var(--acc-cyan) !important;
 }
 
-/* Sidebar section labels go bitmap — tiny system print */
+/* Sidebar section labels go bitmap - tiny system print */
 #sidebar h3 {
     font-family: var(--font-bitmap) !important;
     font-size: 0.6rem !important;
@@ -178,7 +178,7 @@ input[type="text"] {
     letter-spacing: 0;
 }
 
-/* Dialogs are windows too — their header already IS a title bar */
+/* Dialogs are windows too - their header already IS a title bar */
 dialog {
     background: var(--bg-panel) !important;
     border: 1px solid var(--border-light) !important;
@@ -215,7 +215,7 @@ dialog {
 }
 
 /* ── 5. SMALL PRINT + CLEANUP ──────────────────────────────────── */
-/* PHASMO TIMER nav link — bring the last hardcoded cyan into the system */
+/* PHASMO TIMER nav link - bring the last hardcoded cyan into the system */
 .phasmo-timer-nav-btn {
     border-radius: 0 !important;
     background: var(--acc-cyan) !important;
@@ -236,7 +236,7 @@ dialog {
     font-size: 0.5rem !important;
 }
 
-/* Footer is gone — reclaim the old mobile clearance */
+/* Footer is gone - reclaim the old mobile clearance */
 @media (max-width: 768px) {
     .section-container { padding-bottom: 24px !important; }
     .dashboard-container { padding-bottom: 24px !important; }
@@ -249,4 +249,112 @@ dialog {
         animation-duration: 0.01ms !important;
     }
     .card:hover { transform: none; }
+}
+
+/* ── SESSION TRACKER (top bar win/loss logging, Aug 2026) ──────── */
+.session-tracker {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 12px;
+}
+.session-start-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--acc-green);
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--acc-green);
+    font-family: var(--font-hud);
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 0;
+    box-shadow: var(--bevel);
+    transition: background 0.15s ease;
+}
+.session-start-btn:hover { background: rgba(34, 197, 94, 0.22); }
+
+.session-active {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 6px 0 12px;
+    border: 1px solid var(--acc-cyan);
+    background: rgba(6, 182, 212, 0.1);
+    box-shadow: var(--bevel);
+}
+.session-active-label {
+    font-family: var(--font-hud);
+    font-size: 0.68rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+.session-timer {
+    font-family: var(--font-hud);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--acc-cyan);
+    font-variant-numeric: tabular-nums;
+    padding-right: 8px;
+    margin-right: 4px;
+    border-right: 1px solid var(--border);
+}
+.session-result-btn {
+    width: 26px;
+    height: 24px;
+    border: 1px solid var(--border-light);
+    background: var(--bg-elevated);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1;
+    border-radius: 0;
+    transition: all 0.15s ease;
+}
+.session-result-btn.session-win { color: var(--acc-green); }
+.session-result-btn.session-win:hover { background: var(--acc-green); color: #041018; }
+.session-result-btn.session-loss { color: var(--acc-red); }
+.session-result-btn.session-loss:hover { background: var(--acc-red); color: #041018; }
+.session-cancel-btn {
+    width: 22px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.85rem;
+    border-radius: 0;
+}
+.session-cancel-btn:hover { color: var(--text-main); }
+
+/* Result confirmation toast */
+.session-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 99999;
+    padding: 14px 20px;
+    min-width: 260px;
+    text-align: center;
+    font-family: var(--font-hud);
+    background: var(--bg-elevated);
+    color: var(--text-main);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.45), 0 0 24px rgba(0,0,0,0.5);
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+.session-toast-win { border: 1px solid var(--acc-green); }
+.session-toast-loss { border: 1px solid var(--acc-red); }
+
+@media (max-width: 768px) {
+    .session-active-label { display: none; }
+    .session-start-btn { padding: 0 10px; font-size: 0.66rem; }
 }

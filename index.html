@@ -14,7 +14,7 @@
     <!-- Open Graph (for Discord, Facebook, Reddit sharing) -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Phasmophobia Cheat Sheet | All Ghosts, Evidence & Nightmare Guide">
-    <meta property="og:description" content="All 30 ghosts, evidence filters, Nightmare mode behavioural tells, maps, and equipment — the complete Phasmophobia investigation tool.">
+    <meta property="og:description" content="All 30 ghosts, evidence filters, Nightmare mode behavioural tells, maps, and equipment - the complete Phasmophobia investigation tool.">
     <meta property="og:site_name" content="PHASMO.OS">
 
     <!-- Twitter/X card -->
@@ -27,7 +27,7 @@
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "PHASMO.OS — Phasmophobia Cheat Sheet",
+      "name": "PHASMO.OS - Phasmophobia Cheat Sheet",
       "description": "Interactive Phasmophobia cheat sheet covering all 30 ghosts with evidence, hunt thresholds, speeds, Nightmare mode 0-evidence behavioural tells, maps, equipment, and survival strategies.",
       "applicationCategory": "GameApplication",
       "operatingSystem": "Any",
@@ -45,7 +45,7 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Silkscreen&family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="os-theme.css"><!-- Field Terminal theme — delete this line to restore the old look -->
+    <link rel="stylesheet" href="os-theme.css"><!-- Field Terminal theme - delete this line to restore the old look -->
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -129,6 +129,18 @@
     </span>
 
 </a>
+
+<!-- Session tracker: only shown to logged-in users (see 15-session-tracker.js) -->
+<div id="sessionTracker" class="session-tracker" style="display:none;">
+    <button id="btnStartSession" class="session-start-btn" type="button">▸ Start New Session</button>
+    <div id="sessionActive" class="session-active" style="display:none;">
+        <span class="session-timer" id="sessionTimer">0:00</span>
+        <span class="session-active-label">Ghost identified?</span>
+        <button id="btnSessionWin" class="session-result-btn session-win" type="button" title="You got it right">✓</button>
+        <button id="btnSessionLoss" class="session-result-btn session-loss" type="button" title="You got it wrong">✗</button>
+        <button id="btnSessionCancel" class="session-cancel-btn" type="button" title="Cancel session">✕</button>
+    </div>
+</div>
 </nav>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
@@ -340,8 +352,8 @@
                         <div class="map-topline"><span class="map-size-pill small">Small</span><span class="difficulty">★☆☆</span></div>
                         <div class="map-header"><h4>13 Willow Street</h4></div>
                         <div class="map-info"><span class="info-tag">2 Floors</span><span class="info-tag">10 Rooms</span><span class="info-tag">Reworked</span></div>
-                        <p class="map-desc">Fully reworked in v0.18 to match Tanglewood's standard: same layout underneath, but the second bedroom is now an art studio, the garage a gym, and the basement an open-plan den with a bar and game room — plus cat trees everywhere.</p>
-                        <div class="map-tips"><strong>Plan:</strong> Relearn the map — all seven cursed possession spots moved in the rework. The open basement den has fewer walls for breaking line of sight, so know your hide before pushing it. The redrawn truck map now shows full room detail.</div>
+                        <p class="map-desc">Fully reworked in v0.18 to match Tanglewood's standard: same layout underneath, but the second bedroom is now an art studio, the garage a gym, and the basement an open-plan den with a bar and game room - plus cat trees everywhere.</p>
+                        <div class="map-tips"><strong>Plan:</strong> Relearn the map - all seven cursed possession spots moved in the rework. The open basement den has fewer walls for breaking line of sight, so know your hide before pushing it. The redrawn truck map now shows full room detail.</div>
                     </article>
 
                     <article class="map-card">
@@ -500,7 +512,7 @@
             </div>
 
             <div class="mechanics-note warning-note">
-                <strong>Data verified July 2026</strong> against game version v0.17.1.x and current community wiki datamines — including the Aswang and Kormos added in the Alan Wake event.
+                <strong>Data verified July 2026</strong> against game version v0.17.1.x and current community wiki datamines - including the Aswang and Kormos added in the Alan Wake event.
             </div>
             
             <div class="mechanics-grid refined-mechanics-grid">
@@ -644,7 +656,7 @@
                         <h4>Aswang</h4>
                         <ul>
                             <li>Base 1.53 m/s; LoS acceleration is 1.5x normal, reaching its 2.53 m/s max in ~8.7s instead of ~13s.</li>
-                            <li>Cannot kill players in official hiding spots — reaching one instantly ends the hunt.</li>
+                            <li>Cannot kill players in official hiding spots - reaching one instantly ends the hunt.</li>
                             <li>After a hunt ends that way, its next hunt starts by walking to that player's old hiding spot.</li>
                         </ul>
                         <h4>Kormos</h4>
@@ -652,7 +664,7 @@
                             <li>Blind: only gains line-of-sight within 5m unobstructed. Hunts by sound instead.</li>
                             <li>Footstep detection: 10m crouch-walking, 15m walking, 30m sprinting (same floor).</li>
                             <li>Moves at 1.7 m/s, or 2.21 m/s when travelling to a detected sound; re-targets sounds every 5–10s.</li>
-                            <li>Kills within 1.5m on the same floor even through walls and furniture — don't stand in its path.</li>
+                            <li>Kills within 1.5m on the same floor even through walls and furniture - don't stand in its path.</li>
                             <li>Threshold 50%, raised to 70% if a player sprints in the same room. Cannot do mist-orb or chasing events.</li>
                         </ul>
                     </div>
@@ -1151,9 +1163,9 @@
                     <div class="tip-card" style="border-color:rgba(139,92,246,0.35);"><h4 style="color:#c4b5fd;">Dayan</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Movement-sensitive. Stand still during a hunt when it is close: if it slows sharply, then speeds the moment someone moves, suspect Dayan. Also check female-only clue.</p></div>
                     <div class="tip-card" style="border-color:rgba(239,68,68,0.35);"><h4 style="color:var(--acc-red);">Gallu</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Defensive tools and salt can change its state. Enraged Gallu is faster, has reduced incense blind time, and cannot disturb salt; after an enraged hunt it becomes weakened.</p></div>
                     <div class="tip-card" style="border-color:rgba(6,182,212,0.35);"><h4 style="color:var(--acc-cyan);">Obambo</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Watch for repeating ~2-minute waves. Calm phases are interaction-heavy but almost never hunt; aggressive phases go quiet on activity yet hunt early (65%) and fast. Quiet does NOT mean safe. A mid-hunt speed snap or a fast-start hunt ending ~20% early is near-conclusive.</p></div>
-                    <div class="tip-card" style="border-color:rgba(234,179,8,0.35);"><h4 style="color:#fde68a;">Aswang</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Best 0EV tell in the game: lead it to an official hiding spot (closet/locker) while it can see you — if the hunt ends the instant it reaches you, it is an Aswang. Also ramps to max chase speed ~1.5x faster than normal, so break sight lines early. Expect its next hunt to check your old hiding spot.</p></div>
-                    <div class="tip-card" style="border-color:rgba(34,197,94,0.35);"><h4 style="color:#86efac;">Kormos</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Blind, sound-based hunter. Go still, silent and electronics-off in an open area: it will walk straight past you (rule out Banshee by having everyone freeze). It kills within 1.5m through walls, so keep clear of its path — and never sprint in its room (raises its threshold to 70%).</p></div>
-                    <div class="tip-card" style="border-color:rgba(59,130,246,0.35);"><h4 style="color:#93c5fd;">Deildegast</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Flat 3.0 m/s hunts with zero line-of-sight speed-up — unlike a Revenant, it is fast BEFORE it sees you. Move 10–15 unique house items between hunts (dead teammates count) and the next hunt slows right down; touch nothing and it stays at full sprint. Speed resets after every hunt and burned crucifix, so keep littering.</p></div>
+                    <div class="tip-card" style="border-color:rgba(234,179,8,0.35);"><h4 style="color:#fde68a;">Aswang</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Best 0EV tell in the game: lead it to an official hiding spot (closet/locker) while it can see you - if the hunt ends the instant it reaches you, it is an Aswang. Also ramps to max chase speed ~1.5x faster than normal, so break sight lines early. Expect its next hunt to check your old hiding spot.</p></div>
+                    <div class="tip-card" style="border-color:rgba(34,197,94,0.35);"><h4 style="color:#86efac;">Kormos</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Blind, sound-based hunter. Go still, silent and electronics-off in an open area: it will walk straight past you (rule out Banshee by having everyone freeze). It kills within 1.5m through walls, so keep clear of its path - and never sprint in its room (raises its threshold to 70%).</p></div>
+                    <div class="tip-card" style="border-color:rgba(59,130,246,0.35);"><h4 style="color:#93c5fd;">Deildegast</h4><p style="color:var(--text-muted); font-size:0.88rem; line-height:1.6;">Flat 3.0 m/s hunts with zero line-of-sight speed-up - unlike a Revenant, it is fast BEFORE it sees you. Move 10–15 unique house items between hunts (dead teammates count) and the next hunt slows right down; touch nothing and it stays at full sprint. Speed resets after every hunt and burned crucifix, so keep littering.</p></div>
                 </div>
             </div>
 
@@ -1188,7 +1200,7 @@
                             <li><strong>Yokai:</strong> voice can cause very early hunts.</li>
                             <li><strong>Obambo:</strong> safe-feeling phases can flip suddenly.</li>
                             <li><strong>Kormos:</strong> kills within 1.5m through walls; any noise draws it in fast.</li>
-                            <li><strong>Deildegast:</strong> flat 3.0 m/s until you slow it by moving items — lethal early.</li>
+                            <li><strong>Deildegast:</strong> flat 3.0 m/s until you slow it by moving items - lethal early.</li>
                         </ul>
                     </div>
                     <div class="tip-card" style="border-color:rgba(234,179,8,0.4); background:rgba(234,179,8,0.03);">
@@ -1243,7 +1255,7 @@
                 <div>
                     <p class="updates-kicker">ABOUT THIS TOOL</p>
                     <h2 class="page-title">👻 About PhasmoOS</h2>
-                    <p class="updates-intro">PhasmoOS is a free, fan-made companion app for Phasmophobia — a single place for ghost identification, maps, equipment, mechanics, strategy and 0 EV hunting, all built to sit alongside the game.</p>
+                    <p class="updates-intro">PhasmoOS is a free, fan-made companion app for Phasmophobia - a single place for ghost identification, maps, equipment, mechanics, strategy and 0 EV hunting, all built to sit alongside the game.</p>
                 </div>
                 <div class="updates-version-card">
                     <span class="updates-version-label">Version</span>
@@ -1257,7 +1269,7 @@
                 <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px;">
                     <h3 style="font-family: var(--font-hud); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--acc-cyan); margin: 0 0 12px;">What is PhasmoOS?</h3>
                     <p style="color: var(--text-muted); line-height: 1.65; margin: 0 0 10px;">PhasmoOS is a reference and investigation tool for <strong style="color: var(--text-main);">Phasmophobia</strong>, the co-op ghost-hunting game by Kinetic Games. It pulls together everything you'd normally have scattered across wikis and notes into one fast, dark-themed dashboard.</p>
-                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0;">Use the evidence filters in the sidebar to narrow down which ghost you're dealing with during a hunt, then dig into per-ghost behaviour, hunt thresholds, map layouts, equipment tiers, game mechanics and strategy guides — including a dedicated 0 EV section for evidence-less identification.</p>
+                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0;">Use the evidence filters in the sidebar to narrow down which ghost you're dealing with during a hunt, then dig into per-ghost behaviour, hunt thresholds, map layouts, equipment tiers, game mechanics and strategy guides - including a dedicated 0 EV section for evidence-less identification.</p>
                 </div>
 
                 <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px;">
@@ -1274,14 +1286,14 @@
 
                 <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px;">
                     <h3 style="font-family: var(--font-hud); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--acc-cyan); margin: 0 0 12px;">How "Hunters Online" works</h3>
-                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0 0 10px;">The <strong style="color: var(--text-main);">Hunters Online</strong> badge in the header shows roughly how many people are using PhasmoOS at the same time as you — a live presence count, just for fun.</p>
-                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0;">It works with a lightweight <strong style="color: var(--text-main);">heartbeat</strong>: your browser quietly pings the server every so often to say "still here," and drops off the count when you close the tab. That's all it does — it doesn't log, track, or store anything about you or what you're doing.</p>
+                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0 0 10px;">The <strong style="color: var(--text-main);">Hunters Online</strong> badge in the header shows roughly how many people are using PhasmoOS at the same time as you - a live presence count, just for fun.</p>
+                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0;">It works with a lightweight <strong style="color: var(--text-main);">heartbeat</strong>: your browser quietly pings the server every so often to say "still here," and drops off the count when you close the tab. That's all it does - it doesn't log, track, or store anything about you or what you're doing.</p>
                 </div>
 
                 <div style="background: rgba(6,182,212,0.06); border: 1px solid var(--acc-cyan); border-radius: 10px; padding: 20px 22px;">
                     <h3 style="font-family: var(--font-hud); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--acc-cyan); margin: 0 0 12px;">🔒 Signing in &amp; your privacy</h3>
-                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0 0 10px;">Signing in is completely optional — the whole tool works without an account. If you do log in with Google, it's only used to identify your account so things like saved progress and friends work.</p>
-                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0;">Your email is <strong style="color: var(--text-main);">never used for marketing and never sold or shared with anyone</strong>. There's no advertising and no third-party tracking here — it's a hobby project, not a data business.</p>
+                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0 0 10px;">Signing in is completely optional - the whole tool works without an account. If you do log in with Google, it's only used to identify your account so things like saved progress and friends work.</p>
+                    <p style="color: var(--text-muted); line-height: 1.65; margin: 0;">Your email is <strong style="color: var(--text-main);">never used for marketing and never sold or shared with anyone</strong>. There's no advertising and no third-party tracking here - it's a hobby project, not a data business.</p>
                 </div>
 
                 <div class="about-support-card">
@@ -1300,7 +1312,7 @@
         </div>
     </div>
 
-    <!-- Footer timer removed (Aug 2026) — hunt/smudge timing lives in the ghost modal tempo tool and phasmo-timer.html -->
+    <!-- Footer timer removed (Aug 2026) - hunt/smudge timing lives in the ghost modal tempo tool and phasmo-timer.html -->
 
     <!-- Ghost Details Modal -->
     <dialog id="ghostModal">
@@ -1421,7 +1433,7 @@
                 'Target Sanity': '#06b6d4', 'Variable': '#8b5cf6'
             };
 
-            // Extract a clean one-liner from zeroEv — first sentence only
+            // Extract a clean one-liner from zeroEv - first sentence only
             function shortSummary(text) {
                 // Strip HTML tags for the summary line
                 const stripped = text.replace(/<[^>]+>/g, '');
@@ -1765,7 +1777,7 @@ border:1px solid rgba(255,255,255,0.08);
         </div>
     </dialog>
 
-    <!-- PhasmoOS scripts — split from script.js. LOAD ORDER MATTERS: later files
+    <!-- PhasmoOS scripts - split from script.js. LOAD ORDER MATTERS: later files
          use and override things defined in earlier ones. See README-SPLIT.md -->
     <script src="js/01-core-data.js"></script>
     <script src="js/02-app-core.js"></script>
@@ -1780,6 +1792,8 @@ border:1px solid rgba(255,255,255,0.08);
     <script src="js/11-online-hunters.js"></script>
     <script src="js/12-investigation-override.js"></script>
     <script src="js/13-live-banner.js"></script>
+    <script src="js/14-version-check.js"></script>
+    <script src="js/15-session-tracker.js"></script>
 
 <div id="event-popup-overlay" class="event-popup-overlay hidden">
     <div class="event-popup">

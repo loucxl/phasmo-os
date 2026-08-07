@@ -1,7 +1,7 @@
 // ============================================================
-// PhasmoOS — 09-game-updates.js
+// PhasmoOS - 09-game-updates.js
 // GAME_UPDATES data + live update loading and rendering
-// Split from script.js — load order matters (see index.html)
+// Split from script.js - load order matters (see index.html)
 // ============================================================
 
 // ═══════════════════════════════════════════════════════════════
@@ -290,7 +290,7 @@ const GAME_UPDATES = [
                     "Alan Wake themed event/update released.",
                     "Ghost fixes included Yurei door closing, Raiju light flicker behaviour, and several room/pathing fixes.",
                     "Equipment fixes included Firelight, Head Gear, Video Camera, Flashlight, Tripod, Igniter, and Spirit Box related issues.",
-                    "Kormos and Aswang added as surprise new ghosts. (Site note: their data has since been verified against wiki datamines — see the ghost cards.)"
+                    "Kormos and Aswang added as surprise new ghosts. (Site note: their data has since been verified against wiki datamines - see the ghost cards.)"
                 ]
             }
         ]
@@ -321,7 +321,7 @@ async function loadGameUpdates() {
             }
         }
     } catch (err) {
-        // Offline / file:// usage — the baked-in GAME_UPDATES covers us.
+        // Offline / file:// usage - the baked-in GAME_UPDATES covers us.
     }
     renderGameUpdates();
 }
