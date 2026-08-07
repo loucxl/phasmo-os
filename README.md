@@ -1,4 +1,4 @@
-# PHASMO.OS // Complete Investigation Suite
+# PHASMO.OS // Complete Phasmo Helper
 
 A comprehensive web-based toolkit for Phasmophobia investigators — built for ghost hunters of all experience levels. Whether you're learning the basics or mastering zero-evidence runs, this site has everything you need to identify ghosts, survive hunts, and track game update notes.
 
