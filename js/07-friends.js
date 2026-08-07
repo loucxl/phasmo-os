@@ -42,13 +42,19 @@ function generateFriendCode() {
 }
 
 async function getPublicUserProfile(uid) {
-    const snapshot = await firebase.database().ref(`users/${uid}`).once('value');
-    const data = snapshot.val() || {};
+    // Read only public fields individually — the whole users/<uid> node
+    // includes owner-only children (email, history) that reject a full read.
+    const base = firebase.database().ref(`users/${uid}`);
+    const [nick, photo, code] = await Promise.all([
+        base.child('nickname').once('value').then(s => s.val()).catch(() => null),
+        base.child('photoURL').once('value').then(s => s.val()).catch(() => null),
+        base.child('friendCode').once('value').then(s => s.val()).catch(() => null)
+    ]);
     return {
         uid,
-        nickname: data.nickname || 'Unknown Hunter',
-        photoURL: data.photoURL || '',
-        friendCode: data.friendCode || ''
+        nickname: nick || 'Unknown Hunter',
+        photoURL: photo || '',
+        friendCode: code || ''
     };
 }
 
@@ -77,8 +83,8 @@ async function initializeFriendCode() {
 
     try {
         const userRef = firebase.database().ref(`users/${currentUser.uid}`);
-        const snapshot = await userRef.once('value');
-        const userData = snapshot.val() || {};
+        const fcSnap = await userRef.child('friendCode').once('value');
+        const userData = { friendCode: fcSnap.val() };
 
         if (userData.friendCode) {
             const existingCode = normaliseFriendCode(userData.friendCode);
@@ -549,10 +555,17 @@ setTimeout(() => {
 // View friend stats
 async function viewFriendStats(friendUid, friendNickname) {
     try {
-        // Load friend's data
-        const friendSnapshot = await firebase.database().ref(`users/${friendUid}`).once('value');
-        const friendData = friendSnapshot.val();
-        
+        // Load friend's data — read only the fields we show, individually,
+        // since the full node has owner-only children (email, history).
+        const friendBase = firebase.database().ref(`users/${friendUid}`);
+        const [fNick, fPhoto, fStats] = await Promise.all([
+            friendBase.child('nickname').once('value').then(s => s.val()).catch(() => null),
+            friendBase.child('photoURL').once('value').then(s => s.val()).catch(() => null),
+            friendBase.child('stats').once('value').then(s => s.val()).catch(() => null)
+        ]);
+
+        const friendData = (fNick || fStats) ? { nickname: fNick, photoURL: fPhoto, stats: fStats } : null;
+
         if (!friendData) {
             alert('Could not load friend data');
             return;

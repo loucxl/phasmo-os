@@ -27,7 +27,9 @@ function initOnlineHuntersCounter() {
 
         hunterRef.set({
             lastSeen: Date.now(),
-            page: window.location.pathname || "/"
+            page: window.location.pathname || "/",
+            // Nickname only if logged in; anonymous stays null. NEVER store email here.
+            nickname: (typeof currentUserNickname !== 'undefined' && currentUserNickname) ? currentUserNickname : null
         }).catch((error) => {
             console.warn("Online Hunters write failed. Check Firebase rules.", error);
         });
@@ -38,7 +40,8 @@ function initOnlineHuntersCounter() {
         onlineHunterHeartbeat = setInterval(() => {
             hunterRef.update({
                 lastSeen: Date.now(),
-                page: window.location.pathname || "/"
+                page: window.location.pathname || "/",
+                nickname: (typeof currentUserNickname !== 'undefined' && currentUserNickname) ? currentUserNickname : null
             }).catch((error) => {
                 console.warn("Online Hunters heartbeat failed.", error);
             });

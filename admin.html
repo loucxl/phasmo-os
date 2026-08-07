@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>PHASMO/OS - Admin</title>
+<style>
+    :root {
+        --bg-void: #030712; --bg-panel: #0b1120; --bg-card: #171f30;
+        --border: #334155; --acc-cyan: #06b6d4; --acc-green: #22c55e;
+        --text-main: #f8fafc; --text-muted: #94a3b8; --text-dim: #64748b;
+        --font-hud: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0; padding: 24px; background: var(--bg-void);
+        color: var(--text-main); font-family: var(--font-hud);
+        min-height: 100vh;
+    }
+    h1 { font-size: 1.2rem; letter-spacing: 1px; margin: 0 0 4px; }
+    .sub { color: var(--text-dim); font-size: 0.75rem; margin-bottom: 24px; }
+    .gate, .panel { max-width: 720px; margin: 0 auto; }
+    .card {
+        background: var(--bg-panel); border: 1px solid var(--border);
+        padding: 18px 20px; margin-bottom: 16px;
+    }
+    .stat-row { display: flex; gap: 16px; margin-bottom: 16px; }
+    .stat {
+        flex: 1; background: var(--bg-card); border: 1px solid var(--border);
+        padding: 14px 16px; text-align: center;
+    }
+    .stat-num { font-size: 1.8rem; font-weight: 700; color: var(--acc-cyan); }
+    .stat-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-top: 4px; }
+    .row {
+        display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+        border-bottom: 1px solid rgba(51,65,85,0.4); font-size: 0.85rem;
+    }
+    .row:last-child { border-bottom: none; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--acc-green); flex-shrink: 0; }
+    .dot.anon { background: var(--text-dim); }
+    .name { flex: 1; }
+    .name.anon { color: var(--text-dim); font-style: italic; }
+    .page-tag { color: var(--text-muted); font-size: 0.72rem; }
+    button {
+        background: var(--acc-cyan); color: #041018; border: none;
+        padding: 10px 18px; font-family: inherit; font-weight: 700;
+        cursor: pointer; font-size: 0.85rem;
+    }
+    .empty { color: var(--text-dim); text-align: center; padding: 20px; font-size: 0.8rem; }
+    .note { color: var(--text-dim); font-size: 0.7rem; margin-top: 20px; line-height: 1.6; }
+    a { color: var(--acc-cyan); }
+</style>
+</head>
+<body>
+    <div id="gate" class="gate">
+        <div class="card">
+            <h1>PHASMO/OS Admin</h1>
+            <div class="sub">Restricted area</div>
+            <p style="color:var(--text-muted); font-size:0.85rem;">Sign in with the owner account to continue.</p>
+            <button id="loginBtn">Sign in with Google</button>
+            <div id="denied" style="display:none; color:#ef4444; margin-top:14px; font-size:0.85rem;">
+                That account isn't authorised for this page.
+            </div>
+        </div>
+    </div>
+
+    <div id="panel" class="panel" style="display:none;">
+        <h1>Live Presence</h1>
+        <div class="sub" id="clock">-</div>
+        <div class="stat-row">
+            <div class="stat"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Online now</div></div>
+            <div class="stat"><div class="stat-num" id="namedCount">0</div><div class="stat-label">Logged in</div></div>
+            <div class="stat"><div class="stat-num" id="anonCount">0</div><div class="stat-label">Not logged in</div></div>
+        </div>
+        <div class="card" id="list"><div class="empty">Loading...</div></div>
+        <div class="note">
+            Live view only - nothing here is stored or logged. Shows nicknames of
+            signed-in hunters and a count of anonymous visitors. No emails, no IPs,
+            no location, no tracking of individuals. <a href="index.html">&larr; Back to site</a>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script>
+        // ── CONFIG ──────────────────────────────────────────────
+        const firebaseConfig = {
+            apiKey: "AIzaSyCBe2DLH2DnFucxKEp_tMfdsTV3dr8K-Qw",
+            authDomain: "phasmo-group-journal.firebaseapp.com",
+            databaseURL: "https://phasmo-group-journal-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "phasmo-group-journal",
+            storageBucket: "phasmo-group-journal.firebasestorage.app",
+            messagingSenderId: "224238426204",
+            appId: "1:224238426204:web:b20b8db2f80981d2f02e99"
+        };
+
+        // Your Firebase Auth UID. Only this account can view the dashboard.
+        // Find it: Firebase console -> Authentication -> Users -> User UID.
+        const OWNER_UID = "PASTE-YOUR-UID-HERE";
+
+        const ONLINE_WINDOW = 30000; // match the site's 30s presence window
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        const gate = document.getElementById('gate');
+        const panel = document.getElementById('panel');
+        const denied = document.getElementById('denied');
+
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            try {
+                await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+            } catch (e) { console.error(e); }
+        });
+
+        auth.onAuthStateChanged((user) => {
+            if (user && user.uid === OWNER_UID) {
+                gate.style.display = 'none';
+                panel.style.display = 'block';
+                startDashboard();
+            } else if (user) {
+                // Signed in but not the owner - show refusal, sign back out
+                denied.style.display = 'block';
+                auth.signOut();
+            }
+        });
+
+        function startDashboard() {
+            const clock = document.getElementById('clock');
+            setInterval(() => { clock.textContent = new Date().toLocaleTimeString(); }, 1000);
+
+            db.ref('onlineHunters').on('value', (snap) => {
+                const data = snap.val() || {};
+                const now = Date.now();
+                const live = Object.values(data).filter(h => h && h.lastSeen && (now - h.lastSeen) < ONLINE_WINDOW);
+
+                const named = live.filter(h => h.nickname);
+                const anon = live.filter(h => !h.nickname);
+
+                document.getElementById('totalCount').textContent = live.length;
+                document.getElementById('namedCount').textContent = named.length;
+                document.getElementById('anonCount').textContent = anon.length;
+
+                const list = document.getElementById('list');
+                list.innerHTML = '';
+                if (live.length === 0) {
+                    list.innerHTML = '<div class="empty">Nobody online right now.</div>';
+                    return;
+                }
+
+                // Named hunters first, then anonymous rows
+                named.forEach(h => list.appendChild(rowEl(h.nickname, h.page, false)));
+                anon.forEach(h => list.appendChild(rowEl('Non-logged in user', h.page, true)));
+            });
+        }
+
+        function rowEl(name, page, isAnon) {
+            const row = document.createElement('div');
+            row.className = 'row';
+            const dot = document.createElement('span');
+            dot.className = 'dot' + (isAnon ? ' anon' : '');
+            const nameEl = document.createElement('span');
+            nameEl.className = 'name' + (isAnon ? ' anon' : '');
+            nameEl.textContent = name;
+            const pageEl = document.createElement('span');
+            pageEl.className = 'page-tag';
+            pageEl.textContent = prettyPage(page);
+            row.appendChild(dot);
+            row.appendChild(nameEl);
+            row.appendChild(pageEl);
+            return row;
+        }
+
+        function prettyPage(path) {
+            if (!path) return '';
+            if (path.includes('phasmo-timer')) return 'Timer overlay';
+            if (path.includes('share-stats')) return 'Stats card';
+            if (path.includes('admin')) return 'Admin';
+            return 'Main site';
+        }
+    </script>
+</body>
+</html>

@@ -233,19 +233,26 @@ async function onUserLoggedIn(user) {
     console.log("User logged in:", user.email);
     currentUser = user;
     
-    // Check if user has a nickname
-    const userRef = firebase.database().ref(`users/${user.uid}`);
-    const snapshot = await userRef.once('value');
-    const userData = snapshot.val();
-    
-    if (!userData || !userData.nickname) {
+    // Check if user has a nickname. Read ONLY the nickname field, not the
+    // whole users/<uid> node — that node has children (email, history) with
+    // stricter read rules, and reading the parent rejects the whole request.
+    const nickRef = firebase.database().ref(`users/${user.uid}/nickname`);
+    let nickname = null;
+    try {
+        const snapshot = await nickRef.once('value');
+        nickname = snapshot.val();
+    } catch (e) {
+        console.error("Couldn't read nickname:", e);
+    }
+
+    if (!nickname) {
         // First time login - prompt for nickname
         document.getElementById('nicknameModal').showModal();
         return;
     }
-    
+
     // User has nickname, load it
-    currentUserNickname = userData.nickname;
+    currentUserNickname = nickname;
     showUserView();
 }
 
