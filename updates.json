@@ -1,7 +1,29 @@
 {
-  "generated": "2026-09-16T04:54:04.550Z",
+  "generated": "2026-09-16T17:03:22.781Z",
   "source": "Steam ISteamNews (auto) + manual entries",
   "updates": [
+    {
+      "id": "steam-1844115010489571",
+      "manual": false,
+      "version": "v0.19.0.2",
+      "title": "Phasmophobia Patch Notes",
+      "logAdded": "16 September 2026",
+      "gameRelease": "16 September 2026",
+      "date": 1789574727,
+      "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1844115010489571",
+      "sections": [
+        {
+          "heading": "Patch Notes",
+          "text": [
+            "Welcome back, Ghost Hunters. We’ve got an update for you.Today, we have released an update for Phasmophobia to address two issues that have been raised by the community since the release of our last update.Fixes"
+          ],
+          "items": [
+            "Fixed an issue which prevented certain PlayStation 5 and XBOX Series X/S users from entering rooms for Singleplayer and Multiplayer.",
+            "Fixed an issue that caused player audio to be muffled in Multiplayer if another player dropped the Parabolic Microphone immediately after turning it on."
+          ]
+        }
+      ]
+    },
     {
       "id": "steam-1843481262691864",
       "manual": false,
