@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-07T13:30:44.317Z",
+  "generated": "2026-10-07T23:08:24.622Z",
   "source": "Steam ISteamNews (auto) + manual entries",
   "updates": [
     {
@@ -20,7 +20,7 @@
             "Known Issues"
           ],
           "items": [
-            "Crimson Eye - The Crimson Eye is upon us, Ghost Hunters. Once more, various locations across Phasmophobia will be bathed in the red glow of the Blood Moon, offering any willing Ghost Hunter rewards in return for completing investigations, optional objectives and more. For more information on this year’s iteration of the event, please read our latest blogpost \\[LINK TO BLOG].",
+            "Crimson Eye - The Crimson Eye is upon us, Ghost Hunters. Once more, various locations across Phasmophobia will be bathed in the red glow of the Blood Moon, offering any willing Ghost Hunter rewards in return for completing investigations, optional objectives and more. For more information on this year’s iteration of the event, please read our latest blogpost.",
             "Seasonal Event toggle - As a new feature for Crimson Eye and future seasonal events, we have implemented a toggle that allows players to turn on/off the event maps for their session.",
             "Fixed an issue that caused the white light upon being revived to flash rather than slowly fade in and out.",
             "Fixed an issue where an Easter Egg reward may not unlock, despite a 0x multiplier being active and the reward pop up being displayed.",
