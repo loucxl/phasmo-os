@@ -1,7 +1,26 @@
 {
-  "generated": "2026-11-17T07:59:47.475Z",
+  "generated": "2026-11-17T20:59:21.637Z",
   "source": "Steam ISteamNews (auto) + manual entries",
   "updates": [
+    {
+      "id": "steam-1849458702694051",
+      "manual": false,
+      "version": "Update",
+      "title": "Announcing - Phasmophobia's Resonance Update Releases November 24th, 2026",
+      "logAdded": "17 November 2026",
+      "gameRelease": "17 November 2026",
+      "date": 1794927610,
+      "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1849458702694051",
+      "sections": [
+        {
+          "heading": "Patch Notes",
+          "text": [
+            "Welcome back, Ghost Hunters.Today, we are excited to announce that Resonance, our next major update for Phasmophobia, releases November 24th, 2026 across all platforms.Along with our transition to Unity 6, Resonance brings with it the new Dowsing Rods, new Voice Recognition features, improved lighting across the game as well as a host of bug fixes. For a look at what's instore, read our latest Development Preview.Full patch notes for Resonance will be released at launch.[carousel][/carousel]"
+          ],
+          "items": []
+        }
+      ]
+    },
     {
       "id": "steam-1846018067925452",
       "manual": false,
