@@ -1,7 +1,26 @@
 {
-  "generated": "2026-11-26T08:28:00.111Z",
+  "generated": "2026-11-26T21:38:53.280Z",
   "source": "Steam ISteamNews (auto) + manual entries",
   "updates": [
+    {
+      "id": "steam-1850460852986875",
+      "manual": false,
+      "version": "v0.20.0.0",
+      "title": "Phasmophobia Compatibility Fix",
+      "logAdded": "26 November 2026",
+      "gameRelease": "26 November 2026",
+      "date": 1795719742,
+      "url": "https://steamstore-a.akamaihd.net/news/externalpost/steam_community_announcements/1850460852986875",
+      "sections": [
+        {
+          "heading": "Patch Notes",
+          "text": [
+            "Ghost Hunters, we have deployed a fix for Steam that addresses an issue that caused a black screen for users with Eye Adaptation enabled. This was related to a compatibility issue with graphics cards that are unable to support DirectX 11.1."
+          ],
+          "items": []
+        }
+      ]
+    },
     {
       "id": "steam-1849827110445832",
       "manual": false,
